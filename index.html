@@ -1788,6 +1788,19 @@ tbody tr:hover{
             <span class="count" id="storage-usage" title="Espacio usado de los 5MB disponibles en esta llave de almacenamiento"></span>
             <button class="btn btn-ghost btn-sm" id="btn-export-excel" type="button">⬇ Exportar a Excel</button>
             <button class="btn btn-ghost btn-sm" id="btn-export-ics-all" type="button">📅 Exportar a calendario</button>
+            <div class="pdf-dropdown" id="platform-export-dropdown">
+              <button class="btn btn-ghost btn-sm" id="platform-export-btn" type="button">🔗 Exportar a otra plataforma ▾</button>
+              <div class="pdf-menu" id="platform-export-menu">
+                <button type="button" data-platform="monday">
+                  <span class="pm-title">📋 Monday.com (CSV)</span>
+                  <span class="pm-sub">Usa "Import from Excel/CSV" dentro de Monday</span>
+                </button>
+                <button type="button" data-platform="clickup">
+                  <span class="pm-title">✅ ClickUp (CSV)</span>
+                  <span class="pm-sub">Usa "Import from CSV" dentro de ClickUp</span>
+                </button>
+              </div>
+            </div>
             <button class="btn btn-ghost btn-sm" id="btn-export-backup" type="button">🗄 Descargar respaldo</button>
             <button class="btn btn-ghost btn-sm" id="btn-import-backup" type="button">⤴ Restaurar respaldo</button>
             <input type="file" id="backup-input" accept="application/json" style="display:none;">
@@ -4660,6 +4673,88 @@ document.getElementById("dm-export-ics").addEventListener("click", ()=>{
   if(currentDetailId) exportToCalendar(currentDetailId);
 });
 document.getElementById("btn-export-ics-all").addEventListener("click", exportAllToCalendar);
+
+/* ============================================================
+   EXPORTAR BITÁCORA A OTRAS PLATAFORMAS (Monday.com / ClickUp)
+   ------------------------------------------------------------
+   No es posible empujar los datos en vivo hacia la API de estas
+   plataformas desde un archivo HTML estático (requieren un token
+   privado y sus API normalmente bloquean llamadas directas desde
+   el navegador por seguridad — CORS). La ruta confiable y segura
+   es generar un CSV con las columnas que cada plataforma reconoce
+   en su propio importador nativo ("Import from Excel/CSV"), sin
+   exponer ninguna contraseña ni token.
+   ============================================================ */
+function csvEscape(val){
+  if(val == null) return "";
+  const str = String(val);
+  if(/[",\n]/.test(str)){
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+function buildCsv(headers, rows){
+  const lines = [headers.map(csvEscape).join(",")];
+  rows.forEach(row=>{
+    lines.push(headers.map(h=>csvEscape(row[h])).join(","));
+  });
+  return lines.join("\r\n");
+}
+function downloadCsv(csv, filename){
+  // El BOM al inicio evita que Excel/Windows muestre mal los acentos.
+  const blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8"});
+  downloadBlob(blob, filename);
+}
+
+function exportToMondayCsv(){
+  if(RECORDS.length === 0){ alert("No hay registros para exportar."); return; }
+  const headers = ["Name","Status","Priority","Person","Department","Area","Date","Due Date","Notes"];
+  const rows = RECORDS.map(r=>({
+    "Name": r.tema,
+    "Status": r.estado,
+    "Priority": r.prioridad,
+    "Person": r.responsable,
+    "Department": r.departamento,
+    "Area": r.area,
+    "Date": r.fecha,
+    "Due Date": r.fechaCompromiso || "",
+    "Notes": (r.descripcion || "").replace(/\n/g, " ")
+  }));
+  downloadCsv(buildCsv(headers, rows), `bitacora_monday_${todayISO()}.csv`);
+  showToast("✓ CSV para Monday.com generado");
+}
+
+function exportToClickUpCsv(){
+  if(RECORDS.length === 0){ alert("No hay registros para exportar."); return; }
+  const headers = ["Task Name","Task Content","Status","Assignee","Priority","Due Date","Tags"];
+  const priorityMap = {"Crítica":"Urgent","Alta":"High","Media":"Normal","Baja":"Low"};
+  const rows = RECORDS.map(r=>({
+    "Task Name": r.tema,
+    "Task Content": r.descripcion,
+    "Status": r.estado,
+    "Assignee": r.responsable,
+    "Priority": priorityMap[r.prioridad] || r.prioridad,
+    "Due Date": r.fechaCompromiso || "",
+    "Tags": [r.area, r.tipo].filter(Boolean).join(",")
+  }));
+  downloadCsv(buildCsv(headers, rows), `bitacora_clickup_${todayISO()}.csv`);
+  showToast("✓ CSV para ClickUp generado");
+}
+
+document.getElementById("platform-export-btn").addEventListener("click", (e)=>{
+  e.stopPropagation();
+  document.getElementById("platform-export-menu").classList.toggle("show");
+});
+document.getElementById("platform-export-menu").addEventListener("click", (e)=>{
+  const btn = e.target.closest("button");
+  if(!btn) return;
+  document.getElementById("platform-export-menu").classList.remove("show");
+  if(btn.dataset.platform === "monday") exportToMondayCsv();
+  else if(btn.dataset.platform === "clickup") exportToClickUpCsv();
+});
+document.addEventListener("click", ()=>{
+  document.getElementById("platform-export-menu").classList.remove("show");
+});
 
 /* ============================================================
    COMPARTIR FICHA DEL CASO POR WHATSAPP
