@@ -1367,6 +1367,20 @@ tbody tr:hover{
   grid-template-columns:repeat(4,minmax(0,1fr));
   gap:12px;
 }
+.identity-grid{
+  display:grid;
+  grid-template-columns:220px 1fr;
+  gap:18px;
+  align-items:start;
+}
+.logo-preview-box{
+  width:76px;height:76px;border-radius:12px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--ink),var(--ink-soft));color:#fff;
+  font-family:'Sora',sans-serif;font-weight:800;font-size:22px;
+  border:1px solid var(--line);flex-shrink:0;
+}
+.logo-preview-box img{width:100%;height:100%;object-fit:contain;background:#fff;}
 .storage-meter{
   height:12px;
   border-radius:999px;
@@ -1396,8 +1410,9 @@ tbody tr:hover{
   .config-grid,.diagnostic-row{grid-template-columns:1fr;}
   .config-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
-@media(max-width:560px){
+@media(max-width:640px){
   .config-add-row,.config-metrics{grid-template-columns:1fr;}
+  .identity-grid{grid-template-columns:1fr;}
   .storage-banner{padding-right:46px;}
 }
 </style>
@@ -1406,10 +1421,10 @@ tbody tr:hover{
 
 <div class="topbar">
   <div class="brand">
-    <div class="brand-mark">CH</div>
+    <div class="brand-mark" id="brand-mark">CH</div>
     <div class="brand-text">
-      <div class="t1">Centro de Control · Capital Humano</div>
-      <div class="t2">Seguimiento de operaciones RH</div>
+      <div class="t1" id="brand-title">Centro de Control · Capital Humano</div>
+      <div class="t2" id="brand-subtitle">Seguimiento de operaciones RH</div>
     </div>
   </div>
   <div class="tabs">
@@ -2252,6 +2267,37 @@ tbody tr:hover{
     </div>
 
     <div class="config-grid">
+      <div class="card config-card full">
+        <h3>Identidad del sistema</h3>
+        <div class="identity-grid">
+          <div class="field" style="margin-bottom:0;">
+            <label>Logotipo</label>
+            <div class="logo-preview-box" id="cfg-logo-preview">CH</div>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+              <button class="btn btn-ghost btn-sm" type="button" id="cfg-logo-upload-btn">Subir imagen</button>
+              <button class="btn btn-ghost btn-sm" type="button" id="cfg-logo-remove-btn">Quitar</button>
+            </div>
+            <input type="file" id="cfg-logo-input" accept="image/*" style="display:none;">
+            <div class="hint">Recomendado: imagen cuadrada, fondo transparente (PNG), máx. 2MB.</div>
+          </div>
+          <div>
+            <div class="field">
+              <label for="cfg-brand-titulo">Título del sistema</label>
+              <input type="text" id="cfg-brand-titulo" placeholder="Ej. Centro de Control · Capital Humano" maxlength="60">
+            </div>
+            <div class="field">
+              <label for="cfg-brand-subtitulo">Subtítulo</label>
+              <input type="text" id="cfg-brand-subtitulo" placeholder="Ej. Seguimiento de operaciones RH" maxlength="80">
+              <div class="hint">El título también se usa como nombre de la pestaña del navegador.</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-ghost" type="button" id="cfg-brand-reset">Restaurar identidad original</button>
+          <button class="btn btn-primary" type="button" id="cfg-brand-save">Guardar identidad</button>
+        </div>
+      </div>
+
       <div class="card config-card">
         <h3>Departamentos</h3>
         <div class="config-add-row">
@@ -2528,6 +2574,11 @@ const EVIDENCE_MAX_MB = 2;
 const IMAGE_MAX_DIMENSION = 1000;
 const STORAGE_QUOTA_MB = 5;
 const DEFAULT_SETTINGS = {
+  branding:{
+    logoDataUrl: null,
+    titulo: "Centro de Control · Capital Humano",
+    subtitulo: "Seguimiento de operaciones RH"
+  },
   catalogs:{
     departamentos: DEFAULT_DEPARTAMENTOS,
     sucursales: DEFAULT_SUCURSALES,
@@ -2667,16 +2718,38 @@ function normalizeSettings(raw){
   return {
     ...base,
     ...raw,
+    branding:{...base.branding, ...(raw.branding || {})},
     catalogs:{...base.catalogs, ...(raw.catalogs || {})},
     rules:{...base.rules, ...(raw.rules || {})},
     kpis:{...base.kpis, ...(raw.kpis || {})}
   };
+}
+function applyBrandingToDom(){
+  const b = APP_SETTINGS.branding || DEFAULT_SETTINGS.branding;
+  const mark = document.getElementById("brand-mark");
+  const titleEl = document.getElementById("brand-title");
+  const subEl = document.getElementById("brand-subtitle");
+  const titulo = b.titulo || DEFAULT_SETTINGS.branding.titulo;
+  const subtitulo = b.subtitulo || DEFAULT_SETTINGS.branding.subtitulo;
+  if(titleEl) titleEl.textContent = titulo;
+  if(subEl) subEl.textContent = subtitulo;
+  document.title = titulo;
+  if(mark){
+    if(b.logoDataUrl){
+      mark.innerHTML = `<img src="${b.logoDataUrl}" alt="Logotipo">`;
+      mark.style.background = "#fff";
+    } else {
+      mark.textContent = "CH";
+      mark.style.background = "";
+    }
+  }
 }
 function applySettingsToRuntime(){
   DEPARTAMENTOS = [...APP_SETTINGS.catalogs.departamentos];
   SUCURSALES = [...APP_SETTINGS.catalogs.sucursales];
   TIPOS_ACTIVIDAD = [...APP_SETTINGS.catalogs.tiposActividad];
   COSTO_CATEGORIAS = [...APP_SETTINGS.catalogs.costoCategorias];
+  applyBrandingToDom();
 }
 async function loadSettings(){
   try{
@@ -2805,6 +2878,34 @@ function readAsDataUrl(file){
   return new Promise((resolve, reject)=>{
     const reader = new FileReader();
     reader.onload = e=>resolve(e.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function compressLogoImage(file){
+  // Similar a compressImage(), pero conserva PNG (transparencia) y usa
+  // una resolución baja adecuada para un logotipo pequeño en la barra superior.
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxDim = 220;
+        let w = img.width, h = img.height;
+        if(w > maxDim || h > maxDim){
+          if(w >= h){ h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
@@ -3029,7 +3130,67 @@ function renderCatalogList(key){
     </div>
   `).join("");
 }
+function renderBrandingConfig(){
+  const b = APP_SETTINGS.branding || DEFAULT_SETTINGS.branding;
+  document.getElementById("cfg-brand-titulo").value = b.titulo || "";
+  document.getElementById("cfg-brand-subtitulo").value = b.subtitulo || "";
+  const preview = document.getElementById("cfg-logo-preview");
+  if(b.logoDataUrl){
+    preview.innerHTML = `<img src="${b.logoDataUrl}" alt="Logotipo">`;
+  } else {
+    preview.textContent = "CH";
+  }
+}
+document.getElementById("cfg-logo-upload-btn").addEventListener("click", ()=>{
+  document.getElementById("cfg-logo-input").click();
+});
+document.getElementById("cfg-logo-input").addEventListener("change", async (e)=>{
+  const file = e.target.files[0];
+  e.target.value = "";
+  if(!file) return;
+  if(!isImageType(file.type)){
+    alert("Selecciona un archivo de imagen válido.");
+    return;
+  }
+  if(file.size > 2 * 1024 * 1024){
+    alert("La imagen supera los 2MB. Elige una imagen más ligera.");
+    return;
+  }
+  try{
+    const dataUrl = await compressLogoImage(file);
+    APP_SETTINGS.branding.logoDataUrl = dataUrl;
+    renderBrandingConfig();
+  }catch(err){
+    console.error(err);
+    alert("No se pudo procesar la imagen seleccionada.");
+  }
+});
+document.getElementById("cfg-logo-remove-btn").addEventListener("click", ()=>{
+  APP_SETTINGS.branding.logoDataUrl = null;
+  renderBrandingConfig();
+});
+document.getElementById("cfg-brand-save").addEventListener("click", async ()=>{
+  const titulo = document.getElementById("cfg-brand-titulo").value.trim() || DEFAULT_SETTINGS.branding.titulo;
+  const subtitulo = document.getElementById("cfg-brand-subtitulo").value.trim() || DEFAULT_SETTINGS.branding.subtitulo;
+  APP_SETTINGS.branding.titulo = titulo;
+  APP_SETTINGS.branding.subtitulo = subtitulo;
+  await saveSettings();
+  applyBrandingToDom();
+  renderBrandingConfig();
+  showToast("✓ Identidad del sistema actualizada");
+});
+document.getElementById("cfg-brand-reset").addEventListener("click", ()=>{
+  showConfirm("¿Restaurar el logotipo, título y subtítulo originales?", async ()=>{
+    APP_SETTINGS.branding = JSON.parse(JSON.stringify(DEFAULT_SETTINGS.branding));
+    await saveSettings();
+    applyBrandingToDom();
+    renderBrandingConfig();
+    showToast("✓ Identidad restaurada");
+  });
+});
+
 function renderConfigView(){
+  renderBrandingConfig();
   ["departamentos","sucursales","tiposActividad","costoCategorias"].forEach(renderCatalogList);
   document.getElementById("cfg-contrato-amarillo").value = APP_SETTINGS.rules.contratoAmarilloDias;
   document.getElementById("cfg-contrato-rojo").value = APP_SETTINGS.rules.contratoRojoDias;
