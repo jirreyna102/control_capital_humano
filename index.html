@@ -375,7 +375,7 @@ tbody td.wrap{white-space:normal;min-width:180px;max-width:260px;}
   position:absolute;left:12px;top:50%;transform:translateY(-50%);
   color:var(--text-mute);font-weight:600;font-size:14px;pointer-events:none;
 }
-.cost-field input{padding-left:26px;}
+.cost-field input{padding-left:32px !important;}
 
 /* ---------- HISTORIAL DE AVANCES ---------- */
 .card-divider{height:1px;background:var(--line);margin:18px 0;}
@@ -1886,6 +1886,7 @@ tbody tr:hover{
               </div>
             </div>
             <button class="btn btn-ghost btn-sm" id="btn-export-backup" type="button">🗄 Descargar respaldo</button>
+            <button class="btn btn-ghost btn-sm" id="btn-change-backup-location" type="button" style="display:none;" title="Elegir una nueva carpeta para los próximos respaldos">📂 Cambiar ubicación</button>
             <button class="btn btn-ghost btn-sm" id="btn-import-backup" type="button">⤴ Restaurar respaldo</button>
             <input type="file" id="backup-input" accept="application/json" style="display:none;">
           </div>
@@ -2678,6 +2679,16 @@ function uid(){
 function todayISO(){
   const d = new Date();
   return d.toISOString().slice(0,10);
+}
+function nowStamp(){
+  // Marca de tiempo local (no UTC) con formato YYYY-MM-DD_HH-MM-SS,
+  // usada en nombres de archivo para evitar que se sobrescriban
+  // respaldos generados el mismo día.
+  const d = new Date();
+  const pad = (n)=>String(n).padStart(2,"0");
+  const fecha = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const hora = `${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
+  return `${fecha}_${hora}`;
 }
 function daysBetween(startISO, endISO){
   const a = new Date(startISO + "T00:00:00");
@@ -3519,6 +3530,44 @@ async function editRecord(id){
   renderEvidenceGrid();
   pendingAvances = (r.avances || []).map(a=>({...a}));
   renderAvancesTimeline();
+}
+
+function duplicateRecord(id){
+  const original = RECORDS.find(x=>x.id===id);
+  if(!original) return;
+  // Copia profunda: nada de lo que hagamos sobre "clone" toca el registro original.
+  const clone = JSON.parse(JSON.stringify(original));
+
+  resetForm(); // parte de un formulario limpio (id vacío = inserción nueva)
+
+  // La fecha de inicio se reinicia a hoy y el caso arranca "No Iniciado":
+  // duplicar un caso Cerrado no debería heredar su fecha de cierre ni sus
+  // días congelados, ya que es, en la práctica, un caso distinto que apenas
+  // comienza. La evidencia y el historial de avances tampoco se copian,
+  // porque pertenecen específicamente al caso original.
+  document.getElementById("f-fecha").value = todayISO();
+  document.getElementById("f-fechacompromiso").value = clone.fechaCompromiso || "";
+  document.getElementById("f-tema").value = clone.tema ? (clone.tema + " (copia)") : "";
+  document.getElementById("f-tipo").value = clone.tipo || "";
+  document.getElementById("f-area").value = clone.area || "";
+  fillMacroSelect(clone.area, clone.macro);
+  document.getElementById("f-desc").value = clone.descripcion || "";
+  document.getElementById("f-resp").value = clone.responsable || "";
+  document.getElementById("f-corresp").value = clone.corresponsable || "";
+  document.getElementById("f-solic").value = clone.solicitante || "";
+  document.getElementById("f-depto").value = clone.departamento || "";
+  document.getElementById("f-sucursal").value = clone.sucursal || "";
+  document.getElementById("f-estado").value = "No Iniciado";
+  document.getElementById("f-prioridad").value = clone.prioridad || "";
+  document.getElementById("f-riesgo").value = clone.riesgo || "";
+  document.getElementById("f-comentarios").value = clone.comentarios || "";
+  document.getElementById("f-costocat").value = clone.costoCategoria || "No aplica";
+  refreshAutoFields();
+
+  document.getElementById("form-title").textContent = "Nueva captura (duplicado de: " + (original.tema || "") + ")";
+  document.querySelector('.tab-btn[data-view="captura"]').click();
+  window.scrollTo({top:0, behavior:"smooth"});
+  showToast("✓ Datos duplicados. Revisa y guarda el nuevo caso.");
 }
 
 function deleteRecord(id){
@@ -4391,6 +4440,7 @@ function renderTable(){
           <button class="icon-btn" title="Enviar por WhatsApp" onclick="shareToWhatsApp('${r.id}')">💬</button>
           <button class="icon-btn" title="Agregar a calendario" onclick="exportToCalendar('${r.id}')">📅</button>
           <button class="icon-btn" title="Editar" onclick="editRecord('${r.id}')">✎</button>
+          <button class="icon-btn" title="Duplicar" onclick="duplicateRecord('${r.id}')">⧉</button>
           <button class="icon-btn danger" title="Eliminar" onclick="deleteRecord('${r.id}')">✕</button>
         </div>
       </td>
@@ -5158,10 +5208,61 @@ document.getElementById("dm-export-whatsapp").addEventListener("click", ()=>{
 /* ============================================================
    RESPALDO MANUAL (JSON) — por si el guardado automático no está disponible
    ============================================================ */
+let backupFileHandle = null; // se mantiene solo durante la sesión actual del navegador
+
+async function verifyFileHandlePermission(handle){
+  const opts = { mode: "readwrite" };
+  try{
+    if((await handle.queryPermission(opts)) === "granted") return true;
+    if((await handle.requestPermission(opts)) === "granted") return true;
+  }catch(err){
+    console.error("No se pudo verificar el permiso sobre el archivo elegido.", err);
+  }
+  return false;
+}
+async function writeTextToHandle(handle, text){
+  const writable = await handle.createWritable();
+  await writable.write(text);
+  await writable.close();
+}
+function resetBackupSaveLocation(){
+  backupFileHandle = null;
+  showToast("La próxima descarga te pedirá elegir ubicación de nuevo");
+}
+
 async function exportBackupJSON(){
   const payload = { exportedAt: new Date().toISOString(), records: RECORDS, empleados: EMPLEADOS, settings: APP_SETTINGS };
-  const blob = new Blob([JSON.stringify(payload)], {type:"application/json"});
-  downloadBlob(blob, `respaldo_rh_${todayISO()}.json`);
+  const jsonText = JSON.stringify(payload);
+  const suggestedName = `respaldo_rh_${nowStamp()}.json`;
+
+  // Navegadores compatibles (Chrome/Edge): usamos File System Access API para
+  // que el usuario elija una carpeta UNA vez, y los respaldos siguientes de
+  // esta misma sesión se guarden ahí mismo sin volver a preguntar, evitando
+  // que se acumulen decenas de archivos sueltos en "Descargas". Firefox y
+  // Safari no soportan esta API, así que ahí se usa la descarga normal.
+  if(window.showSaveFilePicker){
+    try{
+      if(backupFileHandle && await verifyFileHandlePermission(backupFileHandle)){
+        await writeTextToHandle(backupFileHandle, jsonText);
+        showToast("✓ Respaldo guardado en la ubicación seleccionada");
+        return;
+      }
+      const handle = await window.showSaveFilePicker({
+        suggestedName,
+        types: [{ description: "Respaldo JSON", accept: {"application/json": [".json"]} }]
+      });
+      backupFileHandle = handle;
+      await writeTextToHandle(handle, jsonText);
+      showToast("✓ Respaldo guardado. Los siguientes respaldos de esta sesión se guardarán ahí mismo");
+      return;
+    }catch(err){
+      if(err && err.name === "AbortError") return; // el usuario cerró el diálogo, no hacemos nada más
+      console.error("No se pudo guardar en la ubicación elegida, se usa la descarga estándar.", err);
+    }
+  }
+
+  const blob = new Blob([jsonText], {type:"application/json"});
+  downloadBlob(blob, suggestedName);
   showToast("✓ Respaldo descargado (bitácora + personal)");
 }
 async function importBackupFile(file){
@@ -5226,6 +5327,10 @@ async function importBackupFile(file){
   });
 }
 document.getElementById("btn-export-backup").addEventListener("click", exportBackupJSON);
+document.getElementById("btn-change-backup-location").addEventListener("click", resetBackupSaveLocation);
+if(window.showSaveFilePicker){
+  document.getElementById("btn-change-backup-location").style.display = "inline-block";
+}
 document.getElementById("banner-backup-btn").addEventListener("click", exportBackupJSON);
 document.getElementById("btn-import-backup").addEventListener("click", ()=>{
   document.getElementById("backup-input").click();
