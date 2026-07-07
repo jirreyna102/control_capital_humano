@@ -7,10 +7,47 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  // Cargador con respaldo: si cdnjs.cloudflare.com está bloqueado (extensiones
+  // de privacidad, "Tracking Prevention" de Edge, redes corporativas, o el
+  // archivo se abre localmente con file://), se reintenta automáticamente
+  // desde jsdelivr, un proveedor distinto. Así las gráficas y exportaciones
+  // siguen funcionando aunque una de las dos fuentes esté bloqueada.
+  function loadScriptWithFallback(urls, testGlobal){
+    return new Promise((resolve)=>{
+      let i = 0;
+      function tryNext(){
+        if(testGlobal && window[testGlobal]){ resolve(true); return; }
+        if(i >= urls.length){ resolve(false); return; }
+        const url = urls[i++];
+        const s = document.createElement("script");
+        s.src = url;
+        s.onload = ()=>resolve(true);
+        s.onerror = tryNext;
+        document.head.appendChild(s);
+      }
+      tryNext();
+    });
+  }
+  window.LIB_LOAD_PROMISE = Promise.all([
+    loadScriptWithFallback([
+      "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js",
+      "https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"
+    ], "Chart"),
+    loadScriptWithFallback([
+      "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js",
+      "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"
+    ], "ExcelJS"),
+    loadScriptWithFallback([
+      "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
+      "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"
+    ], "JSZip"),
+    loadScriptWithFallback([
+      "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+      "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
+    ], "html2canvas")
+  ]);
+</script>
 <style>
 :root{
   --ink:#161B2E;
@@ -65,10 +102,37 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
   background:linear-gradient(135deg,var(--amber),#B96A17);
   display:flex;align-items:center;justify-content:center;
   font-family:'Sora',sans-serif;font-weight:800;color:var(--ink);font-size:16px;
-  flex-shrink:0;
+  flex-shrink:0;overflow:hidden;
 }
-.brand-text .t1{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;letter-spacing:.2px;line-height:1.2;}
-.brand-text .t2{font-size:11px;color:#9AA0BC;letter-spacing:.4px;text-transform:uppercase;}
+.brand-mark img{width:100%;height:100%;object-fit:contain;display:block;background:#fff;}
+.brand-text{min-width:0;}
+.brand-text .t1{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;letter-spacing:.2px;line-height:1.2;white-space:nowrap;}
+.brand-text .t2{font-size:11px;color:#9AA0BC;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;}
+
+/* ---------- ÍCONO DE AYUDA / TOOLTIP GLOSARIO ---------- */
+.info-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--gray-soft);color:var(--text-soft);
+  font-size:10.5px;font-weight:700;font-style:italic;font-family:Georgia,serif;
+  border:1px solid var(--line);cursor:help;margin-left:6px;vertical-align:middle;
+  padding:0;line-height:1;flex-shrink:0;
+}
+.info-icon:hover,.info-icon:focus{background:var(--ink);color:#fff;border-color:var(--ink);outline:none;}
+.filter-with-info{display:inline-flex;align-items:center;gap:2px;}
+.info-tip-panel{
+  position:fixed;z-index:600;width:300px;max-width:calc(100vw - 20px);
+  background:var(--ink);color:#fff;border-radius:10px;
+  padding:12px 14px;font-size:11.5px;line-height:1.5;
+  box-shadow:0 16px 36px -12px rgba(0,0,0,0.5);
+  display:none;
+}
+.info-tip-panel.show{display:block;}
+.info-tip-panel .tip-title{font-weight:700;margin-bottom:6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:#F3C77C;}
+.info-tip-panel dl{margin:0;}
+.info-tip-panel dt{font-weight:700;color:#F3C77C;margin-top:8px;}
+.info-tip-panel dt:first-child{margin-top:0;}
+.info-tip-panel dd{margin:1px 0 0;color:#E7E9F0;}
 
 .tabs{
   display:flex;background:rgba(255,255,255,0.07);border-radius:12px;padding:4px;gap:2px;
@@ -1447,6 +1511,11 @@ tbody tr:hover{
   <button class="storage-dismiss" id="storage-banner-dismiss" type="button" title="Cerrar alerta">✕</button>
 </div>
 
+<div class="storage-banner" id="chartlib-banner" style="display:none;background:#FBE1DE;border-bottom-color:#EBB4AC;">
+  ⚠ No se pudo cargar el motor de gráficas. Las tarjetas con números seguirán funcionando, pero las gráficas se verán en blanco. Revisa tu conexión a internet y recarga la página; tus datos siguen guardados con seguridad.
+  <button class="storage-dismiss" id="chartlib-banner-dismiss" type="button" title="Cerrar alerta">✕</button>
+</div>
+
 <div class="page">
 
 
@@ -1480,7 +1549,7 @@ tbody tr:hover{
         </div>
         <div class="field-row">
           <div class="field">
-            <label for="f-tipo">Tipo de actividad</label>
+            <label for="f-tipo">Tipo de actividad<button type="button" class="info-icon" data-tooltip="tipoActividad" aria-label="Ver glosario de Tipo de Actividad">i</button></label>
             <select id="f-tipo" required></select>
           </div>
           <div class="field">
@@ -1824,6 +1893,10 @@ tbody tr:hover{
         <div class="filters-row">
           <select id="filter-sucursal"><option value="">Sucursal: todas</option></select>
           <select id="filter-estado"><option value="">Estado: todos</option></select>
+          <div class="filter-with-info">
+            <select id="filter-tipo"><option value="">Tipo de actividad: todos</option></select>
+            <button type="button" class="info-icon" data-tooltip="tipoActividad" aria-label="Ver glosario de Tipo de Actividad">i</button>
+          </div>
           <input type="text" id="filter-responsable" placeholder="Buscar por responsable...">
           <button class="clear-btn" id="clear-filters">Limpiar filtros</button>
         </div>
@@ -2401,6 +2474,7 @@ tbody tr:hover{
 </div>
 
 <div class="save-toast" id="save-toast">✓ Guardado correctamente</div>
+<div class="info-tip-panel" id="info-tip-panel" role="tooltip"></div>
 
 <div class="modal-backdrop" id="detail-modal">
   <div class="modal-box">
@@ -3073,7 +3147,8 @@ function initSelects(){
     depto: document.getElementById("f-depto")?.value || "",
     sucursal: document.getElementById("f-sucursal")?.value || "",
     costo: document.getElementById("f-costocat")?.value || "",
-    filtroSucursal: document.getElementById("filter-sucursal")?.value || ""
+    filtroSucursal: document.getElementById("filter-sucursal")?.value || "",
+    filtroTipo: document.getElementById("filter-tipo")?.value || ""
   };
   fillSelect("f-tipo", TIPOS_ACTIVIDAD, "Selecciona un tipo");
   fillSelect("f-area", AREAS, "Selecciona un área");
@@ -3089,6 +3164,8 @@ function initSelects(){
   document.getElementById("filter-sucursal").insertAdjacentHTML("afterbegin", '<option value="">Sucursal: todas</option>');
   fillSelect("filter-estado", ESTADOS, null);
   document.getElementById("filter-estado").insertAdjacentHTML("afterbegin", '<option value="">Estado: todos</option>');
+  fillSelect("filter-tipo", TIPOS_ACTIVIDAD, null);
+  document.getElementById("filter-tipo").insertAdjacentHTML("afterbegin", '<option value="">Tipo de actividad: todos</option>');
   if(current.tipo) document.getElementById("f-tipo").value = current.tipo;
   if(current.area) document.getElementById("f-area").value = current.area;
   fillMacroSelect(document.getElementById("f-area").value, current.macro);
@@ -3096,6 +3173,7 @@ function initSelects(){
   if(current.sucursal) document.getElementById("f-sucursal").value = current.sucursal;
   if(current.costo) document.getElementById("f-costocat").value = current.costo;
   document.getElementById("filter-sucursal").value = current.filtroSucursal;
+  document.getElementById("filter-tipo").value = current.filtroTipo;
 }
 
 function repopulateDynamicSelects(){
@@ -3488,6 +3566,96 @@ document.getElementById("confirm-ok").addEventListener("click", ()=>{
 });
 
 /* ============================================================
+   TOOLTIPS INFORMATIVOS (glosario de Tipo de Actividad, etc.)
+   ------------------------------------------------------------
+   Funciona con hover en escritorio y con toque/click en móvil.
+   Un solo panel flotante compartido se reposiciona según el
+   ícono "i" que lo activó, para mantenerlo ligero.
+   ============================================================ */
+const TOOLTIP_GLOSSARIES = {
+  tipoActividad:{
+    title:"Tipo de Actividad — glosario",
+    items:[
+      ["Operativa","Tareas rutinarias y transaccionales del día a día (ej. incidencias de nómina, entrega de uniformes, control de checadas)."],
+      ["Administrativa","Control documental y trámites institucionales internos (ej. armado de expedientes, contratos, actualización de organigramas)."],
+      ["Estratégica","Iniciativas de alto impacto alineadas a los objetivos de la Dirección (ej. planes de retención, cultura organizacional, planes de sucesión)."],
+      ["Mejora Continua","Optimización, agilización o automatización de procesos existentes para reducir tiempos o errores (Kaizen)."],
+      ["Auditoría","Procesos de inspección y revisión exhaustiva para verificar el cumplimiento de estándares internos o expedientes completos."],
+      ["Proyecto","Esfuerzo temporal con inicio y fin definidos para crear un resultado único (ej. eventos masivos, desarrollo de nuevos sistemas)."],
+      ["Cumplimiento Legal","Actividades obligatorias ante la ley para evitar multas, demandas o sanciones (ej. finiquitos, inspecciones de la STPS, comisiones mixtas)."],
+      ["Atención a Solicitud","Casos o requerimientos puntuales que surgen a petición expresa de Directores, Gerentes o colaboradores."]
+    ]
+  }
+};
+function buildTooltipHtml(key){
+  const g = TOOLTIP_GLOSSARIES[key];
+  if(!g) return "";
+  let html = `<div class="tip-title">${escapeHtml(g.title)}</div><dl>`;
+  g.items.forEach(([term,def])=>{
+    html += `<dt>${escapeHtml(term)}</dt><dd>${escapeHtml(def)}</dd>`;
+  });
+  html += `</dl>`;
+  return html;
+}
+function positionInfoTooltip(panel, iconEl){
+  const rect = iconEl.getBoundingClientRect();
+  const panelWidth = Math.min(300, window.innerWidth - 20);
+  let left = rect.left + rect.width/2 - panelWidth/2;
+  left = Math.max(10, Math.min(left, window.innerWidth - panelWidth - 10));
+  panel.style.left = left + "px";
+  panel.style.top = (rect.bottom + 10) + "px";
+  requestAnimationFrame(()=>{
+    const panelRect = panel.getBoundingClientRect();
+    if(panelRect.bottom > window.innerHeight - 10){
+      panel.style.top = Math.max(10, rect.top - panelRect.height - 10) + "px";
+    }
+  });
+}
+function showInfoTooltip(iconEl){
+  const key = iconEl.dataset.tooltip;
+  const panel = document.getElementById("info-tip-panel");
+  panel.innerHTML = buildTooltipHtml(key);
+  panel.classList.add("show");
+  positionInfoTooltip(panel, iconEl);
+}
+function hideInfoTooltip(){
+  const panel = document.getElementById("info-tip-panel");
+  if(panel) panel.classList.remove("show");
+}
+let _tooltipHideTimer = null;
+function cancelHideInfoTooltip(){
+  if(_tooltipHideTimer){ clearTimeout(_tooltipHideTimer); _tooltipHideTimer = null; }
+}
+function scheduleHideInfoTooltip(){
+  cancelHideInfoTooltip();
+  _tooltipHideTimer = setTimeout(hideInfoTooltip, 200);
+}
+document.querySelectorAll(".info-icon").forEach(icon=>{
+  icon.addEventListener("mouseenter", ()=>{ cancelHideInfoTooltip(); showInfoTooltip(icon); });
+  icon.addEventListener("mouseleave", scheduleHideInfoTooltip);
+  icon.addEventListener("focus", ()=>{ cancelHideInfoTooltip(); showInfoTooltip(icon); });
+  icon.addEventListener("blur", scheduleHideInfoTooltip);
+  icon.addEventListener("click", (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    cancelHideInfoTooltip();
+    const panel = document.getElementById("info-tip-panel");
+    if(panel.classList.contains("show")) hideInfoTooltip();
+    else showInfoTooltip(icon);
+  });
+});
+// El panel también cancela el cierre si el cursor entra en él, para poder
+// desplazarse del ícono al panel sin que parpadee o se cierre de golpe.
+const infoTipPanelEl = document.getElementById("info-tip-panel");
+infoTipPanelEl.addEventListener("mouseenter", cancelHideInfoTooltip);
+infoTipPanelEl.addEventListener("mouseleave", scheduleHideInfoTooltip);
+document.addEventListener("click", (e)=>{
+  if(!e.target.closest(".info-icon") && !e.target.closest("#info-tip-panel")) hideInfoTooltip();
+});
+document.addEventListener("scroll", hideInfoTooltip, true);
+window.addEventListener("resize", hideInfoTooltip);
+
+/* ============================================================
    TABS
    ============================================================ */
 document.querySelectorAll(".tab-btn").forEach(btn=>{
@@ -3518,6 +3686,15 @@ document.getElementById("storage-banner-dismiss").addEventListener("click", asyn
   APP_SETTINGS.storageBannerDismissed = true;
   await saveSettings();
   document.getElementById("storage-banner").style.display = "none";
+});
+
+function checkChartLibrary(){
+  if(typeof Chart === "undefined"){
+    document.getElementById("chartlib-banner").style.display = "flex";
+  }
+}
+document.getElementById("chartlib-banner-dismiss").addEventListener("click", ()=>{
+  document.getElementById("chartlib-banner").style.display = "none";
 });
 
 document.querySelectorAll("[data-catalog-add]").forEach(btn=>{
@@ -3906,6 +4083,18 @@ function escapeHtml(str){
 /* ============================================================
    RENDER: DASHBOARD
    ============================================================ */
+function safeRender(label, fn){
+  // Aísla errores de una sola gráfica/sección para que un fallo puntual
+  // (p. ej. datos inesperados en un registro) no deje en blanco el resto
+  // del tablero. El detalle del error queda visible en la consola del
+  // navegador (F12 → Console) para poder diagnosticarlo.
+  try{
+    fn();
+  }catch(err){
+    console.error(`[Render] Error en "${label}":`, err);
+  }
+}
+
 function renderDashboard(){
   const empty = document.getElementById("dash-empty");
   const content = document.getElementById("dash-content");
@@ -3917,13 +4106,13 @@ function renderDashboard(){
   empty.style.display = "none";
   content.style.display = "block";
 
-  renderKpis();
-  renderChartEstado();
-  renderChartVolumen();
-  renderChartRiesgo();
-  renderChartCosto();
-  renderTalentoDashboard();
-  renderTable();
+  safeRender("renderKpis", renderKpis);
+  safeRender("renderChartEstado", renderChartEstado);
+  safeRender("renderChartVolumen", renderChartVolumen);
+  safeRender("renderChartRiesgo", renderChartRiesgo);
+  safeRender("renderChartCosto", renderChartCosto);
+  safeRender("renderTalentoDashboard", renderTalentoDashboard);
+  safeRender("renderTable", renderTable);
 }
 
 function renderTalentoDashboard(){
@@ -4142,10 +4331,12 @@ function renderChartCosto(){
 function getFilteredRecords(){
   const suc = document.getElementById("filter-sucursal").value;
   const est = document.getElementById("filter-estado").value;
+  const tipo = document.getElementById("filter-tipo").value;
   const resp = document.getElementById("filter-responsable").value.trim().toLowerCase();
   return RECORDS.filter(r=>{
     if(suc && r.sucursal !== suc) return false;
     if(est && r.estado !== est) return false;
+    if(tipo && r.tipo !== tipo) return false;
     if(resp && !r.responsable.toLowerCase().includes(resp)) return false;
     return true;
   });
@@ -5049,13 +5240,14 @@ document.getElementById("btn-load-backup-top").addEventListener("click", ()=>{
   document.getElementById("backup-input").click();
 });
 
-["filter-sucursal","filter-estado"].forEach(id=>{
+["filter-sucursal","filter-estado","filter-tipo"].forEach(id=>{
   document.getElementById(id).addEventListener("change", renderTable);
 });
 document.getElementById("filter-responsable").addEventListener("input", renderTable);
 document.getElementById("clear-filters").addEventListener("click", ()=>{
   document.getElementById("filter-sucursal").value = "";
   document.getElementById("filter-estado").value = "";
+  document.getElementById("filter-tipo").value = "";
   document.getElementById("filter-responsable").value = "";
   renderTable();
 });
@@ -5110,11 +5302,11 @@ function renderKpisView(){
   renderKpiSection(activeBtn ? activeBtn.dataset.kpi : "operativos");
 }
 function renderKpiSection(name){
-  if(name === "operativos") renderKpiOperativos();
-  else if(name === "productividad") renderKpiProductividad();
-  else if(name === "estrategicos") renderKpiEstrategicos();
-  else if(name === "analiticos") renderKpiAnaliticos();
-  else if(name === "talento") renderKpiTalento();
+  if(name === "operativos") safeRender("renderKpiOperativos", renderKpiOperativos);
+  else if(name === "productividad") safeRender("renderKpiProductividad", renderKpiProductividad);
+  else if(name === "estrategicos") safeRender("renderKpiEstrategicos", renderKpiEstrategicos);
+  else if(name === "analiticos") safeRender("renderKpiAnaliticos", renderKpiAnaliticos);
+  else if(name === "talento") safeRender("renderKpiTalento", renderKpiTalento);
 }
 
 /* ---- I. OPERATIVOS ---- */
@@ -5226,13 +5418,13 @@ function renderKpiEstrategicos(){
 
 /* ---- IV. ANALÍTICOS ---- */
 function renderKpiAnaliticos(){
-  renderParetoChart();
-  renderHeatmap();
-  renderMatrizImpactoUrgencia();
-  renderTendenciaRiesgos();
-  renderCostoDistDonut();
-  renderForecastChart();
-  renderRankings();
+  safeRender("renderParetoChart", renderParetoChart);
+  safeRender("renderHeatmap", renderHeatmap);
+  safeRender("renderMatrizImpactoUrgencia", renderMatrizImpactoUrgencia);
+  safeRender("renderTendenciaRiesgos", renderTendenciaRiesgos);
+  safeRender("renderCostoDistDonut", renderCostoDistDonut);
+  safeRender("renderForecastChart", renderForecastChart);
+  safeRender("renderRankings", renderRankings);
 }
 
 /* ---- V. GESTIÓN DE TALENTO ---- */
@@ -5529,9 +5721,9 @@ function ymd(y,m,d){
   return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 }
 function renderCalendarView(){
-  renderMonthCalendar();
-  renderGantt();
-  renderGanttPersonal();
+  safeRender("renderMonthCalendar", renderMonthCalendar);
+  safeRender("renderGantt", renderGantt);
+  safeRender("renderGanttPersonal", renderGanttPersonal);
 }
 function renderMonthCalendar(){
   document.getElementById("cal-month-label").textContent = `${MESES[calMonth]} ${calYear}`;
@@ -5813,11 +6005,12 @@ function renderAll(){
   renderSemaforoVencimientos();
 }
 
-loadSettings().then(()=>{
+Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   initSelects();
   initPersonalSelects();
   refreshAutoFields();
   checkStorageHealth();
+  checkChartLibrary();
   return Promise.all([loadRecords(), loadEmpleados()]);
 }).then(()=>{
   renderAll();
