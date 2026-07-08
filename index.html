@@ -464,6 +464,7 @@ tbody td.wrap{white-space:normal;min-width:180px;max-width:260px;}
   padding:40px 16px;
 }
 .modal-backdrop.show{display:flex;}
+#detail-modal{z-index:310;}
 .modal-box{
   background:var(--paper);border-radius:16px;max-width:720px;width:100%;
   box-shadow:0 30px 60px -20px rgba(0,0,0,0.4);animation:fadeIn .2s ease;
@@ -480,6 +481,16 @@ tbody td.wrap{white-space:normal;min-width:180px;max-width:260px;}
 }
 .modal-close:hover{background:var(--red-soft);color:var(--red);}
 .modal-body{padding:20px 24px 26px;}
+.lm-toolbar{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  padding:0 24px 16px;
+}
+.lm-toolbar input[type="text"],.lm-toolbar select{
+  border:1px solid var(--line);background:#FBFBFD;border-radius:8px;padding:8px 11px;font-size:13px;
+  font-family:'Inter',sans-serif;
+}
+.lm-toolbar input[type="text"]{flex:1;min-width:160px;}
+.lm-toolbar select{min-width:150px;}
 .modal-section{margin-bottom:18px;}
 .modal-section:last-child{margin-bottom:0;}
 .modal-section h4{
@@ -2533,6 +2544,17 @@ tbody tr:hover{
       </div>
       <button class="modal-close" id="lm-close">✕</button>
     </div>
+    <div class="lm-toolbar" id="lm-toolbar">
+      <input type="text" id="lm-search" placeholder="Buscar por tema o responsable...">
+      <select id="lm-filter-sucursal"><option value="">Sucursal: todas</option></select>
+      <select id="lm-sort">
+        <option value="">Orden original</option>
+        <option value="dias-desc">Días transcurridos: mayor a menor</option>
+        <option value="dias-asc">Días transcurridos: menor a mayor</option>
+        <option value="fecha-desc">Fecha de inicio: más reciente primero</option>
+        <option value="fecha-asc">Fecha de inicio: más antigua primero</option>
+      </select>
+    </div>
     <div class="modal-body" id="lm-body" style="max-height:60vh;overflow-y:auto;"></div>
   </div>
 </div>
@@ -4545,27 +4567,74 @@ document.getElementById("dm-export-zip").addEventListener("click", ()=>{
 });
 
 /* ---- LISTADO DE CASOS DESDE TARJETAS KPI ---- */
-function openCaseList(records, title, sub){
-  document.getElementById("lm-title").textContent = title;
-  document.getElementById("lm-sub").textContent = sub || `${records.length} caso(s)`;
-  const body = document.getElementById("lm-body");
-  if(records.length === 0){
-    body.innerHTML = '<div class="modal-empty">No hay casos que coincidan con este criterio.</div>';
-  } else {
-    body.innerHTML = records.map(r=>{
-      const color = COLOR_ESTADO[r.estado] || "#8B90A3";
-      const costoTxt = (r.costoFinal != null && r.costoFinal !== "") ? " · " + money(r.costoFinal) : "";
-      return `<div class="recent-item" style="cursor:pointer;" onclick="closeCaseList();openDetail('${r.id}')">
+let _listModalBaseRecords = []; // arreglo original sin filtrar/ordenar, preservado para re-render reactivo
+let _listModalOriginalSub = "";
+
+function caseListItemHtml(r){
+  const color = COLOR_ESTADO[r.estado] || "#8B90A3";
+  const costoTxt = (r.costoFinal != null && r.costoFinal !== "") ? " · " + money(r.costoFinal) : "";
+  return `<div class="recent-item" style="cursor:pointer;" onclick="openDetail('${r.id}')">
         <div class="recent-accent" style="background:${color}"></div>
         <div class="recent-main">
           <div class="rt">${escapeHtml(r.tema)}</div>
           <div class="rs">${escapeHtml(r.area)} · ${escapeHtml(r.responsable)} · ${escapeHtml(r.estado)} · ${r.fecha}${costoTxt}</div>
         </div>
       </div>`;
-    }).join("");
-  }
+}
+
+function openCaseList(records, title, sub){
+  _listModalBaseRecords = records || [];
+  _listModalOriginalSub = sub || `${_listModalBaseRecords.length} caso(s)`;
+  document.getElementById("lm-title").textContent = title;
+
+  // Poblar el filtro de sucursal con las opciones vigentes del catálogo
+  const sucSelect = document.getElementById("lm-filter-sucursal");
+  sucSelect.innerHTML = '<option value="">Sucursal: todas</option>' +
+    SUCURSALES.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+
+  // Reiniciar controles de filtro/orden cada vez que se abre un listado nuevo
+  document.getElementById("lm-search").value = "";
+  sucSelect.value = "";
+  document.getElementById("lm-sort").value = "";
+
+  renderListModalBody();
   document.getElementById("list-modal").classList.add("show");
 }
+
+function renderListModalBody(){
+  const search = document.getElementById("lm-search").value.trim().toLowerCase();
+  const suc = document.getElementById("lm-filter-sucursal").value;
+  const sortMode = document.getElementById("lm-sort").value;
+
+  let list = _listModalBaseRecords.filter(r=>{
+    if(suc && r.sucursal !== suc) return false;
+    if(search){
+      const inTema = (r.tema || "").toLowerCase().includes(search);
+      const inResp = (r.responsable || "").toLowerCase().includes(search);
+      if(!inTema && !inResp) return false;
+    }
+    return true;
+  });
+
+  if(sortMode === "dias-desc") list = [...list].sort((a,b)=>calcDias(b)-calcDias(a));
+  else if(sortMode === "dias-asc") list = [...list].sort((a,b)=>calcDias(a)-calcDias(b));
+  else if(sortMode === "fecha-desc") list = [...list].sort((a,b)=> new Date(b.fecha) - new Date(a.fecha));
+  else if(sortMode === "fecha-asc") list = [...list].sort((a,b)=> new Date(a.fecha) - new Date(b.fecha));
+
+  const noFiltersActive = !search && !suc;
+  document.getElementById("lm-sub").textContent = noFiltersActive
+    ? _listModalOriginalSub
+    : `${list.length} de ${_listModalBaseRecords.length} caso(s)`;
+
+  const body = document.getElementById("lm-body");
+  body.innerHTML = list.length === 0
+    ? '<div class="modal-empty">No hay casos que coincidan con este criterio.</div>'
+    : list.map(caseListItemHtml).join("");
+}
+
+document.getElementById("lm-search").addEventListener("input", ()=>renderListModalBody());
+document.getElementById("lm-filter-sucursal").addEventListener("change", ()=>renderListModalBody());
+document.getElementById("lm-sort").addEventListener("change", ()=>renderListModalBody());
 function closeCaseList(){
   document.getElementById("list-modal").classList.remove("show");
 }
@@ -4626,7 +4695,14 @@ document.getElementById("evidence-lightbox").addEventListener("click", (e)=>{
   if(e.target.id === "evidence-lightbox") closeLightbox();
 });
 document.addEventListener("keydown", (e)=>{
-  if(e.key === "Escape"){ closeLightbox(); closeDetail(); closeCaseList(); closeConfirm(); }
+  if(e.key !== "Escape") return;
+  // Cierra solo la capa "de encima" en vez de todo a la vez, para respetar
+  // la misma jerarquía que el botón ✕: lightbox de evidencia > confirmación
+  // > detalle de caso > listado base.
+  if(document.getElementById("evidence-lightbox").classList.contains("show")){ closeLightbox(); return; }
+  if(document.getElementById("confirm-modal").classList.contains("show")){ closeConfirm(); return; }
+  if(document.getElementById("detail-modal").classList.contains("show")){ closeDetail(); return; }
+  if(document.getElementById("list-modal").classList.contains("show")){ closeCaseList(); return; }
 });
 
 /* ============================================================
