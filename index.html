@@ -5460,6 +5460,7 @@ const NIVEL_RIESGO_RANK = {"Bajo":1,"Medio":2,"Alto":3,"Crítico":4};
 
 let NOTIFICACIONES = [];
 const NOTIFICACIONES_STORAGE_KEY = "hr-notificaciones-v1";
+const NOTIF_RETENTION_DAYS = 15;
 let notifModalFilter = "todas";
 
 async function loadNotificaciones(){
@@ -5469,6 +5470,18 @@ async function loadNotificaciones(){
   }catch(e){
     NOTIFICACIONES = [];
   }
+}
+function pruneNotificacionesAntiguas(){
+  // Conserva solo notificaciones creadas dentro de los últimos
+  // NOTIF_RETENTION_DAYS días. Esto evita que el arreglo crezca sin
+  // límite con el tiempo (lo que ralentiza cada carga de la app, ya
+  // que checkVencimientosYGenerar recorre NOTIFICACIONES por cada
+  // caso activo) y libera espacio dentro de la cuota de almacenamiento.
+  const limiteMs = NOTIF_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+  const ahora = Date.now();
+  const antes = NOTIFICACIONES.length;
+  NOTIFICACIONES = NOTIFICACIONES.filter(n => (ahora - (n.createdAt || 0)) <= limiteMs);
+  return antes - NOTIFICACIONES.length; // número de notificaciones eliminadas
 }
 async function saveNotificaciones(){
   try{
@@ -8663,6 +8676,7 @@ Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   return Promise.all([loadRecords(), loadEmpleados(), loadCandidatos(), loadNotificaciones(), loadPlantillas()]);
 }).then(async ()=>{
   initKanbanFilterSelects();
+  pruneNotificacionesAntiguas();
   checkVencimientosYGenerar();
   await saveNotificaciones();
   renderAll();
