@@ -156,6 +156,107 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
 }
 .btn-top:hover{background:rgba(255,255,255,0.16);}
 
+/* ---------- CENTRO DE NOTIFICACIONES ---------- */
+.notif-wrap{position:relative;}
+.notif-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:16px;height:16px;padding:0 4px;border-radius:9px;
+  background:var(--red,#C1433D);color:#fff;font-size:9.5px;font-weight:800;
+  margin-left:4px;vertical-align:middle;
+}
+.notif-dropdown{
+  display:none;position:absolute;top:calc(100% + 10px);right:0;
+  width:360px;max-width:calc(100vw - 24px);max-height:70vh;
+  background:#fff;border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 20px 45px -15px rgba(22,27,46,0.4);z-index:500;
+  overflow:hidden;flex-direction:column;
+}
+.notif-dropdown.show{display:flex;}
+.notif-dropdown-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;border-bottom:1px solid var(--line);
+  font-family:'Sora',sans-serif;font-weight:700;font-size:13px;color:var(--ink);
+}
+.notif-mark-all{
+  border:none;background:none;color:var(--blue,#3B5BA9);font-size:11px;font-weight:600;cursor:pointer;
+}
+.notif-dropdown-list{overflow-y:auto;flex:1;max-height:50vh;}
+.notif-dropdown-footer{padding:8px;border-top:1px solid var(--line);}
+.notif-item{
+  display:flex;gap:9px;padding:10px 14px;border-bottom:1px solid #F2F3F6;cursor:pointer;
+  border-left:3px solid transparent;position:relative;
+}
+.notif-item:hover{background:#FAFAFC;}
+.notif-item.unread{background:#F7F9FF;}
+.notif-item.sev-critica{border-left-color:var(--red,#C1433D);}
+.notif-item.sev-pendiente{border-left-color:var(--amber,#D98C2B);}
+.notif-item.sev-informativa{border-left-color:var(--blue,#3B5BA9);}
+.notif-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.notif-body{flex:1;min-width:0;}
+.notif-title{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.3;}
+.notif-msg{font-size:11.5px;color:var(--text-soft);margin-top:2px;line-height:1.4;}
+.notif-time{font-size:10px;color:var(--text-mute);margin-top:3px;}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--blue,#3B5BA9);flex-shrink:0;margin-top:4px;}
+.notif-empty{padding:30px 16px;text-align:center;color:var(--text-mute);font-size:12.5px;}
+
+.notif-actions-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.notif-actions-row button{
+  border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px 8px;
+  font-size:10px;font-weight:600;color:var(--text-soft);cursor:pointer;
+}
+.notif-actions-row button:hover{background:var(--gray-soft,#EEF0F5);}
+
+.notif-filters{display:flex;gap:8px;flex-wrap:wrap;padding:0 24px 14px;}
+.notif-filters button{
+  border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 14px;
+  font-size:12px;font-weight:600;color:var(--text-soft);cursor:pointer;
+}
+.notif-filters button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+/* ---------- KANBAN ---------- */
+.kanban-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.kanban-toolbar select,.kanban-toolbar input[type="text"]{
+  border:1px solid var(--line);background:#FBFBFD;border-radius:8px;padding:8px 11px;font-size:13px;
+  font-family:'Inter',sans-serif;
+}
+.kanban-toolbar label.chk{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-soft);}
+.kanban-board{
+  display:flex;gap:14px;overflow-x:auto;padding-bottom:14px;align-items:flex-start;
+}
+.kanban-col{
+  flex:0 0 280px;background:#F3F4F8;border-radius:12px;padding:12px;
+  min-height:120px;max-height:74vh;display:flex;flex-direction:column;
+}
+.kanban-col.dragover{background:#E5EAF4;outline:2px dashed var(--blue,#3B5BA9);outline-offset:-4px;}
+.kanban-col-head{
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:'Sora',sans-serif;font-weight:700;font-size:13px;color:var(--ink);
+  margin-bottom:10px;padding:0 2px;
+}
+.kanban-col-count{
+  background:#fff;border-radius:20px;padding:1px 9px;font-size:11px;font-weight:700;color:var(--text-soft);
+}
+.kanban-cards{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:9px;}
+.kanban-card{
+  background:#fff;border-radius:10px;padding:11px 12px;cursor:grab;
+  border-left:4px solid var(--text-mute);box-shadow:0 1px 2px rgba(22,27,46,0.06);
+  border:1px solid var(--line);border-left-width:4px;
+}
+.kanban-card:active{cursor:grabbing;}
+.kanban-card.dragging{opacity:0.4;}
+.kanban-card.overdue{box-shadow:0 0 0 2px var(--red,#C1433D) inset;}
+.kanban-card-title{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:5px;}
+.kanban-card-meta{font-size:10.5px;color:var(--text-mute);line-height:1.5;}
+.kanban-card-meta b{color:var(--text-soft);font-weight:600;}
+.kanban-progress-bg{height:5px;border-radius:4px;background:#EEF0F5;margin-top:7px;overflow:hidden;}
+.kanban-progress-fill{height:100%;border-radius:4px;background:var(--teal,#1F6F6B);}
+.kanban-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:10px;color:var(--text-mute);}
+.kanban-chip{background:#F3F4F8;border-radius:5px;padding:1px 6px;}
+.kanban-badge-paused{
+  display:inline-block;font-size:9px;font-weight:700;color:var(--amber,#D98C2B);
+  background:#FCEBD3;border-radius:4px;padding:1px 5px;margin-left:5px;
+}
+
 /* ---------- LAYOUT ---------- */
 .page{max-width:1320px;margin:0 auto;padding:28px 24px 80px;}
 .view{display:none;}
@@ -1490,6 +1591,159 @@ tbody tr:hover{
   .identity-grid{grid-template-columns:1fr;}
   .storage-banner{padding-right:46px;}
 }
+/* ================================================================
+   TEAMHUB KIT — REDISEÑO ESTÉTICO FINAL
+   ------------------------------------------------------------
+   Bloque 100% CSS. No modifica IDs, clases lógicas, atributos
+   onclick ni ninguna etiqueta de JavaScript. Se coloca al final de la hoja
+   de estilos a propósito: al tener la misma especificidad que las
+   reglas anteriores, gana por orden de cascada sin necesidad de
+   tocar ni una sola línea de las reglas previas.
+   ================================================================ */
+:root{
+  /* Tokens TeamHub, con los nombres exactos solicitados */
+  --th-bg-main:#F8FAFC;
+  --th-surface:#FFFFFF;
+  --th-border:#E2E8F0;
+  --blue-hover:#4338CA;
+  --green:#10B981;
+  --green-bg:#D1FAE5;
+  --amber-bg:#FEF3C7;
+  --red-bg:#FEE2E2;
+  --text-main:#334155;
+  --radius-lg:16px;
+  --radius-md:12px;
+  --radius-sm:8px;
+  --shadow-sm:0 1px 2px 0 rgba(15,23,42,.05);
+  --shadow-md:0 4px 6px -1px rgba(15,23,42,.05),0 2px 4px -2px rgba(15,23,42,.05);
+  --shadow-lg:0 10px 15px -3px rgba(15,23,42,.04),0 4px 6px -4px rgba(15,23,42,.04);
+
+  /* Remapeo de las variables ya usadas en todo el sistema (cientos de
+     selectores) para que hereden la paleta TeamHub automáticamente,
+     sin tener que tocar esos selectores uno por uno.
+     Nota: "--teal" se conserva apuntando al verde de éxito (#10B981)
+     porque así se ha usado semánticamente en todo el sistema desde el
+     inicio (estados "Activo"/"Cerrado"/positivo), no como un cian
+     literal — así todo sigue leyéndose correctamente como "positivo". */
+  --ink:#0F172A;
+  --ink-soft:#1E293B;
+  --canvas:#F8FAFC;
+  --paper:#FFFFFF;
+  --line:#E2E8F0;
+  --text:#334155;
+  --text-soft:#475569;
+  --text-mute:#64748B;
+  --blue:#4F46E5;
+  --blue-soft:#E0E7FF;
+  --teal:#10B981;
+  --teal-soft:#D1FAE5;
+  --amber:#F59E0B;
+  --amber-soft:#FEF3C7;
+  --red:#EF4444;
+  --red-soft:#FEE2E2;
+  --gray-soft:#F1F5F9;
+  --radius:16px;
+  --shadow:0 4px 6px -1px rgba(15,23,42,.05),0 2px 4px -2px rgba(15,23,42,.05);
+}
+
+/* ---- 2. Layout global ---- */
+body{
+  background:var(--th-bg-main);
+  color:var(--text-main);
+}
+.topbar{
+  background:var(--th-surface);
+  border-bottom:1px solid var(--th-border);
+  box-shadow:none;
+}
+.tab-btn{
+  color:var(--text-mute);
+  font-weight:500;
+  transition:background-color .15s ease, color .15s ease;
+}
+.tab-btn.active{
+  background:rgba(79,70,229,0.08);
+  color:var(--blue);
+  box-shadow:none;
+}
+.tab-btn:not(.active):hover{
+  background:rgba(79,70,229,0.05);
+  color:var(--blue);
+}
+
+/* ---- 3. Cards del dashboard y contenedores principales ---- */
+.kpi-card,.mini-kpi,.semaforo-card,.chart-card,.table-card,.card{
+  background:var(--th-surface);
+  border-radius:var(--radius-lg);
+  border:none;
+  box-shadow:var(--shadow-md);
+}
+.kpi-card{padding:24px;}
+.kpi-label{
+  color:var(--text-mute);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  font-weight:600;
+}
+.kpi-value{
+  font-family:'Sora',sans-serif;
+  color:var(--ink);
+}
+
+/* ---- 4. Tablas y pastillas de estatus ---- */
+table{border-collapse:collapse;}
+table td,table th{border-left:none;border-right:none;}
+tbody tr{
+  border-bottom:1px solid var(--th-border);
+  transition:background-color .15s ease;
+}
+tbody tr:hover{background-color:var(--th-bg-main);}
+.pill{
+  padding:4px 12px;
+  font-weight:600;
+  border-radius:9999px;
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+}
+
+/* ---- 5. Modales y formularios ---- */
+.modal-backdrop{
+  background:rgba(15,23,42,0.4);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+.modal-box{
+  background:var(--th-surface);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);
+  padding:32px;
+}
+input[type=text],input[type=date],input[type=number],input[type=email],
+select,textarea{
+  border:1px solid var(--th-border);
+  border-radius:var(--radius-md);
+  padding:10px 14px;
+  color:var(--text-main);
+  font-family:'Inter',sans-serif;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+input[type=text]:focus,input[type=date]:focus,input[type=number]:focus,input[type=email]:focus,
+select:focus,textarea:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 4px rgba(79,70,229,0.15);
+  outline:none;
+}
+
+/* ---- Botones primarios acorde a la nueva paleta ---- */
+.btn-primary{
+  background:var(--blue);
+  box-shadow:none;
+}
+.btn-primary:hover{
+  background:var(--blue-hover);
+}
 </style>
 </head>
 <body>
@@ -1508,10 +1762,24 @@ tbody tr:hover{
     <button class="tab-btn" data-view="personal">Personal</button>
     <button class="tab-btn" data-view="candidatos">Candidatos</button>
     <button class="tab-btn" data-view="kpis">KPIs</button>
+    <button class="tab-btn" data-view="kanban">Kanban</button>
     <button class="tab-btn" data-view="calendario">Calendario</button>
     <button class="tab-btn" data-view="configuracion">Configuración</button>
   </div>
   <div class="topbar-actions">
+    <div class="notif-wrap" id="notif-wrap">
+      <button class="btn-top" id="notif-bell-btn" type="button" title="Notificaciones">🔔<span class="notif-badge" id="notif-badge" style="display:none;">0</span></button>
+      <div class="notif-dropdown" id="notif-dropdown">
+        <div class="notif-dropdown-head">
+          <b>Notificaciones</b>
+          <button class="notif-mark-all" id="notif-mark-all-quick" type="button">Marcar todas leídas</button>
+        </div>
+        <div class="notif-dropdown-list" id="notif-dropdown-list"></div>
+        <div class="notif-dropdown-footer">
+          <button class="btn btn-ghost btn-sm" id="notif-view-all" type="button" style="width:100%;">Ver todas las notificaciones</button>
+        </div>
+      </div>
+    </div>
     <button class="btn-top" id="btn-load-backup-top" type="button" title="Cargar un respaldo .json previamente descargado">Cargar respaldo</button>
     <button class="btn-top" id="btn-save-backup-top" type="button" title="Descargar toda la información actual">Descargar respaldo</button>
   </div>
@@ -2428,6 +2696,64 @@ tbody tr:hover{
     </div>
   </div>
 
+  <!-- ======================= VISTA: KANBAN ======================= -->
+  <div class="view" id="view-kanban">
+    <div class="page-head">
+      <h1>Tablero Kanban</h1>
+      <p>Vista visual de la bitácora de casos, totalmente sincronizada con Dashboard, KPIs y Notificaciones.</p>
+    </div>
+
+    <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:16px;">
+      <div class="kpi-card">
+        <div class="kpi-top"><span class="kpi-label">Pendientes</span><span class="kpi-icon">📥</span></div>
+        <div class="kpi-value mono" id="kb-kpi-pendientes">0</div>
+      </div>
+      <div class="kpi-card avg">
+        <div class="kpi-top"><span class="kpi-label">En proceso</span><span class="kpi-icon">🔄</span></div>
+        <div class="kpi-value mono" id="kb-kpi-proceso">0</div>
+      </div>
+      <div class="kpi-card" style="border-left-color:var(--teal);">
+        <div class="kpi-top"><span class="kpi-label">Finalizadas</span><span class="kpi-icon">✅</span></div>
+        <div class="kpi-value mono" id="kb-kpi-finalizadas">0</div>
+      </div>
+      <div class="kpi-card crit">
+        <div class="kpi-top"><span class="kpi-label">Críticas</span><span class="kpi-icon">🔥</span></div>
+        <div class="kpi-value mono" id="kb-kpi-criticas">0</div>
+      </div>
+      <div class="kpi-card crit">
+        <div class="kpi-top"><span class="kpi-label">Vencidas</span><span class="kpi-icon">⏰</span></div>
+        <div class="kpi-value mono" id="kb-kpi-vencidas">0</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="kanban-toolbar">
+        <select id="kb-group-mode">
+          <option value="estado">Agrupar por: Estado</option>
+          <option value="responsable">Agrupar por: Responsable</option>
+          <option value="area">Agrupar por: Área</option>
+          <option value="macro">Agrupar por: Macroproceso</option>
+          <option value="prioridad">Agrupar por: Prioridad</option>
+        </select>
+        <select id="kb-filter-macro"><option value="">Macroproceso: todos</option></select>
+        <select id="kb-filter-area"><option value="">Área: todas</option></select>
+        <select id="kb-filter-responsable"><option value="">Responsable: todos</option></select>
+        <select id="kb-filter-prioridad"><option value="">Prioridad: todas</option></select>
+        <select id="kb-filter-tipo"><option value="">Tipo: todos</option></select>
+        <input type="text" id="kb-filter-texto" placeholder="Buscar texto libre...">
+        <label class="chk"><input type="checkbox" id="kb-show-cancelados"> Mostrar cancelados</label>
+        <button class="clear-btn" id="kb-clear-filters">Limpiar filtros</button>
+      </div>
+    </div>
+
+    <div id="kb-empty" class="empty-state" style="display:none;">
+      <div class="em-icon">🗂️</div>
+      <div><b>Aún no hay casos registrados.</b><br>Ve a la pestaña "Captura" para agregar el primero.</div>
+    </div>
+
+    <div class="kanban-board" id="kanban-board"></div>
+  </div>
+
   <!-- ======================= VISTA: CALENDARIO ======================= -->
   <div class="view" id="view-calendario">
     <div class="page-head">
@@ -2513,6 +2839,23 @@ tbody tr:hover{
         <div class="form-actions">
           <button class="btn btn-ghost" type="button" id="cfg-brand-reset">Restaurar identidad original</button>
           <button class="btn btn-primary" type="button" id="cfg-brand-save">Guardar identidad</button>
+        </div>
+      </div>
+
+      <div class="card config-card full">
+        <h3>Preferencias de notificaciones</h3>
+        <p class="hint" style="margin:-6px 0 12px;">Estas preferencias son compartidas por todas las personas que usan este documento (el sistema no tiene cuentas individuales).</p>
+        <div class="config-metrics" style="grid-template-columns:repeat(4,1fr);">
+          <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-criticas"> Actividades críticas</label>
+          <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-vencimientos"> Vencimientos</label>
+          <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-comentarios"> Comentarios / avances</label>
+          <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-evidencias"> Evidencias</label>
+          <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-responsable"> Cambios de responsable</label>
+          <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-prioridad"> Cambios de prioridad</label>
+          <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-recordatorios"> Recordatorios (cambios de estado)</label>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="button" id="cfg-notif-save">Guardar preferencias</button>
         </div>
       </div>
 
@@ -2708,6 +3051,29 @@ tbody tr:hover{
   </div>
 </div>
 
+<div class="modal-backdrop" id="notif-modal">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="modal-head">
+      <div>
+        <h2>Centro de Notificaciones</h2>
+        <div class="msub" id="notif-modal-sub"></div>
+      </div>
+      <button class="modal-close" id="notif-modal-close">✕</button>
+    </div>
+    <div class="notif-filters" id="notif-filters">
+      <button class="active" data-filter="todas" type="button">Todas</button>
+      <button data-filter="no-leidas" type="button">No leídas</button>
+      <button data-filter="criticas" type="button">Críticas</button>
+      <button data-filter="pendientes" type="button">Pendientes</button>
+      <button data-filter="archivadas" type="button">Archivadas</button>
+    </div>
+    <div class="modal-body" style="padding-top:0;max-height:60vh;overflow-y:auto;" id="notif-modal-body"></div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;padding:0 24px 22px;">
+      <button class="btn btn-ghost" id="notif-mark-all-full" type="button">Marcar todas como leídas</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
    DATOS MAESTROS
@@ -2823,6 +3189,15 @@ const DEFAULT_SETTINGS = {
   kpis:{
     metaResolucionDias: 7,
     presupuestoMensual: 0
+  },
+  notificaciones:{
+    criticas: true,
+    vencimientos: true,
+    comentarios: true,
+    evidencias: true,
+    cambiosResponsable: true,
+    cambiosPrioridad: true,
+    recordatorios: true
   },
   storageBannerDismissed: false
 };
@@ -2961,7 +3336,8 @@ function normalizeSettings(raw){
     branding:{...base.branding, ...(raw.branding || {})},
     catalogs:{...base.catalogs, ...(raw.catalogs || {})},
     rules:{...base.rules, ...(raw.rules || {})},
-    kpis:{...base.kpis, ...(raw.kpis || {})}
+    kpis:{...base.kpis, ...(raw.kpis || {})},
+    notificaciones:{...base.notificaciones, ...(raw.notificaciones || {})}
   };
 }
 function applyBrandingToDom(){
@@ -3346,6 +3722,7 @@ function repopulateDynamicSelects(){
   initSelects();
   initPersonalSelects();
   initCandidatosSelects();
+  initKanbanFilterSelects();
   refreshAutoFields();
   renderDashboard();
   renderEmpleadosTable();
@@ -3437,6 +3814,7 @@ document.getElementById("cfg-brand-reset").addEventListener("click", ()=>{
 
 function renderConfigView(){
   renderBrandingConfig();
+  renderNotifPrefsConfig();
   ["departamentos","sucursales","tiposActividad","costoCategorias"].forEach(renderCatalogList);
   document.getElementById("cfg-contrato-amarillo").value = APP_SETTINGS.rules.contratoAmarilloDias;
   document.getElementById("cfg-contrato-rojo").value = APP_SETTINGS.rules.contratoRojoDias;
@@ -3578,6 +3956,7 @@ document.getElementById("btn-cancel-edit").addEventListener("click", resetForm);
 
 form.addEventListener("submit", async (e)=>{
   e.preventDefault();
+  const prevRecordForNotif = editingId ? JSON.parse(JSON.stringify(RECORDS.find(r=>r.id===editingId) || null)) : null;
   const fecha = document.getElementById("f-fecha").value;
   const estado = document.getElementById("f-estado").value;
   const riesgo = document.getElementById("f-riesgo").value;
@@ -3644,6 +4023,8 @@ form.addEventListener("submit", async (e)=>{
   }
 
   await saveRecords();
+  generateCaseDiffNotifications(prevRecordForNotif, record);
+  await commitNotifications();
   showToast(editingId ? "✓ Registro actualizado" : "✓ Guardado correctamente");
   resetForm();
   renderAll();
@@ -3875,6 +4256,7 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
     if(btn.dataset.view === "kpis") renderKpisView();
     if(btn.dataset.view === "personal"){ renderEmpleadosTable(); renderSemaforoVencimientos(); }
     if(btn.dataset.view === "candidatos") renderCandidatosTable();
+    if(btn.dataset.view === "kanban") renderKanban();
     if(btn.dataset.view === "configuracion") renderConfigView();
   });
 });
@@ -4492,6 +4874,537 @@ document.getElementById("cand-clear-filters").addEventListener("click", ()=>{
   document.getElementById("cand-filter-sucursal").value = "";
   document.getElementById("cand-filter-estatus").value = "";
   renderCandidatosTable();
+});
+
+/* ============================================================
+   CENTRO DE NOTIFICACIONES
+   ------------------------------------------------------------
+   No existen cuentas de usuario individuales en este sistema (es un
+   documento compartido), así que las notificaciones son una bandeja
+   ÚNICA y compartida por todas las personas con acceso al archivo,
+   y las preferencias de activación/desactivación también son
+   compartidas (viven en APP_SETTINGS.notificaciones). Cuando un
+   evento afecta "al responsable anterior y al nuevo", ambos nombres
+   se mencionan explícitamente en el mensaje de la notificación.
+   ============================================================ */
+const NOTIF_TYPES = {
+  vencida:            { severity:"critica",     icon:"⏰", prefKey:"vencimientos" },
+  proxima_vencer:     { severity:"pendiente",   icon:"⏳", prefKey:"vencimientos" },
+  prioridad:          { severity:"informativa", icon:"⬆️", prefKey:"cambiosPrioridad" },
+  prioridad_critica:  { severity:"critica",     icon:"🔥", prefKey:"criticas" },
+  responsable:        { severity:"pendiente",   icon:"🔁", prefKey:"cambiosResponsable" },
+  estado:             { severity:"pendiente",   icon:"📌", prefKey:"recordatorios" },
+  comentario:         { severity:"informativa", icon:"💬", prefKey:"comentarios" },
+  evidencia:          { severity:"informativa", icon:"📎", prefKey:"evidencias" },
+  documento_personal: { severity:"pendiente",   icon:"🪪", prefKey:"vencimientos" },
+  riesgo:             { severity:"critica",     icon:"⚠️", prefKey:"criticas" }
+};
+const PRIORIDAD_RANK = {"Baja":1,"Media":2,"Alta":3,"Crítica":4};
+const NIVEL_RIESGO_RANK = {"Bajo":1,"Medio":2,"Alto":3,"Crítico":4};
+
+let NOTIFICACIONES = [];
+const NOTIFICACIONES_STORAGE_KEY = "hr-notificaciones-v1";
+let notifModalFilter = "todas";
+
+async function loadNotificaciones(){
+  try{
+    const res = await window.storage.get(NOTIFICACIONES_STORAGE_KEY, true);
+    NOTIFICACIONES = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    NOTIFICACIONES = [];
+  }
+}
+async function saveNotificaciones(){
+  try{
+    await window.storage.set(NOTIFICACIONES_STORAGE_KEY, JSON.stringify(NOTIFICACIONES), true);
+    storageAvailable = true;
+  }catch(e){
+    console.error("Error guardando notificaciones", e);
+    storageAvailable = false;
+  }
+  updateStorageBanner();
+}
+function notifPrefEnabled(type){
+  const meta = NOTIF_TYPES[type];
+  if(!meta || !meta.prefKey) return true;
+  const prefs = (APP_SETTINGS && APP_SETTINGS.notificaciones) || {};
+  return prefs[meta.prefKey] !== false;
+}
+function addNotification(type, opts){
+  if(!notifPrefEnabled(type)) return;
+  if(opts.dedupeKey && NOTIFICACIONES.some(n=>n.dedupeKey === opts.dedupeKey)) return;
+  const meta = NOTIF_TYPES[type] || {severity:"informativa", icon:"🔔"};
+  NOTIFICACIONES.unshift({
+    id: uid(),
+    type,
+    severity: meta.severity,
+    icon: meta.icon,
+    title: opts.title,
+    message: opts.message || "",
+    relatedType: opts.relatedType || null,
+    relatedId: opts.relatedId || null,
+    read: false,
+    archived: false,
+    dedupeKey: opts.dedupeKey || null,
+    createdAt: Date.now()
+  });
+}
+async function commitNotifications(){
+  await saveNotificaciones();
+  renderNotifBell();
+}
+
+/* ---- generación automática a partir de cambios en un caso ---- */
+function generateCaseDiffNotifications(prev, curr){
+  if(!prev) return; // no se notifica la creación, solo cambios sobre casos existentes
+  if(prev.prioridad !== curr.prioridad){
+    const subiendo = (PRIORIDAD_RANK[curr.prioridad]||0) > (PRIORIDAD_RANK[prev.prioridad]||0);
+    const tipo = (curr.prioridad === "Crítica" && subiendo) ? "prioridad_critica" : "prioridad";
+    addNotification(tipo, {
+      title: `Cambio de prioridad: ${curr.tema}`,
+      message: `${prev.prioridad} → ${curr.prioridad}`,
+      relatedType:"caso", relatedId: curr.id
+    });
+  }
+  if(prev.responsable !== curr.responsable){
+    addNotification("responsable", {
+      title: `Cambio de responsable: ${curr.tema}`,
+      message: `Se notifica a ambos: ${prev.responsable || "—"} (anterior) → ${curr.responsable || "—"} (nuevo)`,
+      relatedType:"caso", relatedId: curr.id
+    });
+  }
+  if(prev.estado !== curr.estado){
+    addNotification("estado", {
+      title: `Cambio de estado: ${curr.tema}`,
+      message: `${prev.estado} → ${curr.estado}`,
+      relatedType:"caso", relatedId: curr.id
+    });
+  }
+  const prevRiesgoRank = NIVEL_RIESGO_RANK[prev.nivelRiesgo] || 0;
+  const currRiesgoRank = NIVEL_RIESGO_RANK[curr.nivelRiesgo] || 0;
+  if(currRiesgoRank > prevRiesgoRank && (curr.nivelRiesgo === "Alto" || curr.nivelRiesgo === "Crítico")){
+    addNotification("riesgo", {
+      title: `Riesgo elevado a ${curr.nivelRiesgo}: ${curr.tema}`,
+      message: `Nivel de riesgo pasó de ${prev.nivelRiesgo} a ${curr.nivelRiesgo}`,
+      relatedType:"caso", relatedId: curr.id
+    });
+  }
+  if((curr.evidenciaCount||0) > (prev.evidenciaCount||0)){
+    addNotification("evidencia", {
+      title: `Nueva evidencia adjunta: ${curr.tema}`,
+      message: `Se agregaron ${(curr.evidenciaCount||0) - (prev.evidenciaCount||0)} archivo(s)`,
+      relatedType:"caso", relatedId: curr.id
+    });
+  }
+  const prevAvancesN = (prev.avances||[]).length;
+  const currAvancesN = (curr.avances||[]).length;
+  if(currAvancesN > prevAvancesN){
+    const ultimo = sortAvances(curr.avances).slice(-1)[0];
+    addNotification("comentario", {
+      title: `Nuevo avance registrado: ${curr.tema}`,
+      message: ultimo ? safeTruncate(ultimo.descripcion, 140) : "",
+      relatedType:"caso", relatedId: curr.id
+    });
+  }
+}
+
+/* ---- revisión programada de vencimientos (casos y documentos de personal) ---- */
+function checkVencimientosYGenerar(){
+  RECORDS.filter(r => ESTADOS_ACTIVOS.includes(r.estado) && r.fechaCompromiso).forEach(r=>{
+    const dias = daysUntil(r.fechaCompromiso);
+    if(dias < 0){
+      addNotification("vencida", {
+        title:`Actividad vencida: ${r.tema}`,
+        message:`Venció hace ${Math.abs(dias)} día(s) (compromiso: ${r.fechaCompromiso})`,
+        relatedType:"caso", relatedId:r.id,
+        dedupeKey:`vencida_${r.id}_${r.fechaCompromiso}`
+      });
+    } else if([7,3,1].includes(dias)){
+      addNotification("proxima_vencer", {
+        title:`Vence en ${dias} día(s): ${r.tema}`,
+        message:`Fecha compromiso: ${r.fechaCompromiso}`,
+        relatedType:"caso", relatedId:r.id,
+        dedupeKey:`proxima_${r.id}_${r.fechaCompromiso}_${dias}`
+      });
+    }
+  });
+
+  EMPLEADOS.filter(e => e.estatus === "Activo" && CONTRATOS_TEMPORALES.includes(e.estadoContrato)).forEach(e=>{
+    const efectivo = getVencimientoEfectivo(e);
+    if(!efectivo) return;
+    const dias = daysUntil(efectivo);
+    if(dias < 0){
+      addNotification("documento_personal", {
+        title:`Contrato vencido: ${e.nombre}`,
+        message:`Venció hace ${Math.abs(dias)} día(s) (${efectivo})`,
+        relatedType:"empleado", relatedId:e.id,
+        dedupeKey:`doc_venc_${e.id}_${efectivo}`
+      });
+    } else if([7,3,1].includes(dias)){
+      addNotification("documento_personal", {
+        title:`Contrato por vencer: ${e.nombre}`,
+        message:`Vence en ${dias} día(s) (${efectivo})`,
+        relatedType:"empleado", relatedId:e.id,
+        dedupeKey:`doc_prox_${e.id}_${efectivo}_${dias}`
+      });
+    }
+  });
+}
+
+/* ---- render: campanita + dropdown + bandeja completa ---- */
+function timeAgo(ts){
+  const diffMin = Math.round((Date.now() - ts) / 60000);
+  if(diffMin < 1) return "justo ahora";
+  if(diffMin < 60) return `hace ${diffMin} min`;
+  const diffH = Math.round(diffMin/60);
+  if(diffH < 24) return `hace ${diffH} h`;
+  const diffD = Math.round(diffH/24);
+  return `hace ${diffD} d`;
+}
+function notifItemHtml(n, compact){
+  const unreadClass = n.read ? "" : "unread";
+  const actions = compact ? "" : `
+    <div class="notif-actions-row">
+      <button type="button" onclick="event.stopPropagation();notifOpenRelated('${n.id}')">Abrir</button>
+      ${!n.read ? `<button type="button" onclick="event.stopPropagation();notifMarkRead('${n.id}')">Marcar leída</button>` : ""}
+      ${!n.archived ? `<button type="button" onclick="event.stopPropagation();notifArchive('${n.id}')">Archivar</button>` : ""}
+      <button type="button" onclick="event.stopPropagation();notifDelete('${n.id}')">Eliminar</button>
+    </div>`;
+  return `<div class="notif-item sev-${n.severity} ${unreadClass}" onclick="notifOpenRelated('${n.id}')">
+    <div class="notif-icon">${n.icon}</div>
+    <div class="notif-body">
+      <div class="notif-title">${escapeHtml(n.title)}</div>
+      ${n.message ? `<div class="notif-msg">${escapeHtml(n.message)}</div>` : ""}
+      <div class="notif-time">${timeAgo(n.createdAt)}${n.archived ? " · archivada" : ""}</div>
+      ${actions}
+    </div>
+    ${!n.read ? '<div class="notif-dot"></div>' : ""}
+  </div>`;
+}
+function renderNotifBell(){
+  const badge = document.getElementById("notif-badge");
+  const unread = NOTIFICACIONES.filter(n=>!n.read && !n.archived).length;
+  if(unread > 0){
+    badge.style.display = "inline-flex";
+    badge.textContent = unread > 99 ? "99+" : String(unread);
+  } else {
+    badge.style.display = "none";
+  }
+  const list = document.getElementById("notif-dropdown-list");
+  const recientes = NOTIFICACIONES.filter(n=>!n.archived).slice(0, 8);
+  list.innerHTML = recientes.length
+    ? recientes.map(n=>notifItemHtml(n, true)).join("")
+    : '<div class="notif-empty">No hay notificaciones por ahora.</div>';
+  if(document.getElementById("notif-modal").classList.contains("show")) renderNotifModalBody();
+}
+function renderNotifModalBody(){
+  let list = NOTIFICACIONES;
+  if(notifModalFilter === "no-leidas") list = list.filter(n=>!n.read && !n.archived);
+  else if(notifModalFilter === "criticas") list = list.filter(n=>n.severity === "critica" && !n.archived);
+  else if(notifModalFilter === "pendientes") list = list.filter(n=>n.severity === "pendiente" && !n.archived);
+  else if(notifModalFilter === "archivadas") list = list.filter(n=>n.archived);
+  else list = list.filter(n=>!n.archived);
+
+  document.getElementById("notif-modal-sub").textContent = `${list.length} notificación(es)`;
+  const body = document.getElementById("notif-modal-body");
+  body.innerHTML = list.length
+    ? list.map(n=>notifItemHtml(n, false)).join("")
+    : '<div class="notif-empty">No hay notificaciones para este filtro.</div>';
+}
+function notifMarkRead(id){
+  const n = NOTIFICACIONES.find(x=>x.id===id);
+  if(!n) return;
+  n.read = true;
+  saveNotificaciones().then(()=>{ renderNotifBell(); renderNotifModalBody(); });
+}
+function notifMarkAllRead(){
+  NOTIFICACIONES.forEach(n=>n.read = true);
+  saveNotificaciones().then(()=>{ renderNotifBell(); renderNotifModalBody(); showToast("✓ Notificaciones marcadas como leídas"); });
+}
+function notifArchive(id){
+  const n = NOTIFICACIONES.find(x=>x.id===id);
+  if(!n) return;
+  n.archived = true;
+  n.read = true;
+  saveNotificaciones().then(()=>{ renderNotifBell(); renderNotifModalBody(); });
+}
+function notifDelete(id){
+  NOTIFICACIONES = NOTIFICACIONES.filter(x=>x.id!==id);
+  saveNotificaciones().then(()=>{ renderNotifBell(); renderNotifModalBody(); });
+}
+function notifOpenRelated(id){
+  const n = NOTIFICACIONES.find(x=>x.id===id);
+  if(!n) return;
+  if(!n.read) notifMarkRead(id);
+  document.getElementById("notif-dropdown").classList.remove("show");
+  document.getElementById("notif-modal").classList.remove("show");
+  if(n.relatedType === "caso" && n.relatedId){
+    const exists = RECORDS.find(r=>r.id===n.relatedId);
+    if(exists) openDetail(n.relatedId);
+  } else if(n.relatedType === "empleado" && n.relatedId){
+    const exists = EMPLEADOS.find(e=>e.id===n.relatedId);
+    if(exists) editEmpleado(n.relatedId);
+  }
+}
+
+document.getElementById("notif-bell-btn").addEventListener("click", (e)=>{
+  e.stopPropagation();
+  document.getElementById("notif-dropdown").classList.toggle("show");
+});
+document.addEventListener("click", (e)=>{
+  if(!e.target.closest("#notif-wrap")) document.getElementById("notif-dropdown").classList.remove("show");
+});
+document.getElementById("notif-mark-all-quick").addEventListener("click", notifMarkAllRead);
+document.getElementById("notif-mark-all-full").addEventListener("click", notifMarkAllRead);
+document.getElementById("notif-view-all").addEventListener("click", ()=>{
+  document.getElementById("notif-dropdown").classList.remove("show");
+  notifModalFilter = "todas";
+  document.querySelectorAll("#notif-filters button").forEach(b=>b.classList.remove("active"));
+  document.querySelector('#notif-filters button[data-filter="todas"]').classList.add("active");
+  renderNotifModalBody();
+  document.getElementById("notif-modal").classList.add("show");
+});
+document.getElementById("notif-modal-close").addEventListener("click", ()=>{
+  document.getElementById("notif-modal").classList.remove("show");
+});
+document.getElementById("notif-modal").addEventListener("click", (e)=>{
+  if(e.target.id === "notif-modal") document.getElementById("notif-modal").classList.remove("show");
+});
+document.getElementById("notif-filters").addEventListener("click", (e)=>{
+  const btn = e.target.closest("button");
+  if(!btn) return;
+  document.querySelectorAll("#notif-filters button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  notifModalFilter = btn.dataset.filter;
+  renderNotifModalBody();
+});
+
+/* ---- preferencias de notificaciones (Configuración) ---- */
+function renderNotifPrefsConfig(){
+  const p = (APP_SETTINGS && APP_SETTINGS.notificaciones) || DEFAULT_SETTINGS.notificaciones;
+  document.getElementById("cfg-notif-criticas").checked = p.criticas !== false;
+  document.getElementById("cfg-notif-vencimientos").checked = p.vencimientos !== false;
+  document.getElementById("cfg-notif-comentarios").checked = p.comentarios !== false;
+  document.getElementById("cfg-notif-evidencias").checked = p.evidencias !== false;
+  document.getElementById("cfg-notif-responsable").checked = p.cambiosResponsable !== false;
+  document.getElementById("cfg-notif-prioridad").checked = p.cambiosPrioridad !== false;
+  document.getElementById("cfg-notif-recordatorios").checked = p.recordatorios !== false;
+}
+document.getElementById("cfg-notif-save").addEventListener("click", async ()=>{
+  APP_SETTINGS.notificaciones = {
+    criticas: document.getElementById("cfg-notif-criticas").checked,
+    vencimientos: document.getElementById("cfg-notif-vencimientos").checked,
+    comentarios: document.getElementById("cfg-notif-comentarios").checked,
+    evidencias: document.getElementById("cfg-notif-evidencias").checked,
+    cambiosResponsable: document.getElementById("cfg-notif-responsable").checked,
+    cambiosPrioridad: document.getElementById("cfg-notif-prioridad").checked,
+    recordatorios: document.getElementById("cfg-notif-recordatorios").checked
+  };
+  await saveSettings();
+  showToast("✓ Preferencias de notificaciones actualizadas");
+});
+
+/* ============================================================
+   TABLERO KANBAN
+   ------------------------------------------------------------
+   Reutiliza RECORDS, sus mismos catálogos/colores y el modal de
+   detalle existente (openDetail) para la vista rápida — no crea
+   una fuente de datos paralela.
+   ============================================================ */
+const KANBAN_ESTADO_COLUMNS = [
+  {key:"No Iniciado", label:"Pendiente"},
+  {key:"En Proceso", label:"En proceso"},
+  {key:"En Revisión", label:"En revisión"},
+  {key:"Cerrado", label:"Finalizado"}
+];
+let kanbanDraggedId = null;
+
+function kbGroupField(mode){
+  return {estado:"estado", responsable:"responsable", area:"area", macro:"macro", prioridad:"prioridad"}[mode] || "estado";
+}
+function kbAvanceEstimado(estado){
+  return {"No Iniciado":0, "En Proceso":40, "En Revisión":75, "Detenido":40, "Cerrado":100, "Cancelado":0}[estado] ?? 0;
+}
+function kbBucketFor(r, mode){
+  if(mode !== "estado") return r[kbGroupField(mode)] || "Sin asignar";
+  if(r.estado === "Detenido") return "En Proceso";
+  if(r.estado === "Cancelado") return "__cancelado__";
+  return r.estado;
+}
+function initKanbanFilterSelects(){
+  const macros = [...new Set(RECORDS.map(r=>r.macro).filter(Boolean))].sort();
+  const areas = [...new Set(RECORDS.map(r=>r.area).filter(Boolean))].sort();
+  const responsables = [...new Set(RECORDS.map(r=>r.responsable).filter(Boolean))].sort();
+  fillSelect("kb-filter-macro", macros, null);
+  document.getElementById("kb-filter-macro").insertAdjacentHTML("afterbegin", '<option value="">Macroproceso: todos</option>');
+  fillSelect("kb-filter-area", areas, null);
+  document.getElementById("kb-filter-area").insertAdjacentHTML("afterbegin", '<option value="">Área: todas</option>');
+  fillSelect("kb-filter-responsable", responsables, null);
+  document.getElementById("kb-filter-responsable").insertAdjacentHTML("afterbegin", '<option value="">Responsable: todos</option>');
+  fillSelect("kb-filter-prioridad", PRIORIDADES, null);
+  document.getElementById("kb-filter-prioridad").insertAdjacentHTML("afterbegin", '<option value="">Prioridad: todas</option>');
+  fillSelect("kb-filter-tipo", TIPOS_ACTIVIDAD, null);
+  document.getElementById("kb-filter-tipo").insertAdjacentHTML("afterbegin", '<option value="">Tipo: todos</option>');
+}
+function getKanbanFilteredRecords(){
+  const macro = document.getElementById("kb-filter-macro").value;
+  const area = document.getElementById("kb-filter-area").value;
+  const resp = document.getElementById("kb-filter-responsable").value;
+  const prio = document.getElementById("kb-filter-prioridad").value;
+  const tipo = document.getElementById("kb-filter-tipo").value;
+  const texto = document.getElementById("kb-filter-texto").value.trim().toLowerCase();
+  const showCancelados = document.getElementById("kb-show-cancelados").checked;
+  return RECORDS.filter(r=>{
+    if(macro && r.macro !== macro) return false;
+    if(area && r.area !== area) return false;
+    if(resp && r.responsable !== resp) return false;
+    if(prio && r.prioridad !== prio) return false;
+    if(tipo && r.tipo !== tipo) return false;
+    if(!showCancelados && r.estado === "Cancelado") return false;
+    if(texto){
+      const haystack = [r.tema, r.responsable, r.area, r.macro, r.departamento].join(" ").toLowerCase();
+      if(!haystack.includes(texto)) return false;
+    }
+    return true;
+  });
+}
+function renderKanbanKpis(records){
+  const pendientes = records.filter(r=>r.estado === "No Iniciado").length;
+  const proceso = records.filter(r=>["En Proceso","Detenido","En Revisión"].includes(r.estado)).length;
+  const finalizadas = records.filter(r=>r.estado === "Cerrado").length;
+  const criticas = records.filter(r=>r.prioridad === "Crítica" && ESTADOS_ACTIVOS.includes(r.estado)).length;
+  const vencidas = records.filter(isOverdue).length;
+  document.getElementById("kb-kpi-pendientes").textContent = pendientes;
+  document.getElementById("kb-kpi-proceso").textContent = proceso;
+  document.getElementById("kb-kpi-finalizadas").textContent = finalizadas;
+  document.getElementById("kb-kpi-criticas").textContent = criticas;
+  document.getElementById("kb-kpi-vencidas").textContent = vencidas;
+}
+function kanbanCardHtml(r){
+  const overdue = isOverdue(r);
+  const prioColor = COLOR_PRIORIDAD[r.prioridad] || "#8B90A3";
+  const avance = kbAvanceEstimado(r.estado);
+  const pausado = r.estado === "Detenido" ? '<span class="kanban-badge-paused">⏸ Detenido</span>' : "";
+  return `<div class="kanban-card${overdue ? " overdue" : ""}" style="border-left-color:${prioColor};" draggable="true"
+      data-id="${r.id}" ondragstart="kanbanDragStart(event,'${r.id}')" ondragend="kanbanDragEnd(event)" onclick="openDetail('${r.id}')">
+    <div class="kanban-card-title">${escapeHtml(r.tema)}${pausado}</div>
+    <div class="kanban-card-meta">
+      <b>${escapeHtml(r.macro||"—")}</b> · ${escapeHtml(r.area||"—")}<br>
+      👤 ${escapeHtml(r.responsable||"—")} · ${pillPrioridad(r.prioridad)}<br>
+      📅 ${r.fechaCompromiso || "sin fecha compromiso"} ${pillNivel(r.nivelRiesgo)}
+    </div>
+    <div class="kanban-progress-bg"><div class="kanban-progress-fill" style="width:${avance}%;"></div></div>
+    <div class="kanban-card-footer">
+      <span class="kanban-chip">💬 ${(r.avances||[]).length}</span>
+      <span class="kanban-chip">📎 ${r.evidenciaCount||0}</span>
+      <span>${avance}%</span>
+    </div>
+  </div>`;
+}
+function renderKanban(){
+  const emptyEl = document.getElementById("kb-empty");
+  const boardEl = document.getElementById("kanban-board");
+  if(RECORDS.length === 0){
+    emptyEl.style.display = "block";
+    boardEl.innerHTML = "";
+    return;
+  }
+  emptyEl.style.display = "none";
+
+  const mode = document.getElementById("kb-group-mode").value || "estado";
+  const filtered = getKanbanFilteredRecords();
+  renderKanbanKpis(filtered);
+
+  let columns;
+  if(mode === "estado"){
+    columns = KANBAN_ESTADO_COLUMNS.slice();
+    if(document.getElementById("kb-show-cancelados").checked && filtered.some(r=>r.estado === "Cancelado")){
+      columns.push({key:"__cancelado__", label:"Cancelado"});
+    }
+  } else {
+    const field = kbGroupField(mode);
+    const values = [...new Set(filtered.map(r=>r[field]).filter(Boolean))].sort();
+    columns = values.map(v=>({key:v, label:v}));
+    if(columns.length === 0) columns = [{key:"Sin asignar", label:"Sin asignar"}];
+  }
+
+  boardEl.innerHTML = columns.map(col=>{
+    const cardsInCol = filtered.filter(r => kbBucketFor(r, mode) === col.key);
+    return `<div class="kanban-col" data-colkey="${escapeHtml(col.key)}"
+        ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event,'${escapeHtml(col.key)}')">
+      <div class="kanban-col-head"><span>${escapeHtml(col.label)}</span><span class="kanban-col-count">${cardsInCol.length}</span></div>
+      <div class="kanban-cards">${cardsInCol.length ? cardsInCol.map(kanbanCardHtml).join("") : '<div class="notif-empty" style="padding:16px 6px;">Sin casos aquí</div>'}</div>
+    </div>`;
+  }).join("");
+}
+function kanbanDragStart(e, id){
+  kanbanDraggedId = id;
+  e.dataTransfer.effectAllowed = "move";
+  e.target.classList.add("dragging");
+}
+function kanbanDragEnd(e){
+  e.target.classList.remove("dragging");
+}
+function kanbanDragOver(e){
+  e.preventDefault();
+  e.currentTarget.classList.add("dragover");
+}
+function kanbanDragLeave(e){
+  e.currentTarget.classList.remove("dragover");
+}
+async function kanbanDrop(e, colKey){
+  e.preventDefault();
+  e.currentTarget.classList.remove("dragover");
+  const id = kanbanDraggedId;
+  kanbanDraggedId = null;
+  if(!id) return;
+  const r = RECORDS.find(x=>x.id===id);
+  if(!r) return;
+
+  const mode = document.getElementById("kb-group-mode").value || "estado";
+  const field = kbGroupField(mode);
+  let newValue = colKey;
+  if(mode === "estado" && colKey === "__cancelado__") newValue = "Cancelado";
+  if(r[field] === newValue) { renderKanban(); return; }
+
+  const prev = JSON.parse(JSON.stringify(r));
+  r[field] = newValue;
+  r.updatedAt = Date.now();
+
+  if(field === "estado"){
+    if(ESTADOS_CONGELADOS.includes(newValue) && !ESTADOS_CONGELADOS.includes(prev.estado)){
+      r.diasCongelados = daysBetween(r.fecha, todayISO());
+      r.fechaCongelado = todayISO();
+    } else if(!ESTADOS_CONGELADOS.includes(newValue)){
+      r.diasCongelados = null;
+      r.fechaCongelado = null;
+    }
+    if(!r.avances) r.avances = [];
+    r.avances.push({id:uid(), fecha:todayISO(), descripcion:`Estado actualizado vía Kanban: ${prev.estado} → ${newValue}`, createdAt:Date.now()});
+  }
+
+  await saveRecords();
+  generateCaseDiffNotifications(prev, r);
+  await commitNotifications();
+  renderKanban();
+  renderAll();
+  showToast("✓ Caso actualizado desde el Kanban");
+}
+document.getElementById("kb-group-mode").addEventListener("change", renderKanban);
+["kb-filter-macro","kb-filter-area","kb-filter-responsable","kb-filter-prioridad","kb-filter-tipo"].forEach(id=>{
+  document.getElementById(id).addEventListener("change", renderKanban);
+});
+document.getElementById("kb-filter-texto").addEventListener("input", renderKanban);
+document.getElementById("kb-show-cancelados").addEventListener("change", renderKanban);
+document.getElementById("kb-clear-filters").addEventListener("click", ()=>{
+  document.getElementById("kb-filter-macro").value = "";
+  document.getElementById("kb-filter-area").value = "";
+  document.getElementById("kb-filter-responsable").value = "";
+  document.getElementById("kb-filter-prioridad").value = "";
+  document.getElementById("kb-filter-tipo").value = "";
+  document.getElementById("kb-filter-texto").value = "";
+  document.getElementById("kb-show-cancelados").checked = false;
+  renderKanban();
 });
 
 /* ============================================================
@@ -5724,7 +6637,7 @@ function resetBackupSaveLocation(){
 }
 
 async function exportBackupJSON(){
-  const payload = { exportedAt: new Date().toISOString(), records: RECORDS, empleados: EMPLEADOS, candidatos: CANDIDATOS, settings: APP_SETTINGS };
+  const payload = { exportedAt: new Date().toISOString(), records: RECORDS, empleados: EMPLEADOS, candidatos: CANDIDATOS, notificaciones: NOTIFICACIONES, settings: APP_SETTINGS };
   const jsonText = JSON.stringify(payload);
   const suggestedName = `respaldo_rh_${nowStamp()}.json`;
 
@@ -5791,13 +6704,15 @@ async function importBackupFile(file){
   }
   const empleadosPayload = (payload && Array.isArray(payload.empleados)) ? payload.empleados : [];
   const candidatosPayload = (payload && Array.isArray(payload.candidatos)) ? payload.candidatos : [];
+  const notificacionesPayload = (payload && Array.isArray(payload.notificaciones)) ? payload.notificaciones : [];
   const settingsPayload = payload && payload.settings ? normalizeSettings(payload.settings) : APP_SETTINGS;
 
   // Etapa 4: confirmación (modal propio, no depende de confirm() nativo)
-  showConfirm(`Se restaurarán ${records.length} caso(s), ${empleadosPayload.length} colaborador(es), ${candidatosPayload.length} candidato(s) y la configuración incluida en el respaldo. Esto reemplazará los datos actuales en este documento. ¿Continuar?`, async ()=>{
+  showConfirm(`Se restaurarán ${records.length} caso(s), ${empleadosPayload.length} colaborador(es), ${candidatosPayload.length} candidato(s), ${notificacionesPayload.length} notificación(es) y la configuración incluida en el respaldo. Esto reemplazará los datos actuales en este documento. ¿Continuar?`, async ()=>{
     RECORDS = records;
     EMPLEADOS = empleadosPayload;
     CANDIDATOS = candidatosPayload;
+    NOTIFICACIONES = notificacionesPayload;
     APP_SETTINGS = settingsPayload;
     applySettingsToRuntime();
     // Compatibilidad con respaldos generados por versiones anteriores,
@@ -5811,11 +6726,13 @@ async function importBackupFile(file){
       await saveRecords();
       await saveEmpleados();
       await saveCandidatos();
+      await saveNotificaciones();
       await saveSettings();
       showToast("✓ Respaldo restaurado");
       initSelects();
       initPersonalSelects();
       initCandidatosSelects();
+      initKanbanFilterSelects();
       renderAll();
     }catch(err){
       console.error(err);
@@ -6579,8 +7496,9 @@ function updateStorageUsage(){
   const mbRecords = new Blob([JSON.stringify(RECORDS)]).size / (1024*1024);
   const mbEmp = new Blob([JSON.stringify(EMPLEADOS)]).size / (1024*1024);
   const mbCand = new Blob([JSON.stringify(CANDIDATOS)]).size / (1024*1024);
+  const mbNotif = new Blob([JSON.stringify(NOTIFICACIONES)]).size / (1024*1024);
   const mbSettings = new Blob([JSON.stringify(APP_SETTINGS)]).size / (1024*1024);
-  const totalMb = mbRecords + mbEmp + mbCand + mbSettings;
+  const totalMb = mbRecords + mbEmp + mbCand + mbNotif + mbSettings;
   const pct = Math.min(100, Math.round((totalMb / STORAGE_QUOTA_MB) * 100));
   const color = pct >= 85 ? "var(--red)" : (pct >= 65 ? "var(--amber)" : "var(--text-mute)");
   if(el){
@@ -6607,6 +7525,7 @@ function renderAll(){
   renderEmpleadosTable();
   renderSemaforoVencimientos();
   renderCandidatosTable();
+  renderNotifBell();
 }
 
 Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
@@ -6616,8 +7535,11 @@ Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   refreshAutoFields();
   checkStorageHealth();
   checkChartLibrary();
-  return Promise.all([loadRecords(), loadEmpleados(), loadCandidatos()]);
-}).then(()=>{
+  return Promise.all([loadRecords(), loadEmpleados(), loadCandidatos(), loadNotificaciones()]);
+}).then(async ()=>{
+  initKanbanFilterSelects();
+  checkVencimientosYGenerar();
+  await saveNotificaciones();
   renderAll();
   renderConfigView();
 });
