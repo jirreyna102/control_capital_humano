@@ -213,6 +213,33 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
 }
 .notif-filters button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
 
+/* ---------- BANNER DE NOTIFICACIONES URGENTES ---------- */
+#notif-banner{
+  background:linear-gradient(90deg, #FBE8E8 0%, #FFF9F0 100%);
+  border-left:4px solid var(--red, #C1433D);
+  padding:12px 16px;
+  margin:0 24px 16px;
+  border-radius:10px;
+  font-size:12.5px;
+  display:none;
+  gap:12px;
+  align-items:flex-start;
+}
+.banner-item{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  padding:4px 8px;
+  border-radius:6px;
+  background:rgba(255,255,255,0.6);
+  color:var(--text);
+  font-size:12px;
+  flex:0 1 auto;
+}
+.banner-item:hover{
+  background:rgba(255,255,255,0.9);
+}
+
 /* ---------- KANBAN ---------- */
 .kanban-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
 .kanban-toolbar select,.kanban-toolbar input[type="text"]{
@@ -469,6 +496,22 @@ tbody td.wrap{white-space:normal;min-width:180px;max-width:260px;}
 }
 .icon-btn:hover{background:var(--gray-soft);}
 .icon-btn.danger:hover{background:var(--red-soft);color:var(--red);border-color:var(--red-soft);}
+
+/* ---------- ESTADO VISUAL DE VENCIMIENTOS EN TABLA ---------- */
+tr.row-overdue{
+  background-color:#FBE8E8 !important;
+  border-left:4px solid var(--red, #C1433D) !important;
+}
+tr.row-overdue:hover{
+  background-color:#F8D5D5 !important;
+}
+tr.row-warning{
+  background-color:#FEF7E8 !important;
+  border-left:4px solid var(--amber, #D98C2B) !important;
+}
+tr.row-warning:hover{
+  background-color:#FCF0D4 !important;
+}
 
 /* ---------- COSTO INPUT ---------- */
 .cost-field{position:relative;}
@@ -1316,6 +1359,64 @@ select{
   padding:6px 10px;
 }
 
+/* Estilos para edición inline en modal */
+.dm-edit-mode .modal-kv{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:8px;
+}
+.dm-editable-field{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.dm-editable-field label{
+  font-size:11px;
+  font-weight:600;
+  color:var(--text-soft);
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+.dm-editable-field input,
+.dm-editable-field select,
+.dm-editable-field textarea{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:8px 10px;
+  font-size:13px;
+  font-family:'Inter',sans-serif;
+}
+.dm-editable-field textarea{
+  resize:vertical;
+  min-height:60px;
+}
+.dm-editable-field input:focus,
+.dm-editable-field select:focus,
+.dm-editable-field textarea:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(79,70,229,0.15);
+  outline:none;
+}
+.dm-modal-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.dm-action-buttons{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding:0 24px 22px;
+  flex-wrap:wrap;
+}
+.dm-action-buttons.edit-mode{
+  justify-content:space-between;
+}
+.dm-edit-btn{
+  margin-right:auto;
+}
+
 .recent-item{
   border-radius:8px;
   box-shadow:var(--shadow);
@@ -1805,6 +1906,8 @@ select:focus,textarea:focus{
       <h1 id="form-title">Nueva captura de actividad</h1>
       <p>Registra el caso con el máximo detalle posible. Los campos de riesgo y días transcurridos se calculan automáticamente.</p>
     </div>
+    
+    <div id="notif-banner"></div>
 
     <form id="hr-form" class="form-grid">
       <input type="hidden" id="f-id">
@@ -1989,6 +2092,7 @@ select:focus,textarea:focus{
 
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" id="btn-cancel-edit" style="display:none;">Cancelar edición</button>
+        <button type="button" class="btn btn-ghost" onclick="crearDesdePlantilla()">📋 Usar plantilla</button>
         <button type="button" class="btn btn-ghost" id="btn-reset">Limpiar</button>
         <button type="submit" class="btn btn-primary" id="btn-submit">Guardar captura</button>
       </div>
@@ -2005,8 +2109,13 @@ select:focus,textarea:focus{
   <!-- ======================= VISTA: DASHBOARD ======================= -->
   <div class="view" id="view-dashboard">
     <div class="page-head">
-      <h1>Dashboard Ejecutivo</h1>
-      <p>Vista consolidada en tiempo real de todas las operaciones capturadas.</p>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+        <div>
+          <h1>Dashboard Ejecutivo</h1>
+          <p>Vista consolidada en tiempo real de todas las operaciones capturadas.</p>
+        </div>
+        <button class="btn btn-ghost" onclick="abrirImportadorCSV()" style="white-space:nowrap;">📥 Importar CSV</button>
+      </div>
     </div>
 
     <div id="dash-empty" class="empty-state" style="display:none;">
@@ -2976,7 +3085,11 @@ select:focus,textarea:focus{
     <div class="modal-body" id="dm-body">
       <!-- contenido inyectado dinámicamente -->
     </div>
-    <div style="display:flex;justify-content:flex-end;gap:10px;padding:0 24px 22px;flex-wrap:wrap;">
+    <div class="dm-action-buttons" id="dm-action-buttons" style="display:flex;justify-content:flex-end;gap:10px;padding:0 24px 22px;flex-wrap:wrap;">
+      <button class="btn btn-ghost dm-edit-btn" id="dm-edit-btn" type="button">✎ Editar</button>
+      <button class="btn btn-ghost" id="dm-cancel-edit" type="button" style="display:none;">Cancelar</button>
+      <button class="btn btn-primary" id="dm-save-edit" type="button" style="display:none;">💾 Guardar cambios</button>
+      <button class="btn btn-ghost" id="dm-save-template-btn" onclick="guardarComoPlanilla()" type="button">📋 Guardar como plantilla</button>
       <button class="btn btn-ghost" id="dm-export-whatsapp" type="button">💬 Enviar por WhatsApp</button>
       <button class="btn btn-ghost" id="dm-export-ics" type="button">📅 Agregar a calendario</button>
       <button class="btn btn-ghost" id="dm-export-zip" type="button">⬇ Exportar caso (ZIP)</button>
@@ -3149,6 +3262,7 @@ const DIAS_SEMANA = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
    ESTADO DE APLICACIÓN
    ============================================================ */
 let RECORDS = [];
+let PLANTILLAS = []; // {id, nombre, descripcion, tipo, campos: {...}}
 let editingId = null;
 let chart2Mode = "tipo";
 let charts = {};
@@ -3164,6 +3278,7 @@ let EMPLEADOS = [];
 let editingEmpId = null;
 const STORAGE_KEY = "hr-records-v1";
 const EMPLEADOS_STORAGE_KEY = "hr-empleados-v1";
+const PLANTILLAS_STORAGE_KEY = "hr-plantillas-v1";
 const SETTINGS_STORAGE_KEY = "hr-settings-v1";
 const EVIDENCE_MAX_FILES = 4;
 const EVIDENCE_MAX_MB = 2;
@@ -3206,6 +3321,78 @@ let APP_SETTINGS = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 function uid(){
   return 'r_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,9);
 }
+
+/* ============================================================
+   HISTORIAL DE CAMBIOS / AUDITORÍA
+   ============================================================ */
+function registrarCambio(record, campoNombre, valorAnterior, valorNuevo){
+  if(!record.historialCambios) record.historialCambios = [];
+  if(valorAnterior === valorNuevo) return; // No registrar si no hay cambio
+  
+  record.historialCambios.push({
+    id: uid(),
+    timestamp: new Date().toISOString(),
+    campo: campoNombre,
+    valorAnterior: valorAnterior,
+    valorNuevo: valorNuevo,
+    usuario: "Sistema"
+  });
+}
+
+function detectarYRegistrarCambios(recordViejo, recordNuevo){
+  if(!recordViejo || !recordNuevo) return;
+  
+  const camposImportantes = [
+    {key: 'estado', label: 'Estado'},
+    {key: 'prioridad', label: 'Prioridad'},
+    {key: 'responsable', label: 'Responsable'},
+    {key: 'corresponsable', label: 'Corresponsable'},
+    {key: 'tema', label: 'Tema'},
+    {key: 'riesgo', label: 'Riesgo'},
+    {key: 'descripcion', label: 'Descripción'},
+    {key: 'resultado', label: 'Resultado'},
+    {key: 'costoFinal', label: 'Costo final'},
+    {key: 'fechaCierre', label: 'Fecha cierre'},
+    {key: 'accion', label: 'Acción realizada'}
+  ];
+  
+  camposImportantes.forEach(({key, label})=>{
+    const valAnterior = recordViejo[key];
+    const valNuevo = recordNuevo[key];
+    if(valAnterior !== valNuevo){
+      registrarCambio(recordNuevo, label, valAnterior, valNuevo);
+    }
+  });
+}
+
+function getHistorialHtml(historial){
+  if(!historial || historial.length === 0){
+    return '<span class="modal-empty">Sin cambios registrados para este caso.</span>';
+  }
+  
+  const sorted = [...historial].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+  return `<div style="max-height:300px;overflow-y:auto;border:1px solid var(--line);border-radius:9px;padding:10px;">
+    ${sorted.map(c=>{
+      const fecha = new Date(c.timestamp);
+      const fechaFormato = fecha.toLocaleString('es-MX', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+      });
+      const valAnt = c.valorAnterior !== null && c.valorAnterior !== undefined ? c.valorAnterior : '(vacío)';
+      const valNuev = c.valorNuevo !== null && c.valorNuevo !== undefined ? c.valorNuevo : '(vacío)';
+      return `<div style="padding:8px;border-bottom:1px solid var(--line);font-size:12px;">
+        <div style="color:var(--text-mute);font-size:10px;">${fechaFormato}</div>
+        <div style="color:var(--text-soft);font-weight:600;margin:3px 0;">${c.campo}</div>
+        <div style="display:flex;gap:8px;align-items:center;font-family:'IBM Plex Mono',monospace;">
+          <span style="background:var(--red-soft);color:var(--red);padding:2px 6px;border-radius:4px;font-size:11px;flex:1;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(String(valAnt))}</span>
+          <span style="color:var(--text-mute);">→</span>
+          <span style="background:var(--teal-soft);color:var(--teal);padding:2px 6px;border-radius:4px;font-size:11px;flex:1;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(String(valNuev))}</span>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
 function todayISO(){
   const d = new Date();
   return d.toISOString().slice(0,10);
@@ -3447,6 +3634,375 @@ async function saveEmpleados(){
   }
   updateStorageBanner();
 }
+
+/* ============================================================
+   PLANTILLAS DE CASOS
+   ============================================================ */
+async function loadPlantillas(){
+  try{
+    const data = await storageGetValue(PLANTILLAS_STORAGE_KEY);
+    PLANTILLAS = data ? JSON.parse(data) : [];
+  }catch(e){
+    console.error("Error cargando plantillas", e);
+    PLANTILLAS = [];
+  }
+}
+
+async function savePlantillas(){
+  try{
+    await storageSetValue(PLANTILLAS_STORAGE_KEY, JSON.stringify(PLANTILLAS));
+  }catch(e){
+    console.error("Error guardando plantillas", e);
+  }
+}
+
+function guardarComoPlanilla(){
+  if(!currentDetailId) return;
+  const r = RECORDS.find(x=>x.id===currentDetailId);
+  if(!r) return;
+  
+  const nombrePlanilla = prompt("Nombre de la plantilla (ej: 'Incidente RH Estándar'):");
+  if(!nombrePlanilla || nombrePlanilla.trim()==="") return;
+  
+  const plantilla = {
+    id: uid(),
+    nombre: nombrePlanilla.trim(),
+    descripcion: r.descripcion.substring(0, 100) + "...",
+    tipo: "caso",
+    creada: new Date().toISOString(),
+    campos: {
+      estado: r.estado || ESTADOS[0],
+      prioridad: r.prioridad || PRIORIDADES[2],
+      riesgo: r.riesgo || RIESGOS[0],
+      descripcion: r.descripcion || "",
+      comentarios: r.comentarios || "",
+      costoCategoria: r.costoCategoria || COSTO_CATEGORIAS[0],
+      accion: r.accion || "",
+      resultado: r.resultado || "",
+      responsable: r.responsable || "",
+      corresponsable: r.corresponsable || ""
+    }
+  };
+  
+  PLANTILLAS.push(plantilla);
+  savePlantillas();
+  showToast("✓ Plantilla guardada: " + nombrePlanilla);
+}
+
+function crearDesdePlantilla(){
+  if(PLANTILLAS.length === 0){
+    alert("No hay plantillas disponibles. Guarda un caso como plantilla primero.");
+    return;
+  }
+  
+  const opcionesHtml = PLANTILLAS.map((p, idx) => 
+    `<option value="${idx}">${escapeHtml(p.nombre)}</option>`
+  ).join("");
+  
+  const modal = `
+    <div class="modal" style="display:flex;align-items:center;justify-content:center;">
+      <div class="modal-content" style="max-width:400px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+          <h3>Crear desde plantilla</h3>
+          <button class="btn-icon" onclick="this.closest('.modal').remove();" style="background:none;border:none;cursor:pointer;font-size:20px;">✕</button>
+        </div>
+        <select id="plantilla-selector" style="width:100%;padding:8px;margin-bottom:15px;">
+          ${opcionesHtml}
+        </select>
+        <div style="font-size:12px;color:var(--text-mute);margin-bottom:15px;" id="plantilla-desc"></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn-primary" onclick="aplicarPlantilla()">Usar plantilla</button>
+          <button class="btn-ghost" onclick="this.closest('.modal').remove();">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML("beforeend", modal);
+  
+  const selector = document.getElementById("plantilla-selector");
+  const desc = document.getElementById("plantilla-desc");
+  
+  const actualizar = () => {
+    const idx = parseInt(selector.value);
+    if(PLANTILLAS[idx]) desc.textContent = PLANTILLAS[idx].descripcion;
+  };
+  
+  selector.addEventListener("change", actualizar);
+  actualizar();
+}
+
+/* ============================================================
+   IMPORTAR CASOS DESDE CSV
+   ============================================================ */
+function abrirImportadorCSV(){
+  const modal = `
+    <div class="modal" style="display:flex;align-items:center;justify-content:center;">
+      <div class="modal-content" style="max-width:500px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+          <h3>Importar casos desde CSV</h3>
+          <button class="btn-icon" onclick="this.closest('.modal').remove();" style="background:none;border:none;cursor:pointer;font-size:20px;">✕</button>
+        </div>
+        
+        <div style="margin-bottom:15px;padding:12px;background:var(--blue-soft);border-radius:8px;font-size:12px;color:var(--text);">
+          <b>Formato esperado:</b> tema, estado, prioridad, riesgo, responsable, descripcion, fechaCompromiso, tipo, area, macro
+        </div>
+        
+        <div style="margin-bottom:15px;">
+          <button class="btn-ghost" onclick="descargarPlantillaCSV()" style="width:100%;">📥 Descargar plantilla CSV</button>
+        </div>
+        
+        <div class="dropzone" id="csv-dropzone" style="margin-bottom:15px;">
+          <div class="dz-icon">📊</div>
+          <div class="dz-text">Arrastra tu archivo CSV aquí o haz clic</div>
+          <div class="dz-hint">Solo archivos .csv · máximo 5 MB</div>
+        </div>
+        
+        <input type="file" id="csv-input" accept=".csv" style="display:none;">
+        
+        <div style="display:flex;gap:10px;">
+          <button class="btn-ghost" onclick="this.closest('.modal').remove();">Cancelar</button>
+          <button class="btn-primary" id="btn-preview-csv" style="display:none;" onclick="mostrarPreviewCSV()">Revisar e importar</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML("beforeend", modal);
+  
+  const dropzone = document.getElementById("csv-dropzone");
+  const input = document.getElementById("csv-input");
+  
+  dropzone.addEventListener("click", () => input.click());
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.style.background = "#E1E7F6";
+  });
+  dropzone.addEventListener("dragleave", () => {
+    dropzone.style.background = "";
+  });
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.style.background = "";
+    if(e.dataTransfer.files[0]) procesarArchivoCSV(e.dataTransfer.files[0]);
+  });
+  
+  input.addEventListener("change", (e) => {
+    if(e.target.files[0]) procesarArchivoCSV(e.target.files[0]);
+  });
+}
+
+window.csvPendingParse = null;
+
+function procesarArchivoCSV(file){
+  if(!file.name.endsWith(".csv")){
+    alert("Solo se aceptan archivos .csv");
+    return;
+  }
+  if(file.size > 5 * 1024 * 1024){
+    alert("El archivo es demasiado grande (máximo 5 MB)");
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const csv = e.target.result;
+    const lineas = csv.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+    
+    if(lineas.length < 2){
+      alert("El archivo CSV está vacío o tiene formato inválido");
+      return;
+    }
+    
+    window.csvPendingParse = { cabecera: lineas[0], datos: lineas.slice(1), nombre: file.name };
+    document.getElementById("btn-preview-csv").style.display = "inline-block";
+    showToast("✓ Archivo cargado: " + lineas.length + " filas");
+  };
+  reader.readAsText(file);
+}
+
+function mostrarPreviewCSV(){
+  if(!window.csvPendingParse) return;
+  
+  const { cabecera, datos, nombre } = window.csvPendingParse;
+  const columnas = cabecera.split(",").map(c => c.trim().toLowerCase());
+  
+  const registros = datos.map((linea, idx) => {
+    const valores = linea.split(",");
+    const obj = {};
+    columnas.forEach((col, i) => {
+      obj[col] = (valores[i] || "").trim();
+    });
+    return obj;
+  });
+  
+  // Preview modal
+  const previewHtml = `
+    <div class="modal" style="display:flex;align-items:center;justify-content:center;">
+      <div class="modal-content" style="max-width:600px;max-height:80vh;overflow-y:auto;">
+        <h3 style="margin-top:0;">Preview de importación</h3>
+        <p style="color:var(--text-mute);font-size:12px;">
+          Se importarán <b>${registros.length}</b> casos de: <i>${nombre}</i>
+        </p>
+        
+        <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:15px;">
+          <thead style="background:#F3F4F8;border-bottom:2px solid var(--line);">
+            <tr>
+              <th style="padding:8px;text-align:left;">Tema</th>
+              <th style="padding:8px;text-align:left;">Estado</th>
+              <th style="padding:8px;text-align:left;">Prioridad</th>
+              <th style="padding:8px;text-align:left;">Responsable</th>
+              <th style="padding:8px;text-align:left;">Validación</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${registros.map((r, idx) => {
+              const errores = [];
+              if(!r.tema || r.tema === "") errores.push("Sin tema");
+              if(!r.estado || !ESTADOS.includes(r.estado)) errores.push("Estado inválido");
+              if(!r.prioridad || !PRIORIDADES.includes(r.prioridad)) errores.push("Prioridad inválida");
+              
+              const esValido = errores.length === 0;
+              return `<tr style="border-bottom:1px solid var(--line);background:${esValido ? "#fff" : "#FBE8E8"};">
+                <td style="padding:8px;">${escapeHtml((r.tema || "").substring(0, 20))}</td>
+                <td style="padding:8px;">${escapeHtml(r.estado || "")}</td>
+                <td style="padding:8px;">${escapeHtml(r.prioridad || "")}</td>
+                <td style="padding:8px;">${escapeHtml((r.responsable || "").substring(0, 15))}</td>
+                <td style="padding:8px;color:${esValido ? "var(--teal)" : "var(--red)"};">
+                  ${esValido ? "✓" : "✕ " + errores[0]}
+                </td>
+              </tr>`;
+            }).join("")}
+          </tbody>
+        </table>
+        
+        <div style="display:flex;gap:10px;">
+          <button class="btn-ghost" onclick="this.closest('.modal').remove();">Cancelar</button>
+          <button class="btn-primary" onclick="confirmarImportacionCSV()">📥 Importar ahora</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Cerrar modal anterior
+  document.querySelector(".modal").remove();
+  document.body.insertAdjacentHTML("beforeend", previewHtml);
+}
+
+function confirmarImportacionCSV(){
+  if(!window.csvPendingParse) return;
+  
+  const { cabecera, datos } = window.csvPendingParse;
+  const columnas = cabecera.split(",").map(c => c.trim().toLowerCase());
+  
+  let importados = 0;
+  let errores = 0;
+  
+  datos.forEach((linea) => {
+    if(linea.trim() === "") return;
+    
+    const valores = linea.split(",");
+    const obj = {};
+    columnas.forEach((col, i) => {
+      obj[col] = (valores[i] || "").trim();
+    });
+    
+    // Validar campos requeridos
+    if(!obj.tema || obj.tema === "") {
+      errores++;
+      return;
+    }
+    if(!obj.estado || !ESTADOS.includes(obj.estado)) obj.estado = ESTADOS[0];
+    if(!obj.prioridad || !PRIORIDADES.includes(obj.prioridad)) obj.prioridad = PRIORIDADES[2];
+    if(!obj.riesgo || !RIESGOS.includes(obj.riesgo)) obj.riesgo = RIESGOS[0];
+    
+    // Crear registro
+    const newRecord = {
+      id: uid(),
+      fecha: obj.fecha || todayISO(),
+      tema: obj.tema,
+      tipo: obj.tipo || TIPOS_ACTIVIDAD[0],
+      area: obj.area || AREAS[0],
+      macro: obj.macro || MACROPROCESOS[AREAS[0]][0],
+      descripcion: obj.descripcion || "",
+      responsable: obj.responsable || "",
+      corresponsable: obj.corresponsable || "",
+      solicitante: obj.solicitante || "",
+      departamento: obj.departamento || DEPARTAMENTOS[0],
+      sucursal: obj.sucursal || SUCURSALES[0],
+      estado: obj.estado,
+      prioridad: obj.prioridad,
+      riesgo: obj.riesgo,
+      fechaCompromiso: obj.fechacompromiso || null,
+      comentarios: obj.comentarios || "",
+      accion: obj.accion || "",
+      resultado: obj.resultado || "",
+      fechaCierre: obj.fechacierre || null,
+      costoFinal: obj.costo ? parseFloat(obj.costo) : null,
+      costoCategoria: obj.costocategoria || COSTO_CATEGORIAS[0],
+      costoJustificacion: obj.costojust || "",
+      evidencia: [],
+      evidenciaCount: 0,
+      avances: [],
+      nivelRiesgo: "Bajo",
+      ultimaEdicion: new Date().toISOString(),
+      historialCambios: []
+    };
+    
+    RECORDS.push(newRecord);
+    importados++;
+  });
+  
+  // Guardar y notificar
+  saveRecords().then(() => {
+    document.querySelector(".modal").remove();
+    showToast(`✓ ${importados} casos importados${errores > 0 ? ` (${errores} con errores)` : ""}`);
+    window.csvPendingParse = null;
+    renderAll();
+  });
+}
+
+function descargarPlantillaCSV(){
+  const header = "tema,estado,prioridad,riesgo,responsable,descripcion,fechaCompromiso,tipo,area,macro";
+  const datos = [
+    "Auditoría de nómina,No Iniciado,Alta,Riesgo Legal,Juan Pérez,Revisar cálculos salariales del mes,2024-12-31,Auditoría,Recursos Humanos,Nómina",
+    "Incidencia de beneficiarios,No Iniciado,Media,Riesgo Operativo,María García,Seguimiento a reclamo de beneficiarios,2024-12-15,Seguimiento,Recursos Humanos,Beneficiarios"
+  ];
+  const csv = header + "\n" + datos.join("\n");
+  
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "plantilla_casos.csv";
+  link.click();
+}
+
+
+function aplicarPlantilla(){
+  const selector = document.getElementById("plantilla-selector");
+  if(!selector) return;
+  
+  const idx = parseInt(selector.value);
+  const plantilla = PLANTILLAS[idx];
+  if(!plantilla) return;
+  
+  // Rellenar formulario nuevo caso con datos de plantilla
+  document.getElementById("estado").value = plantilla.campos.estado;
+  document.getElementById("prioridad").value = plantilla.campos.prioridad;
+  document.getElementById("riesgo").value = plantilla.campos.riesgo;
+  document.getElementById("descripcion").value = plantilla.campos.descripcion;
+  document.getElementById("comentarios").value = plantilla.campos.comentarios;
+  document.getElementById("costocat").value = plantilla.campos.costoCategoria;
+  document.getElementById("accion").value = plantilla.campos.accion;
+  document.getElementById("resultado").value = plantilla.campos.resultado;
+  document.getElementById("responsable").value = plantilla.campos.responsable;
+  document.getElementById("corresponsable").value = plantilla.campos.corresponsable;
+  
+  // Cerrar modal
+  document.querySelector(".modal").remove();
+  showToast("✓ Plantilla aplicada: " + plantilla.nombre);
+}
+
 /* NOTA DE ARQUITECTURA: la evidencia se guarda embebida dentro de cada
    registro (record.evidencia) y viaja en la misma llave "hr-records-v1"
    en vez de usar una llave independiente por registro. Esto evita
@@ -5049,6 +5605,40 @@ function checkVencimientosYGenerar(){
       });
     }
   });
+  
+  // Renderizar banner de notificaciones urgentes
+  renderNotifBanner();
+}
+
+function renderNotifBanner(){
+  const urgentes = NOTIFICACIONES.filter(n => !n.archived && (n.severity === "critica" || n.severity === "vencida"));
+  const banner = document.getElementById("notif-banner");
+  if(!banner) return;
+  
+  if(urgentes.length === 0){
+    banner.style.display = "none";
+    return;
+  }
+  
+  banner.style.display = "block";
+  const items = urgentes.slice(0, 3).map(n => {
+    const icon = n.severity === "vencida" ? "⚠️" : "🔴";
+    return `<div class="banner-item" onclick="notifOpenRelated('${n.id}')" style="cursor:pointer;">
+      ${icon} <b>${n.title}</b>
+    </div>`;
+  }).join("");
+  
+  let html = `<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    ${items}`;
+  
+  if(urgentes.length > 3){
+    html += `<span style="color:var(--text-mute);font-size:11px;">+${urgentes.length - 3} más</span>`;
+  }
+  
+  html += `<button onclick="document.getElementById('notif-banner').style.display='none';" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:16px;padding:0;">✕</button>
+  </div>`;
+  
+  banner.innerHTML = html;
 }
 
 /* ---- render: campanita + dropdown + bandeja completa ---- */
@@ -5769,9 +6359,24 @@ function renderTable(){
     const dias = calcDias(r);
     const costoTxt = (r.costoFinal != null && r.costoFinal !== "") ? money(r.costoFinal) : "—";
     const evTxt = r.evidenciaCount ? `📎 ${r.evidenciaCount}` : "—";
-    return `<tr>
+    
+    // Determinar si el caso está vencido o próximo a vencer
+    let rowClass = "";
+    let alertIcon = "";
+    if(ESTADOS_ACTIVOS.includes(r.estado) && r.fechaCompromiso){
+      const diasHasta = daysUntil(r.fechaCompromiso);
+      if(diasHasta < 0){
+        rowClass = "row-overdue";
+        alertIcon = "⚠️";
+      } else if(diasHasta <= 3){
+        rowClass = "row-warning";
+        alertIcon = "⏰";
+      }
+    }
+    
+    return `<tr class="${rowClass}">
       <td>${r.fecha}</td>
-      <td class="wrap"><b>${escapeHtml(r.tema)}</b></td>
+      <td class="wrap"><b>${escapeHtml(r.tema)} ${alertIcon}</b></td>
       <td>${escapeHtml(r.tipo)}</td>
       <td class="wrap">${escapeHtml(r.area)}</td>
       <td class="wrap">${escapeHtml(r.macro)}</td>
@@ -5803,95 +6408,405 @@ function renderTable(){
 /* ============================================================
    MODAL DE DETALLE
    ============================================================ */
+let dmEditMode = false;
+let dmEditData = {};
+let dmPendingEvidence = []; // evidencia temporal en modo edición del modal
+
+// Funciones auxiliares para obtener opciones en modo edición
+function getEstadoOptions(){ return ESTADOS; }
+function getPrioridadOptions(){ return PRIORIDADES; }
+function getRiesgoOptions(){ return RIESGOS; }
+function getCostoCatOptions(){ return COSTO_CATEGORIAS; }
+
+function renderDetailEvidenceGrid(){
+  const grid = document.getElementById("dm-evidence-grid");
+  if(!grid) return;
+  
+  grid.innerHTML = dmPendingEvidence.map(f=>{
+    const inner = isImageType(f.type)
+      ? `<img src="${f.dataUrl}" alt="${escapeHtml(f.name)}">`
+      : `<div class="file-icon">${fileIconFor(f.type)}</div><div class="file-name">${escapeHtml(f.name)}</div>`;
+    return `<div class="evidence-thumb">
+      <button type="button" class="ev-remove" onclick="removeDetailEvidence('${f.id}')" title="Quitar">✕</button>
+      ${inner}
+    </div>`;
+  }).join("");
+  
+  const note = document.getElementById("dm-evidence-note");
+  if(note){
+    note.textContent = dmPendingEvidence.length
+      ? `${dmPendingEvidence.length} de ${EVIDENCE_MAX_FILES} archivos adjuntos`
+      : "";
+  }
+}
+
+function removeDetailEvidence(id){
+  dmPendingEvidence = dmPendingEvidence.filter(f=>f.id!==id);
+  renderDetailEvidenceGrid();
+}
+
+async function handleDetailEvidenceInput(files){
+  if(!files || files.length === 0) return;
+  
+  for(const file of files){
+    if(dmPendingEvidence.length >= EVIDENCE_MAX_FILES){
+      showToast(`⚠ Máximo ${EVIDENCE_MAX_FILES} archivos por caso`);
+      break;
+    }
+    if(file.size > EVIDENCE_MAX_MB * 1024 * 1024){
+      showToast(`⚠ ${escapeHtml(file.name)} excede ${EVIDENCE_MAX_MB}MB`);
+      continue;
+    }
+    
+    let dataUrl;
+    try{
+      if(isImageType(file.type)){
+        dataUrl = await compressImage(file);
+      } else {
+        dataUrl = await readAsDataUrl(file);
+      }
+      dmPendingEvidence.push({
+        id: uid(),
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        dataUrl: dataUrl
+      });
+    } catch(err){
+      console.error("Error procesando archivo", err);
+      showToast(`⚠ Error al procesar ${escapeHtml(file.name)}`);
+    }
+  }
+  renderDetailEvidenceGrid();
+}
+
+async function renderDetailContent(r, editMode=false){
+  const dias = calcDias(r);
+  const costoTxt = (r.costoFinal != null && r.costoFinal !== "") ? money(r.costoFinal) : "No aplica";
+  
+  if(editMode){
+    dmEditData = JSON.parse(JSON.stringify(r)); // copia profunda para edición
+    document.getElementById("dm-body").innerHTML = `
+      <div class="modal-section">
+        <h4>Información del caso</h4>
+        <div class="dm-modal-grid">
+          <div class="dm-editable-field">
+            <label>Estado</label>
+            <select id="dm-edit-estado" value="${r.estado}">
+              ${getEstadoOptions().map(e=>`<option value="${e}" ${e===r.estado?'selected':''}>${e}</option>`).join('')}
+            </select>
+          </div>
+          <div class="dm-editable-field">
+            <label>Prioridad</label>
+            <select id="dm-edit-prioridad" value="${r.prioridad}">
+              ${getPrioridadOptions().map(p=>`<option value="${p}" ${p===r.prioridad?'selected':''}>${p}</option>`).join('')}
+            </select>
+          </div>
+          <div class="dm-editable-field">
+            <label>Responsable</label>
+            <input type="text" id="dm-edit-responsable" value="${escapeHtml(r.responsable)}">
+          </div>
+          <div class="dm-editable-field">
+            <label>Corresponsable</label>
+            <input type="text" id="dm-edit-corresponsable" value="${escapeHtml(r.corresponsable || '')}">
+          </div>
+          <div class="dm-editable-field">
+            <label>Solicitante</label>
+            <input type="text" id="dm-edit-solicitante" value="${escapeHtml(r.solicitante)}">
+          </div>
+          <div class="dm-editable-field">
+            <label>Riesgo</label>
+            <select id="dm-edit-riesgo" value="${r.riesgo}">
+              ${getRiesgoOptions().map(rg=>`<option value="${rg}" ${rg===r.riesgo?'selected':''}>${rg}</option>`).join('')}
+            </select>
+          </div>
+          <div class="dm-editable-field">
+            <label>Fecha de inicio</label>
+            <input type="date" id="dm-edit-fecha" value="${r.fecha}">
+          </div>
+          <div class="dm-editable-field">
+            <label>Fecha compromiso</label>
+            <input type="date" id="dm-edit-fechacompromiso" value="${r.fechaCompromiso || ''}">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Descripción y comentarios</h4>
+        <div class="dm-editable-field">
+          <label>Descripción</label>
+          <textarea id="dm-edit-descripcion">${escapeHtml(r.descripcion || '')}</textarea>
+        </div>
+        <div class="dm-editable-field">
+          <label>Comentarios y observaciones</label>
+          <textarea id="dm-edit-comentarios">${escapeHtml(r.comentarios || '')}</textarea>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Resolución del caso</h4>
+        <div class="dm-modal-grid">
+          <div class="dm-editable-field">
+            <label>Fecha de cierre</label>
+            <input type="date" id="dm-edit-fechacierre" value="${r.fechaCierre || ''}">
+          </div>
+          <div class="dm-editable-field">
+            <label>Costo final</label>
+            <input type="number" id="dm-edit-costo" min="0" step="0.01" value="${r.costoFinal || ''}">
+          </div>
+        </div>
+        <div class="dm-modal-grid">
+          <div class="dm-editable-field">
+            <label>Categoría de costo</label>
+            <select id="dm-edit-costocat">
+              ${getCostoCatOptions().map(c=>`<option value="${c}" ${c===r.costoCategoria?'selected':''}>${c}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="dm-editable-field">
+          <label>Acción realizada</label>
+          <textarea id="dm-edit-accion">${escapeHtml(r.accion || '')}</textarea>
+        </div>
+        <div class="dm-editable-field">
+          <label>Resultado obtenido</label>
+          <textarea id="dm-edit-resultado">${escapeHtml(r.resultado || '')}</textarea>
+        </div>
+        <div class="dm-editable-field">
+          <label>Justificación del costo</label>
+          <textarea id="dm-edit-costojust">${escapeHtml(r.costoJustificacion || '')}</textarea>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Evidencia adjunta</h4>
+        <div class="dropzone" id="dm-dropzone" style="margin-bottom:14px;">
+          <div class="dz-icon">📎</div>
+          <div class="dz-text">Haz clic para adjuntar archivos</div>
+          <div class="dz-hint">Imágenes, PDF, Word o Excel · máx. ${EVIDENCE_MAX_MB} MB por archivo · hasta ${EVIDENCE_MAX_FILES} archivos</div>
+        </div>
+        <input type="file" id="dm-evidence-input" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;">
+        <div class="evidence-grid" id="dm-evidence-grid"></div>
+        <div class="evidence-count-note" id="dm-evidence-note"></div>
+      </div>
+    `;
+  } else {
+    document.getElementById("dm-body").innerHTML = `
+      <div class="modal-section">
+        <h4>Resumen</h4>
+        <div class="modal-grid">
+          <div class="modal-kv"><div class="k">Estado</div><div class="v">${pillEstado(r.estado)}</div></div>
+          <div class="modal-kv"><div class="k">Prioridad</div><div class="v">${pillPrioridad(r.prioridad)}</div></div>
+          <div class="modal-kv"><div class="k">Responsable</div><div class="v">${escapeHtml(r.responsable)}</div></div>
+          <div class="modal-kv"><div class="k">Corresponsable</div><div class="v">${escapeHtml(r.corresponsable) || "—"}</div></div>
+          <div class="modal-kv"><div class="k">Solicitante</div><div class="v">${escapeHtml(r.solicitante)}</div></div>
+          <div class="modal-kv"><div class="k">Departamento / Sucursal</div><div class="v">${escapeHtml(r.departamento)} · ${escapeHtml(r.sucursal)}</div></div>
+          <div class="modal-kv"><div class="k">Riesgo</div><div class="v">${escapeHtml(r.riesgo)} · ${pillNivel(r.nivelRiesgo)}</div></div>
+          <div class="modal-kv"><div class="k">Fecha de inicio</div><div class="v">${r.fecha}</div></div>
+          <div class="modal-kv"><div class="k">Fecha compromiso</div><div class="v">${r.fechaCompromiso || "—"}${isOverdue(r) ? ' <span class="pill" style="background:#C1433D22;color:#C1433D;">Vencida</span>' : ""}</div></div>
+          <div class="modal-kv"><div class="k">Días transcurridos</div><div class="v">${dias}</div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Descripción</h4>
+        <div class="modal-text">${escapeHtml(r.descripcion) || "—"}</div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Historial de Avances</h4>
+        ${avancesReadOnlyHtml(r.avances)}
+      </div>
+
+      <div class="modal-section">
+        <h4>Resolución del caso</h4>
+        <div class="modal-grid" style="margin-bottom:10px;">
+          <div class="modal-kv"><div class="k">Fecha de cierre</div><div class="v">${r.fechaCierre || "—"}</div></div>
+          <div class="modal-kv"><div class="k">Costo final</div><div class="v">${costoTxt}</div></div>
+          <div class="modal-kv"><div class="k">Categoría de costo</div><div class="v">${escapeHtml(r.costoCategoria) || "No aplica"}</div></div>
+        </div>
+        <div class="modal-text" style="margin-bottom:8px;"><b>Acción realizada:</b><br>${escapeHtml(r.accion) || "—"}</div>
+        <div class="modal-text" style="margin-bottom:8px;"><b>Resultado obtenido:</b><br>${escapeHtml(r.resultado) || "—"}</div>
+        <div class="modal-text"><b>Justificación del costo:</b><br>${escapeHtml(r.costoJustificacion) || "—"}</div>
+      </div>
+
+      ${r.comentarios ? `<div class="modal-section"><h4>Comentarios y observaciones</h4><div class="modal-text">${escapeHtml(r.comentarios)}</div></div>` : ""}
+
+      <div class="modal-section">
+        <h4>Evidencia adjunta</h4>
+        <div id="dm-evidence"></div>
+      </div>
+
+      <div class="modal-section">
+        <h4>📋 Historial de cambios</h4>
+        <div style="font-size:11px;color:var(--text-mute);margin-bottom:10px;">
+          Última edición: <b>${r.ultimaEdicion ? new Date(r.ultimaEdicion).toLocaleString('es-MX') : 'Nunca'}</b>
+        </div>
+        ${getHistorialHtml(r.historialCambios)}
+      </div>
+    `;
+  }
+}
+
 async function openDetail(id){
   const r = RECORDS.find(x=>x.id===id);
   if(!r) return;
   currentDetailId = id;
+  dmEditMode = false;
   const modal = document.getElementById("detail-modal");
   document.getElementById("dm-title").textContent = r.tema;
   document.getElementById("dm-sub").textContent = `${r.area} · ${r.macro}`;
 
-  const dias = calcDias(r);
-  const costoTxt = (r.costoFinal != null && r.costoFinal !== "") ? money(r.costoFinal) : "No aplica";
-
-  document.getElementById("dm-body").innerHTML = `
-    <div class="modal-section">
-      <h4>Resumen</h4>
-      <div class="modal-grid">
-        <div class="modal-kv"><div class="k">Estado</div><div class="v">${pillEstado(r.estado)}</div></div>
-        <div class="modal-kv"><div class="k">Prioridad</div><div class="v">${pillPrioridad(r.prioridad)}</div></div>
-        <div class="modal-kv"><div class="k">Responsable</div><div class="v">${escapeHtml(r.responsable)}</div></div>
-        <div class="modal-kv"><div class="k">Corresponsable</div><div class="v">${escapeHtml(r.corresponsable) || "—"}</div></div>
-        <div class="modal-kv"><div class="k">Solicitante</div><div class="v">${escapeHtml(r.solicitante)}</div></div>
-        <div class="modal-kv"><div class="k">Departamento / Sucursal</div><div class="v">${escapeHtml(r.departamento)} · ${escapeHtml(r.sucursal)}</div></div>
-        <div class="modal-kv"><div class="k">Riesgo</div><div class="v">${escapeHtml(r.riesgo)} · ${pillNivel(r.nivelRiesgo)}</div></div>
-        <div class="modal-kv"><div class="k">Fecha de inicio</div><div class="v">${r.fecha}</div></div>
-        <div class="modal-kv"><div class="k">Fecha compromiso</div><div class="v">${r.fechaCompromiso || "—"}${isOverdue(r) ? ' <span class="pill" style="background:#C1433D22;color:#C1433D;">Vencida</span>' : ""}</div></div>
-        <div class="modal-kv"><div class="k">Días transcurridos</div><div class="v">${dias}</div></div>
-      </div>
-    </div>
-
-    <div class="modal-section">
-      <h4>Descripción</h4>
-      <div class="modal-text">${escapeHtml(r.descripcion) || "—"}</div>
-    </div>
-
-    <div class="modal-section">
-      <h4>Historial de Avances</h4>
-      ${avancesReadOnlyHtml(r.avances)}
-    </div>
-
-    <div class="modal-section">
-      <h4>Resolución del caso</h4>
-      <div class="modal-grid" style="margin-bottom:10px;">
-        <div class="modal-kv"><div class="k">Fecha de cierre</div><div class="v">${r.fechaCierre || "—"}</div></div>
-        <div class="modal-kv"><div class="k">Costo final</div><div class="v">${costoTxt}</div></div>
-        <div class="modal-kv"><div class="k">Categoría de costo</div><div class="v">${escapeHtml(r.costoCategoria) || "No aplica"}</div></div>
-      </div>
-      <div class="modal-text" style="margin-bottom:8px;"><b>Acción realizada:</b><br>${escapeHtml(r.accion) || "—"}</div>
-      <div class="modal-text" style="margin-bottom:8px;"><b>Resultado obtenido:</b><br>${escapeHtml(r.resultado) || "—"}</div>
-      <div class="modal-text"><b>Justificación del costo:</b><br>${escapeHtml(r.costoJustificacion) || "—"}</div>
-    </div>
-
-    ${r.comentarios ? `<div class="modal-section"><h4>Comentarios y observaciones</h4><div class="modal-text">${escapeHtml(r.comentarios)}</div></div>` : ""}
-
-    <div class="modal-section">
-      <h4>Evidencia adjunta</h4>
-      <div id="dm-evidence"></div>
-    </div>
-  `;
-
+  await renderDetailContent(r, false);
+  
   modal.classList.add("show");
+  updateDetailActionButtons();
 
   const files = r.evidencia || [];
   currentDetailEvidence = files;
   const evWrap = document.getElementById("dm-evidence");
-  if(files.length === 0){
+  if(files && files.length > 0){
+    evWrap.innerHTML = `<div class="modal-evidence-grid">${files.map(f=>{
+      const preview = isImageType(f.type)
+        ? `<img src="${f.dataUrl}" alt="${escapeHtml(f.name)}">`
+        : `<div class="mev-file">${fileIconFor(f.type)}</div>`;
+      return `<div class="modal-evidence-item">
+        ${preview}
+        <div class="mev-name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</div>
+        <div class="mev-actions">
+          <button type="button" onclick="previewEvidence('${f.id}')">👁 Ver</button>
+          <button type="button" onclick="downloadEvidenceItem('${f.id}')">⬇</button>
+        </div>
+      </div>`;
+    }).join("")}</div>`;
+  } else {
     evWrap.innerHTML = `<span class="modal-empty">No hay evidencia adjunta para este registro.</span>`;
-    return;
   }
-  evWrap.innerHTML = `<div class="modal-evidence-grid">${files.map(f=>{
-    const preview = isImageType(f.type)
-      ? `<img src="${f.dataUrl}" alt="${escapeHtml(f.name)}">`
-      : `<div class="mev-file">${fileIconFor(f.type)}</div>`;
-    return `<div class="modal-evidence-item">
-      ${preview}
-      <div class="mev-name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</div>
-      <div class="mev-actions">
-        <button type="button" onclick="previewEvidence('${f.id}')">👁 Ver</button>
-        <button type="button" onclick="downloadEvidenceItem('${f.id}')">⬇</button>
-      </div>
-    </div>`;
-  }).join("")}</div>`;
+}
+
+function updateDetailActionButtons(){
+  const editBtn = document.getElementById("dm-edit-btn");
+  const cancelBtn = document.getElementById("dm-cancel-edit");
+  const saveBtn = document.getElementById("dm-save-edit");
+  const actionBtns = document.getElementById("dm-action-buttons");
+  
+  if(dmEditMode){
+    editBtn.style.display = "none";
+    cancelBtn.style.display = "inline-block";
+    saveBtn.style.display = "inline-block";
+    actionBtns.classList.add("edit-mode");
+  } else {
+    editBtn.style.display = "inline-block";
+    cancelBtn.style.display = "none";
+    saveBtn.style.display = "none";
+    actionBtns.classList.remove("edit-mode");
+  }
+}
+
+async function toggleDetailEdit(){
+  if(!currentDetailId) return;
+  
+  dmEditMode = !dmEditMode;
+  const r = RECORDS.find(x=>x.id===currentDetailId);
+  if(!r) return;
+  
+  await renderDetailContent(r, dmEditMode);
+  updateDetailActionButtons();
+  
+  // Si entra en modo edición, configurar evidencia y dropzone
+  if(dmEditMode){
+    dmPendingEvidence = (r.evidencia || []).map(f=>({...f}));
+    renderDetailEvidenceGrid();
+    
+    // Configurar dropzone
+    const dropzone = document.getElementById("dm-dropzone");
+    const input = document.getElementById("dm-evidence-input");
+    
+    if(dropzone && input){
+      dropzone.addEventListener("click", ()=>input.click());
+      dropzone.addEventListener("dragover", (e)=>{
+        e.preventDefault();
+        dropzone.classList.add("drag");
+      });
+      dropzone.addEventListener("dragleave", ()=>dropzone.classList.remove("drag"));
+      dropzone.addEventListener("drop", (e)=>{
+        e.preventDefault();
+        dropzone.classList.remove("drag");
+        handleDetailEvidenceInput(e.dataTransfer.files);
+      });
+      input.addEventListener("change", (e)=>handleDetailEvidenceInput(e.target.files));
+    }
+  }
+}
+
+async function saveDetailEdit(){
+  if(!currentDetailId) return;
+  
+  const r = RECORDS.find(x=>x.id===currentDetailId);
+  if(!r) return;
+  
+  // Hacer copia del registro antes de cambios para auditoría
+  const recordAnterior = JSON.parse(JSON.stringify(r));
+
+  // recopilar datos editados
+  r.estado = document.getElementById("dm-edit-estado").value;
+  r.prioridad = document.getElementById("dm-edit-prioridad").value;
+  r.responsable = document.getElementById("dm-edit-responsable").value;
+  r.corresponsable = document.getElementById("dm-edit-corresponsable").value;
+  r.solicitante = document.getElementById("dm-edit-solicitante").value;
+  r.riesgo = document.getElementById("dm-edit-riesgo").value;
+  r.fecha = document.getElementById("dm-edit-fecha").value;
+  r.fechaCompromiso = document.getElementById("dm-edit-fechacompromiso").value || null;
+  r.descripcion = document.getElementById("dm-edit-descripcion").value;
+  r.comentarios = document.getElementById("dm-edit-comentarios").value;
+  r.fechaCierre = document.getElementById("dm-edit-fechacierre").value || null;
+  r.costoFinal = document.getElementById("dm-edit-costo").value ? parseFloat(document.getElementById("dm-edit-costo").value) : null;
+  r.costoCategoria = document.getElementById("dm-edit-costocat").value;
+  r.accion = document.getElementById("dm-edit-accion").value;
+  r.resultado = document.getElementById("dm-edit-resultado").value;
+  r.costoJustificacion = document.getElementById("dm-edit-costojust").value;
+  
+  // recalcular nivelRiesgo
+  const riesgoConfig = CONFIG.riesgosNiveles[r.riesgo] || { valor: 0, nivel: "Bajo" };
+  r.nivelRiesgo = riesgoConfig.nivel;
+  
+  // guardar evidencia actualizada
+  r.evidencia = dmPendingEvidence.map(f=>({id:f.id, name:f.name, type:f.type, size:f.size, dataUrl:f.dataUrl}));
+  r.evidenciaCount = dmPendingEvidence.length;
+  
+  // registrar cambios en auditoría
+  r.ultimaEdicion = new Date().toISOString();
+  detectarYRegistrarCambios(recordAnterior, r);
+
+  await saveRecords();
+  dmEditMode = false;
+  dmPendingEvidence = [];
+  
+  // re-renderizar en modo lectura
+  await openDetail(currentDetailId);
+  showToast("✓ Cambios guardados correctamente");
+  renderAll();
+}
+
+function cancelDetailEdit(){
+  dmEditMode = false;
+  dmPendingEvidence = [];
+  if(currentDetailId){
+    openDetail(currentDetailId);
+  }
 }
 function closeDetail(){
   document.getElementById("detail-modal").classList.remove("show");
   currentDetailId = null;
+  dmEditMode = false;
+  dmPendingEvidence = [];
 }
 document.getElementById("dm-close").addEventListener("click", closeDetail);
 document.getElementById("detail-modal").addEventListener("click", (e)=>{
   if(e.target.id === "detail-modal") closeDetail();
 });
+document.getElementById("dm-edit-btn").addEventListener("click", toggleDetailEdit);
+document.getElementById("dm-cancel-edit").addEventListener("click", cancelDetailEdit);
+document.getElementById("dm-save-edit").addEventListener("click", saveDetailEdit);
 document.getElementById("dm-export-zip").addEventListener("click", ()=>{
   if(currentDetailId) exportCaseZip(currentDetailId);
 });
@@ -7535,7 +8450,7 @@ Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   refreshAutoFields();
   checkStorageHealth();
   checkChartLibrary();
-  return Promise.all([loadRecords(), loadEmpleados(), loadCandidatos(), loadNotificaciones()]);
+  return Promise.all([loadRecords(), loadEmpleados(), loadCandidatos(), loadNotificaciones(), loadPlantillas()]);
 }).then(async ()=>{
   initKanbanFilterSelects();
   checkVencimientosYGenerar();
