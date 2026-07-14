@@ -3987,16 +3987,16 @@ function aplicarPlantilla(){
   if(!plantilla) return;
   
   // Rellenar formulario nuevo caso con datos de plantilla
-  document.getElementById("estado").value = plantilla.campos.estado;
-  document.getElementById("prioridad").value = plantilla.campos.prioridad;
-  document.getElementById("riesgo").value = plantilla.campos.riesgo;
-  document.getElementById("descripcion").value = plantilla.campos.descripcion;
-  document.getElementById("comentarios").value = plantilla.campos.comentarios;
-  document.getElementById("costocat").value = plantilla.campos.costoCategoria;
-  document.getElementById("accion").value = plantilla.campos.accion;
-  document.getElementById("resultado").value = plantilla.campos.resultado;
-  document.getElementById("responsable").value = plantilla.campos.responsable;
-  document.getElementById("corresponsable").value = plantilla.campos.corresponsable;
+  document.getElementById("f-estado").value = plantilla.campos.estado;
+  document.getElementById("f-prioridad").value = plantilla.campos.prioridad;
+  document.getElementById("f-riesgo").value = plantilla.campos.riesgo;
+  document.getElementById("f-desc").value = plantilla.campos.descripcion;
+  document.getElementById("f-comentarios").value = plantilla.campos.comentarios;
+  document.getElementById("f-costocat").value = plantilla.campos.costoCategoria;
+  document.getElementById("f-accion").value = plantilla.campos.accion;
+  document.getElementById("f-resultado").value = plantilla.campos.resultado;
+  document.getElementById("f-resp").value = plantilla.campos.responsable;
+  document.getElementById("f-corresp").value = plantilla.campos.corresponsable;
   
   // Cerrar modal
   document.querySelector(".modal").remove();
@@ -5624,7 +5624,7 @@ function renderNotifBanner(){
   const items = urgentes.slice(0, 3).map(n => {
     const icon = n.severity === "vencida" ? "⚠️" : "🔴";
     return `<div class="banner-item" onclick="notifOpenRelated('${n.id}')" style="cursor:pointer;">
-      ${icon} <b>${n.title}</b>
+      ${icon} <b>${escapeHtml(n.title)}</b>
     </div>`;
   }).join("");
   
@@ -6953,6 +6953,25 @@ document.addEventListener("keydown", (e)=>{
 /* ============================================================
    EXPORTAR A EXCEL
    ============================================================ */
+/* ---- Utilidades de estilo para el Excel ---- */
+function hexToArgb(hex){
+  return "FF" + hex.replace("#","").toUpperCase();
+}
+function tintHex(hex, amount){
+  // Aclara un color hex mezclándolo con blanco (amount 0-1)
+  const h = hex.replace("#","");
+  const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+  const mix = c => Math.round(c + (255 - c) * amount);
+  const toHex = c => c.toString(16).padStart(2,"0").toUpperCase();
+  return "FF" + toHex(mix(r)) + toHex(mix(g)) + toHex(mix(b));
+}
+function badgeStyle(hex){
+  return {
+    fill: { type:"pattern", pattern:"solid", fgColor:{argb: tintHex(hex, 0.82)} },
+    font: { bold:true, color:{argb: hexToArgb(hex)}, size:10.5, name:"Calibri" }
+  };
+}
+
 async function exportToExcel(){
   if(typeof ExcelJS === "undefined"){
     alert("No se pudo cargar el módulo de exportación a Excel. Verifica tu conexión a internet.");
@@ -6966,42 +6985,231 @@ async function exportToExcel(){
   const wb = new ExcelJS.Workbook();
   wb.creator = "Centro de Control · Capital Humano";
   wb.created = new Date();
-  const ws = wb.addWorksheet("Bitácora RH", { views:[{ state:"frozen", ySplit:1 }] });
 
-  const centerKeys = new Set(["fecha","fechaCompromiso","estado","prioridad","riesgo","nivelRiesgo","dias","fechaCierre","costoCategoria","evidenciaCount","avancesCount"]);
+  const NAVY = "FF161B2E", AMBER = "FFD98C2B", LINE = "FFE2E5EE", TEXT_SOFT = "FF4A5068";
 
-  ws.columns = [
-    {header:"Fecha inicio", key:"fecha"},
-    {header:"Fecha compromiso", key:"fechaCompromiso"},
-    {header:"Tema / Caso", key:"tema"},
-    {header:"Tipo de actividad", key:"tipo"},
-    {header:"Área estratégica", key:"area"},
-    {header:"Macroproceso", key:"macro"},
-    {header:"Descripción", key:"descripcion"},
-    {header:"Responsable", key:"responsable"},
-    {header:"Corresponsable", key:"corresponsable"},
-    {header:"Solicitante", key:"solicitante"},
-    {header:"Departamento", key:"departamento"},
-    {header:"Sucursal", key:"sucursal"},
-    {header:"Estado", key:"estado"},
-    {header:"Prioridad", key:"prioridad"},
-    {header:"Riesgo", key:"riesgo"},
-    {header:"Nivel de riesgo", key:"nivelRiesgo"},
-    {header:"Días transcurridos", key:"dias"},
-    {header:"Acción realizada", key:"accion"},
-    {header:"Resultado obtenido", key:"resultado"},
-    {header:"Fecha de cierre", key:"fechaCierre"},
-    {header:"Costo final", key:"costoFinal"},
-    {header:"Categoría de costo", key:"costoCategoria"},
-    {header:"Justificación del costo", key:"costoJustificacion"},
-    {header:"Evidencias adjuntas", key:"evidenciaCount"},
-    {header:"Avances registrados", key:"avancesCount"},
-    {header:"Último avance", key:"ultimoAvance"},
-    {header:"Comentarios", key:"comentarios"}
+  /* ============================================================
+     HOJA 1 · RESUMEN EJECUTIVO
+     ============================================================ */
+  const rs = wb.addWorksheet("Resumen Ejecutivo", {
+    views:[{ showGridLines:false }],
+    properties:{ tabColor:{argb:AMBER} }
+  });
+  rs.columns = [{width:3},{width:26},{width:16},{width:16},{width:16},{width:16},{width:3}];
+
+  rs.mergeCells("B2:F2");
+  rs.getCell("B2").value = "Centro de Control · Capital Humano";
+  rs.getCell("B2").font = { name:"Calibri", bold:true, size:18, color:{argb:NAVY} };
+
+  rs.mergeCells("B3:F3");
+  rs.getCell("B3").value = "Resumen ejecutivo · Bitácora de casos RH";
+  rs.getCell("B3").font = { name:"Calibri", size:12, color:{argb:TEXT_SOFT} };
+
+  rs.mergeCells("B4:F4");
+  const fechaGenLarga = new Date().toLocaleDateString("es-MX", { day:"2-digit", month:"long", year:"numeric" });
+  rs.getCell("B4").value = `Generado el ${fechaGenLarga}`;
+  rs.getCell("B4").font = { name:"Calibri", italic:true, size:10, color:{argb:"FF8B90A3"} };
+
+  // ---- KPIs principales (fila de tarjetas) ----
+  const activos = RECORDS.filter(r=>ESTADOS_ACTIVOS.includes(r.estado)).length;
+  const cerrados = RECORDS.filter(r=>r.estado === "Cerrado").length;
+  const vencidos = RECORDS.filter(isOverdue).length;
+  const costoTotal = RECORDS.reduce((s,r)=> s + (Number(r.costoFinal) || 0), 0);
+
+  const kpis = [
+    { label:"Total de casos", value: RECORDS.length, color:"#3B5BA9" },
+    { label:"Casos activos", value: activos, color:"#D98C2B" },
+    { label:"Casos cerrados", value: cerrados, color:"#1F6F6B" },
+    { label:"Casos vencidos", value: vencidos, color:"#C1433D" }
   ];
+  const kpiRow = 6, kpiCols = ["B","C","D","E"];
+  rs.getRow(kpiRow).height = 6;
+  kpis.forEach((k,i)=>{
+    const col = kpiCols[i];
+    rs.getRow(kpiRow+1).height = 30;
+    rs.getCell(`${col}${kpiRow+1}`).value = k.value;
+    rs.getCell(`${col}${kpiRow+1}`).font = { name:"Sora", bold:true, size:20, color:{argb:hexToArgb(k.color)} };
+    rs.getCell(`${col}${kpiRow+1}`).alignment = { horizontal:"center", vertical:"middle" };
+    rs.getCell(`${col}${kpiRow+1}`).fill = { type:"pattern", pattern:"solid", fgColor:{argb:tintHex(k.color,0.86)} };
+    rs.getCell(`${col}${kpiRow+2}`).value = k.label;
+    rs.getCell(`${col}${kpiRow+2}`).font = { name:"Calibri", size:9.5, color:{argb:TEXT_SOFT} };
+    rs.getCell(`${col}${kpiRow+2}`).alignment = { horizontal:"center", vertical:"middle" };
+    rs.getCell(`${col}${kpiRow+2}`).fill = { type:"pattern", pattern:"solid", fgColor:{argb:tintHex(k.color,0.86)} };
+    ["top","bottom","left","right"].forEach(side=>{
+      rs.getCell(`${col}${kpiRow+1}`).border = { ...(rs.getCell(`${col}${kpiRow+1}`).border||{}), [side]:{style:"thin", color:{argb:"FFFFFFFF"}} };
+      rs.getCell(`${col}${kpiRow+2}`).border = { ...(rs.getCell(`${col}${kpiRow+2}`).border||{}), [side]:{style:"thin", color:{argb:"FFFFFFFF"}} };
+    });
+  });
+  rs.mergeCells(`B${kpiRow+3}:E${kpiRow+3}`);
+  rs.getCell(`B${kpiRow+3}`).value = `Costo acumulado registrado: ${money(costoTotal)}`;
+  rs.getCell(`B${kpiRow+3}`).font = { name:"Calibri", bold:true, size:10.5, color:{argb:TEXT_SOFT} };
 
-  RECORDS.forEach(r=>{
-    ws.addRow({
+  // ---- Tabla de distribución por Estado con barra de datos ----
+  let row = kpiRow + 6;
+  rs.mergeCells(`B${row}:E${row}`);
+  rs.getCell(`B${row}`).value = "Distribución por estado";
+  rs.getCell(`B${row}`).font = { name:"Sora", bold:true, size:12, color:{argb:NAVY} };
+  row++;
+  const headEstado = row;
+  ["Estado","Casos","%","Proporción"].forEach((h,i)=>{
+    const cell = rs.getCell(row, 2+i);
+    cell.value = h;
+    cell.font = { bold:true, size:10, color:{argb:"FFFFFFFF"} };
+    cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:NAVY} };
+    cell.alignment = { horizontal: i===0 ? "left" : "center", vertical:"middle" };
+  });
+  const firstEstadoDataRow = row + 1;
+  ESTADOS.forEach(estado=>{
+    row++;
+    const count = RECORDS.filter(r=>r.estado===estado).length;
+    const pct = RECORDS.length ? count / RECORDS.length : 0;
+    const color = COLOR_ESTADO[estado] || "#8B90A3";
+    rs.getCell(`B${row}`).value = estado;
+    rs.getCell(`B${row}`).fill = badgeStyle(color).fill;
+    rs.getCell(`B${row}`).font = badgeStyle(color).font;
+    rs.getCell(`B${row}`).alignment = { vertical:"middle" };
+    rs.getCell(`C${row}`).value = count;
+    rs.getCell(`C${row}`).alignment = { horizontal:"center", vertical:"middle" };
+    rs.getCell(`D${row}`).value = pct;
+    rs.getCell(`D${row}`).numFmt = "0.0%";
+    rs.getCell(`D${row}`).alignment = { horizontal:"center", vertical:"middle" };
+    rs.getCell(`E${row}`).value = count; // celda base para databar
+    rs.getCell(`E${row}`).alignment = { horizontal:"center", vertical:"middle" };
+    ["B","C","D","E"].forEach(c=> rs.getCell(`${c}${row}`).border = {
+      top:{style:"thin", color:{argb:LINE}}, bottom:{style:"thin", color:{argb:LINE}},
+      left:{style:"thin", color:{argb:LINE}}, right:{style:"thin", color:{argb:LINE}}
+    });
+  });
+  const lastEstadoDataRow = row;
+  rs.addConditionalFormatting({
+    ref: `E${firstEstadoDataRow}:E${lastEstadoDataRow}`,
+    rules: [{ type:"dataBar", priority:1, minLength:2, maxLength:100,
+      color:{argb:hexToArgb("#3B5BA9")}, gradient:true, border:false, cfvo:[{type:"min"},{type:"max"}] }]
+  });
+
+  // ---- Tabla de distribución por Prioridad ----
+  row += 3;
+  rs.mergeCells(`B${row}:E${row}`);
+  rs.getCell(`B${row}`).value = "Distribución por prioridad";
+  rs.getCell(`B${row}`).font = { name:"Sora", bold:true, size:12, color:{argb:NAVY} };
+  row++;
+  ["Prioridad","Casos","%","Proporción"].forEach((h,i)=>{
+    const cell = rs.getCell(row, 2+i);
+    cell.value = h;
+    cell.font = { bold:true, size:10, color:{argb:"FFFFFFFF"} };
+    cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:NAVY} };
+    cell.alignment = { horizontal: i===0 ? "left" : "center", vertical:"middle" };
+  });
+  const firstPrioDataRow = row + 1;
+  PRIORIDADES.forEach(prio=>{
+    row++;
+    const count = RECORDS.filter(r=>r.prioridad===prio).length;
+    const pct = RECORDS.length ? count / RECORDS.length : 0;
+    const color = COLOR_PRIORIDAD[prio] || "#8B90A3";
+    rs.getCell(`B${row}`).value = prio;
+    rs.getCell(`B${row}`).fill = badgeStyle(color).fill;
+    rs.getCell(`B${row}`).font = badgeStyle(color).font;
+    rs.getCell(`C${row}`).value = count;
+    rs.getCell(`C${row}`).alignment = { horizontal:"center", vertical:"middle" };
+    rs.getCell(`D${row}`).value = pct;
+    rs.getCell(`D${row}`).numFmt = "0.0%";
+    rs.getCell(`D${row}`).alignment = { horizontal:"center", vertical:"middle" };
+    rs.getCell(`E${row}`).value = count;
+    rs.getCell(`E${row}`).alignment = { horizontal:"center", vertical:"middle" };
+    ["B","C","D","E"].forEach(c=> rs.getCell(`${c}${row}`).border = {
+      top:{style:"thin", color:{argb:LINE}}, bottom:{style:"thin", color:{argb:LINE}},
+      left:{style:"thin", color:{argb:LINE}}, right:{style:"thin", color:{argb:LINE}}
+    });
+  });
+  rs.addConditionalFormatting({
+    ref: `E${firstPrioDataRow}:E${row}`,
+    rules: [{ type:"dataBar", priority:2, minLength:2, maxLength:100,
+      color:{argb:hexToArgb("#D98C2B")}, gradient:true, border:false, cfvo:[{type:"min"},{type:"max"}] }]
+  });
+
+  row += 2;
+  rs.mergeCells(`B${row}:E${row}`);
+  rs.getCell(`B${row}`).value = "Los detalles completos de cada caso se encuentran en la hoja \"Bitácora RH\".";
+  rs.getCell(`B${row}`).font = { name:"Calibri", italic:true, size:9, color:{argb:"FF8B90A3"} };
+
+  /* ============================================================
+     HOJA 2 · BITÁCORA DETALLADA
+     ============================================================ */
+  const ws = wb.addWorksheet("Bitácora RH", {
+    views:[{ state:"frozen", xSplit:3, ySplit:4, showGridLines:false }],
+    properties:{ tabColor:{argb:"FF3B5BA9"} }
+  });
+
+  const columnsDef = [
+    {header:"Fecha inicio", key:"fecha", width:13},
+    {header:"Fecha compromiso", key:"fechaCompromiso", width:15},
+    {header:"Tema / Caso", key:"tema", width:28},
+    {header:"Tipo de actividad", key:"tipo", width:18},
+    {header:"Área estratégica", key:"area", width:18},
+    {header:"Macroproceso", key:"macro", width:18},
+    {header:"Descripción", key:"descripcion", width:34},
+    {header:"Responsable", key:"responsable", width:18},
+    {header:"Corresponsable", key:"corresponsable", width:18},
+    {header:"Solicitante", key:"solicitante", width:16},
+    {header:"Departamento", key:"departamento", width:16},
+    {header:"Sucursal", key:"sucursal", width:16},
+    {header:"Estado", key:"estado", width:14},
+    {header:"Prioridad", key:"prioridad", width:12},
+    {header:"Riesgo", key:"riesgo", width:22},
+    {header:"Nivel de riesgo", key:"nivelRiesgo", width:13},
+    {header:"Días transcurridos", key:"dias", width:12},
+    {header:"Acción realizada", key:"accion", width:30},
+    {header:"Resultado obtenido", key:"resultado", width:30},
+    {header:"Fecha de cierre", key:"fechaCierre", width:13},
+    {header:"Costo final", key:"costoFinal", width:14},
+    {header:"Categoría de costo", key:"costoCategoria", width:20},
+    {header:"Justificación del costo", key:"costoJustificacion", width:28},
+    {header:"Evidencias adjuntas", key:"evidenciaCount", width:12},
+    {header:"Avances registrados", key:"avancesCount", width:12},
+    {header:"Último avance", key:"ultimoAvance", width:34},
+    {header:"Comentarios", key:"comentarios", width:28},
+    {header:"Vencido", key:"vencido", width:10}
+  ];
+  const centerKeys = new Set(["fecha","fechaCompromiso","estado","prioridad","riesgo","nivelRiesgo","dias","fechaCierre","costoCategoria","evidenciaCount","avancesCount","vencido"]);
+  const badgeKeys = { estado: COLOR_ESTADO, prioridad: COLOR_PRIORIDAD, riesgo: COLOR_RIESGO, nivelRiesgo: COLOR_NIVEL };
+  const colIndex = {};
+  columnsDef.forEach((c,i)=> colIndex[c.key] = i+1);
+
+  // Bloque de título de la hoja (filas 1-3), encabezados de columna en la fila 4
+  ws.mergeCells(1,1,1,columnsDef.length);
+  ws.getCell(1,1).value = "Centro de Control · Capital Humano — Bitácora de Casos";
+  ws.getCell(1,1).font = { name:"Sora", bold:true, size:14, color:{argb:"FFFFFFFF"} };
+  ws.getCell(1,1).fill = { type:"pattern", pattern:"solid", fgColor:{argb:NAVY} };
+  ws.getCell(1,1).alignment = { vertical:"middle", horizontal:"left", indent:1 };
+  ws.getRow(1).height = 26;
+
+  ws.mergeCells(2,1,2,columnsDef.length);
+  ws.getCell(2,1).value = `Generado el ${fechaGenLarga}  ·  ${RECORDS.length} registro(s)  ·  Costo acumulado: ${money(costoTotal)}`;
+  ws.getCell(2,1).font = { name:"Calibri", italic:true, size:10, color:{argb:"FFC6CAE0"} };
+  ws.getCell(2,1).fill = { type:"pattern", pattern:"solid", fgColor:{argb:NAVY} };
+  ws.getCell(2,1).alignment = { vertical:"middle", horizontal:"left", indent:1 };
+  ws.getRow(2).height = 18;
+
+  ws.mergeCells(3,1,3,columnsDef.length);
+  ws.getRow(3).height = 4;
+
+  const headerRowNum = 4;
+  columnsDef.forEach((c,i)=>{
+    const cell = ws.getCell(headerRowNum, i+1);
+    cell.value = c.header;
+    ws.getColumn(i+1).width = c.width;
+    cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"FF232B45"} };
+    cell.font = { bold:true, color:{argb:"FFFFFFFF"}, size:10.5, name:"Calibri" };
+    cell.alignment = { vertical:"middle", horizontal:"center", wrapText:true };
+    cell.border = { bottom:{style:"medium", color:{argb:AMBER}} };
+  });
+  ws.getRow(headerRowNum).height = 30;
+  ws.autoFilter = { from:{row:headerRowNum, column:1}, to:{row:headerRowNum, column:columnsDef.length} };
+
+  RECORDS.forEach((r,idx)=>{
+    const rowNum = headerRowNum + 1 + idx;
+    const vencido = isOverdue(r);
+    const rowValues = {
       fecha: r.fecha,
       fechaCompromiso: r.fechaCompromiso || "",
       tema: r.tema,
@@ -7028,46 +7236,48 @@ async function exportToExcel(){
       evidenciaCount: r.evidenciaCount || 0,
       avancesCount: (r.avances || []).length,
       ultimoAvance: (r.avances && r.avances.length) ? (()=>{ const u = sortAvances(r.avances).slice(-1)[0]; return `${u.fecha}: ${u.descripcion}`; })() : "",
-      comentarios: r.comentarios || ""
-    });
-  });
+      comentarios: r.comentarios || "",
+      vencido: vencido ? "Sí" : "No"
+    };
+    const zebraFill = idx % 2 === 1 ? "FFF5F6FA" : "FFFFFFFF";
+    columnsDef.forEach(c=>{
+      const cell = ws.getCell(rowNum, colIndex[c.key]);
+      cell.value = rowValues[c.key];
+      cell.border = {
+        top:{style:"thin", color:{argb:LINE}}, bottom:{style:"thin", color:{argb:LINE}},
+        left:{style:"thin", color:{argb:LINE}}, right:{style:"thin", color:{argb:LINE}}
+      };
+      cell.alignment = c.key === "costoFinal"
+        ? { vertical:"middle", horizontal:"right" }
+        : centerKeys.has(c.key)
+          ? { vertical:"middle", horizontal:"center" }
+          : { vertical:"middle", horizontal:"left", wrapText:false };
 
-  // Encabezado: fondo azul marino, texto blanco y negrita
-  const headerRow = ws.getRow(1);
-  headerRow.height = 24;
-  headerRow.eachCell(cell=>{
-    cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"FF161B2E"} };
-    cell.font = { bold:true, color:{argb:"FFFFFFFF"}, size:11, name:"Calibri" };
-    cell.alignment = { vertical:"middle", horizontal:"center", wrapText:true };
+      if(badgeKeys[c.key]){
+        const color = badgeKeys[c.key][rowValues[c.key]] || "#8B90A3";
+        const style = badgeStyle(color);
+        cell.fill = style.fill;
+        cell.font = style.font;
+      } else {
+        cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb: zebraFill} };
+        cell.font = { name:"Calibri", size:10, color:{argb:"FF1D2237"} };
+      }
+    });
+    // Resalta en rojo suave la fecha compromiso de los casos vencidos
+    if(vencido){
+      const cCell = ws.getCell(rowNum, colIndex.fechaCompromiso);
+      cCell.fill = { type:"pattern", pattern:"solid", fgColor:{argb: tintHex("#C1433D", 0.82)} };
+      cCell.font = { bold:true, color:{argb: hexToArgb("#C1433D")}, size:10 };
+    }
+    const vCell = ws.getCell(rowNum, colIndex.vencido);
+    const vColor = vencido ? "#C1433D" : "#1F6F6B";
+    const vStyle = badgeStyle(vColor);
+    vCell.fill = vStyle.fill;
+    vCell.font = vStyle.font;
   });
 
   // Formato de moneda explícito para Costo final
-  ws.getColumn("costoFinal").numFmt = '"$"#,##0.00';
-
-  // Alineación: centrado para estatus/prioridades/fechas, derecha para costo,
-  // izquierda con ajuste de texto para el resto
-  ws.columns.forEach(column=>{
-    let maxLen = column.header ? column.header.length : 10;
-    column.eachCell({ includeEmpty:true }, (cell, rowNumber)=>{
-      const len = cell.value != null ? String(cell.value).length : 0;
-      if(len > maxLen) maxLen = len;
-      if(rowNumber === 1) return;
-      if(column.key === "costoFinal"){
-        cell.alignment = { vertical:"middle", horizontal:"right" };
-      } else if(centerKeys.has(column.key)){
-        cell.alignment = { vertical:"middle", horizontal:"center" };
-      } else {
-        cell.alignment = { vertical:"middle", horizontal:"left", wrapText:false };
-      }
-      cell.border = {
-        top:{style:"thin", color:{argb:"FFE2E5EE"}},
-        bottom:{style:"thin", color:{argb:"FFE2E5EE"}},
-        left:{style:"thin", color:{argb:"FFE2E5EE"}},
-        right:{style:"thin", color:{argb:"FFE2E5EE"}}
-      };
-    });
-    column.width = Math.min(Math.max(maxLen + 2, 10), 45);
-  });
+  ws.getColumn(colIndex.costoFinal).numFmt = '"$"#,##0.00';
 
   try{
     const buffer = await wb.xlsx.writeBuffer();
