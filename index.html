@@ -1865,6 +1865,7 @@ select:focus,textarea:focus{
     <button class="tab-btn" data-view="kpis">KPIs</button>
     <button class="tab-btn" data-view="kanban">Kanban</button>
     <button class="tab-btn" data-view="calendario">Calendario</button>
+    <button class="tab-btn" data-view="minutas">Juntas y Minutas</button>
     <button class="tab-btn" data-view="configuracion">Configuración</button>
   </div>
   <div class="topbar-actions">
@@ -2312,6 +2313,7 @@ select:focus,textarea:focus{
               </div>
             </div>
             <button class="btn btn-ghost btn-sm" id="btn-export-backup" type="button">🗄 Descargar respaldo</button>
+            <button class="btn btn-ghost btn-sm" id="btn-export-consulta" type="button" title="Genera un archivo HTML de solo lectura con la bitácora y las minutas, sin edición ni gráficas">📄 Exportar versión de consulta</button>
             <button class="btn btn-ghost btn-sm" id="btn-change-backup-location" type="button" style="display:none;" title="Elegir una nueva carpeta para los próximos respaldos">📂 Cambiar ubicación</button>
             <button class="btn btn-ghost btn-sm" id="btn-import-backup" type="button">⤴ Restaurar respaldo</button>
             <input type="file" id="backup-input" accept="application/json" style="display:none;">
@@ -2400,6 +2402,11 @@ select:focus,textarea:focus{
             <input type="date" id="emp-ingreso" required>
           </div>
           <div class="field">
+            <label for="emp-nacimiento">Fecha de Nacimiento <span style="font-weight:400;color:var(--text-mute);">(opcional)</span></label>
+            <input type="date" id="emp-nacimiento">
+            <div class="hint">Para recordatorios automáticos de cumpleaños. No se muestra en la tabla.</div>
+          </div>
+          <div class="field">
             <label for="emp-estatus">Estatus del Colaborador</label>
             <select id="emp-estatus" required></select>
           </div>
@@ -2484,6 +2491,31 @@ select:focus,textarea:focus{
           <tbody id="emp-table-body"></tbody>
         </table>
       </div>
+    </div>
+
+    <div class="page-head" style="margin-top:26px;">
+      <h1 style="font-size:16px;">Checklists de Onboarding / Offboarding</h1>
+      <p>Se generan automáticamente al dar de alta un colaborador nuevo o al cambiar su estatus a "Baja", para no olvidar ningún pendiente del proceso.</p>
+    </div>
+    <div id="chk-empty" class="empty-state" style="display:none;">
+      <div class="em-icon">✅</div>
+      <div><b>No hay checklists activos.</b><br>Se crearán automáticamente con la próxima alta o baja de personal.</div>
+    </div>
+    <div id="chk-content">
+      <div class="filters-row">
+        <select id="chk-filter-tipo">
+          <option value="">Tipo: todos</option>
+          <option value="onboarding">Onboarding (alta)</option>
+          <option value="offboarding">Offboarding (baja)</option>
+        </select>
+        <select id="chk-filter-estado">
+          <option value="">Estado: todos</option>
+          <option value="pendiente">Con pendientes</option>
+          <option value="completo">Completos</option>
+        </select>
+        <button class="clear-btn" id="chk-clear-filters">Limpiar filtros</button>
+      </div>
+      <div id="checklists-list"></div>
     </div>
   </div>
 
@@ -2912,6 +2944,100 @@ select:focus,textarea:focus{
     </div>
   </div>
 
+  <!-- ======================= VISTA: JUNTAS Y MINUTAS ======================= -->
+  <div class="view" id="view-minutas">
+    <div class="page-head">
+      <h1>Junta de Operaciones y Minuta</h1>
+      <p>Registra acuerdos y pendientes de las juntas operativas, y vincúlalos a casos de la bitácora para darles seguimiento.</p>
+    </div>
+
+    <div class="collapse-toggle" id="min-toggle">
+      <h3><span id="min-toggle-icon">➕</span> <span id="min-toggle-label">Nueva Minuta</span></h3>
+      <span class="chev">▾</span>
+    </div>
+    <div class="collapse-panel" id="min-panel">
+      <div class="collapse-panel-inner">
+        <div class="emp-form-grid">
+          <div class="field">
+            <label for="min-fecha">Fecha de la junta</label>
+            <input type="date" id="min-fecha">
+          </div>
+          <div class="field" style="grid-column:span 2;">
+            <label for="min-titulo">Título / Tema de la junta</label>
+            <input type="text" id="min-titulo" placeholder="Ej. Junta semanal de operaciones">
+          </div>
+          <div class="field" style="grid-column:span 3;">
+            <label for="min-asistentes">Asistentes</label>
+            <input type="text" id="min-asistentes" placeholder="Nombres separados por coma">
+          </div>
+          <div class="field" style="grid-column:span 3;">
+            <label for="min-notas">Notas generales</label>
+            <textarea id="min-notas" rows="2" placeholder="Contexto, temas tratados, información relevante de la junta..."></textarea>
+          </div>
+        </div>
+
+        <div class="page-head" style="margin-top:16px;margin-bottom:8px;">
+          <h1 style="font-size:14px;">Acuerdos y pendientes</h1>
+          <p style="font-size:12px;">Cada acuerdo puede vincularse opcionalmente a un caso existente de la Bitácora.</p>
+        </div>
+        <div class="emp-form-grid" style="align-items:end;grid-template-columns:2fr 1.2fr 1fr 1.4fr auto;">
+          <div class="field">
+            <label for="ac-desc">Acuerdo / pendiente</label>
+            <input type="text" id="ac-desc" placeholder="¿Qué se acordó?">
+          </div>
+          <div class="field">
+            <label for="ac-resp">Responsable</label>
+            <input type="text" id="ac-resp" placeholder="Nombre">
+          </div>
+          <div class="field">
+            <label for="ac-fecha">Fecha compromiso</label>
+            <input type="date" id="ac-fecha">
+          </div>
+          <div class="field">
+            <label for="ac-caso">Caso vinculado (opcional)</label>
+            <select id="ac-caso"><option value="">Ninguno</option></select>
+          </div>
+          <div class="field">
+            <button type="button" class="btn btn-ghost" id="btn-add-acuerdo">+ Agregar</button>
+          </div>
+        </div>
+        <div id="acuerdos-pending-list" class="avances-timeline" style="margin-top:10px;">
+          <div class="avances-empty">Aún no hay acuerdos agregados a esta minuta.</div>
+        </div>
+
+        <div class="form-actions" style="margin-top:16px;">
+          <button type="button" class="btn btn-ghost" id="min-btn-cancel-edit" style="display:none;">Cancelar edición</button>
+          <button type="button" class="btn btn-ghost" id="min-btn-reset">Limpiar</button>
+          <button type="button" class="btn btn-primary" id="min-btn-submit">Guardar minuta</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="min-empty" class="empty-state" style="display:none;">
+      <div class="em-icon">🗒️</div>
+      <div><b>Aún no hay minutas registradas.</b><br>Usa "Nueva Minuta" para capturar la primera.</div>
+    </div>
+
+    <div id="min-content">
+      <div class="table-head" style="margin-bottom:10px;">
+        <h3>Historial de minutas</h3>
+        <div class="table-toolbar">
+          <span class="count" id="min-count">0 minutas</span>
+        </div>
+      </div>
+      <div class="filters-row">
+        <input type="text" id="min-search" placeholder="Buscar por título, asistente, responsable o acuerdo...">
+        <select id="min-filter-acuerdo">
+          <option value="">Acuerdos: todos</option>
+          <option value="pendiente">Con pendientes</option>
+          <option value="vencido">Con vencidos</option>
+        </select>
+        <button class="clear-btn" id="min-clear-filters">Limpiar filtros</button>
+      </div>
+      <div id="minutas-list"></div>
+    </div>
+  </div>
+
   <!-- ======================= VISTA: CONFIGURACIÓN ======================= -->
   <div class="view" id="view-configuracion">
     <div class="page-head">
@@ -2962,6 +3088,7 @@ select:focus,textarea:focus{
           <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-responsable"> Cambios de responsable</label>
           <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-prioridad"> Cambios de prioridad</label>
           <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-recordatorios"> Recordatorios (cambios de estado)</label>
+          <label class="chk" style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input type="checkbox" id="cfg-notif-cumple"> Cumpleaños y aniversarios laborales</label>
         </div>
         <div class="form-actions">
           <button class="btn btn-primary" type="button" id="cfg-notif-save">Guardar preferencias</button>
@@ -3312,7 +3439,8 @@ const DEFAULT_SETTINGS = {
     evidencias: true,
     cambiosResponsable: true,
     cambiosPrioridad: true,
-    recordatorios: true
+    recordatorios: true,
+    cumpleanosAniversarios: true
   },
   storageBannerDismissed: false
 };
@@ -3419,6 +3547,66 @@ function daysUntil(dateISO){
   const a = new Date(todayISO() + "T00:00:00");
   const b = new Date(dateISO + "T00:00:00");
   return Math.round((b - a) / 86400000);
+}
+function proximaOcurrenciaAnual(fechaISO){
+  // Dada una fecha "YYYY-MM-DD" (nacimiento o ingreso), regresa la
+  // próxima fecha en que se cumple ese mismo mes/día: este año si aún
+  // no pasa, o el que sigue si ya pasó (o es justo hoy).
+  if(!fechaISO) return null;
+  const partes = fechaISO.split("-");
+  const mes = partes[1], dia = partes[2];
+  const anioActual = new Date(todayISO() + "T00:00:00").getFullYear();
+  let candidata = `${anioActual}-${mes}-${dia}`;
+  if(daysUntil(candidata) < 0){
+    candidata = `${anioActual+1}-${mes}-${dia}`;
+  }
+  return candidata;
+}
+function checkCumpleanosYAniversarios(){
+  const hoyAnio = new Date(todayISO() + "T00:00:00").getFullYear();
+  EMPLEADOS.filter(e => e.estatus === "Activo").forEach(e=>{
+    if(e.fechaNacimiento){
+      const prox = proximaOcurrenciaAnual(e.fechaNacimiento);
+      const dias = daysUntil(prox);
+      if(dias === 0){
+        addNotification("cumpleanos", {
+          title:`Hoy es el cumpleaños de ${e.nombre}`,
+          message:`${e.puesto || "Sin puesto"} · ${e.departamento}`,
+          relatedType:"empleado", relatedId:e.id,
+          dedupeKey:`cumple_${e.id}_${hoyAnio}`
+        });
+      } else if(dias === 3){
+        addNotification("cumpleanos", {
+          title:`Cumpleaños en 3 días: ${e.nombre}`,
+          message:`${prox} · ${e.departamento}`,
+          relatedType:"empleado", relatedId:e.id,
+          dedupeKey:`cumple_prox_${e.id}_${hoyAnio}`
+        });
+      }
+    }
+    if(e.fechaIngreso){
+      const prox = proximaOcurrenciaAnual(e.fechaIngreso);
+      const dias = daysUntil(prox);
+      const anios = parseInt(prox.substring(0,4), 10) - parseInt(e.fechaIngreso.substring(0,4), 10);
+      if(anios >= 1){
+        if(dias === 0){
+          addNotification("aniversario", {
+            title:`Hoy ${e.nombre} cumple ${anios} año(s) en la empresa`,
+            message:`${e.puesto || "Sin puesto"} · ${e.departamento}`,
+            relatedType:"empleado", relatedId:e.id,
+            dedupeKey:`aniv_${e.id}_${hoyAnio}`
+          });
+        } else if(dias === 3){
+          addNotification("aniversario", {
+            title:`Aniversario laboral en 3 días: ${e.nombre} (${anios} año(s))`,
+            message:`${prox} · ${e.departamento}`,
+            relatedType:"empleado", relatedId:e.id,
+            dedupeKey:`aniv_prox_${e.id}_${hoyAnio}`
+          });
+        }
+      }
+    }
+  });
 }
 
 /* ---- lógica automatizada ---- */
@@ -4003,19 +4191,139 @@ function aplicarPlantilla(){
   showToast("✓ Plantilla aplicada: " + plantilla.nombre);
 }
 
-/* NOTA DE ARQUITECTURA: la evidencia se guarda embebida dentro de cada
-   registro (record.evidencia) y viaja en la misma llave "hr-records-v1"
-   en vez de usar una llave independiente por registro. Esto evita
-   llamadas de red adicionales y secuenciales al guardar/editar/ver un
-   caso, que eran la causa real de que la evidencia a veces no cargara
-   en el detalle de la bitácora (el sistema de almacenamiento limita la
-   tasa de solicitudes; múltiples llamadas separadas podían fallar de
-   forma silenciosa). Al quedar todo en una sola operación de guardado,
-   la evidencia siempre está disponible de inmediato, sin espera ni
-   posibilidad de que la carga falle por separado.
-   Por eso las imágenes se comprimen de forma más agresiva y el número
-   de archivos por caso es más limitado: todo vive en un único bloque
-   de datos con un límite de tamaño. */
+/* ============================================================
+   EVIDENCIA · ALMACENAMIENTO POR LOTES (multi-llave, carga perezosa)
+   ============================================================
+   Motivo del rediseño: antes, la evidencia de TODOS los casos vivía
+   embebida dentro de cada registro y viajaba junto con "hr-records-v1"
+   en una sola llave. Eso evitaba el problema original (llamadas
+   paralelas de guardado que fallaban en silencio), pero limitaba el
+   total de evidencia de todo el histórico a 5MB combinados, y hacía
+   que CUALQUIER guardado (aunque fuera solo un comentario de texto)
+   reenviara la evidencia completa de TODOS los demás casos.
+
+   Nuevo esquema:
+   - "hr-records-v1" ya NO contiene archivos, solo texto/fechas/estado.
+     Cada registro guarda únicamente evidenciaCount y evidenciaLote
+     (el nombre de la llave donde vive su evidencia).
+   - La evidencia se agrupa en "lotes" (hr-evidencia-lote-1, -2, -3...),
+     cada uno hasta ~4.3MB para dejar margen bajo el límite de 5MB por
+     llave. Cuando un lote se llena, se abre el siguiente automáticamente.
+     Esto multiplica el espacio disponible: 5MB × cantidad de lotes.
+   - La evidencia de un caso se lee bajo demanda (una sola llamada, no
+     varias en paralelo) solo cuando se abre el detalle de ESE caso —
+     se conserva así la garantía original de que nunca hay múltiples
+     llamadas de evidencia compitiendo al mismo tiempo. */
+
+const EVIDENCIA_LOTE_PREFIX = "hr-evidencia-lote-";
+const EVIDENCIA_LOTE_PUNTERO_KEY = "hr-evidencia-lote-actual";
+const EVIDENCIA_LOTE_MAX_BYTES = 4.3 * 1024 * 1024; // margen bajo el límite real de 5MB
+const loteCache = {}; // cache en memoria de lotes ya leídos en esta sesión, para no repetir lecturas
+let loteActualNumCache = 1; // último número de lote conocido, para mostrar en el indicador de uso sin I/O extra
+
+function byteSizeOf(str){
+  return new Blob([str]).size;
+}
+async function getLoteActualKey(){
+  const raw = await storageGetValue(EVIDENCIA_LOTE_PUNTERO_KEY);
+  const n = raw ? parseInt(raw, 10) : 1;
+  loteActualNumCache = (Number.isFinite(n) && n > 0) ? n : 1;
+  return EVIDENCIA_LOTE_PREFIX + loteActualNumCache;
+}
+async function avanzarLoteActual(){
+  const raw = await storageGetValue(EVIDENCIA_LOTE_PUNTERO_KEY);
+  const n = raw ? parseInt(raw, 10) : 1;
+  const siguiente = (Number.isFinite(n) && n > 0 ? n : 1) + 1;
+  await storageSetValue(EVIDENCIA_LOTE_PUNTERO_KEY, String(siguiente));
+  loteActualNumCache = siguiente;
+  return EVIDENCIA_LOTE_PREFIX + siguiente;
+}
+async function cargarLote(loteKey){
+  if(loteCache[loteKey]) return loteCache[loteKey];
+  try{
+    const raw = await storageGetValue(loteKey);
+    const contenido = raw ? JSON.parse(raw) : {};
+    loteCache[loteKey] = contenido;
+    return contenido;
+  }catch(e){
+    console.error("Error leyendo lote de evidencia", loteKey, e);
+    return {};
+  }
+}
+async function guardarLote(loteKey, contenido){
+  loteCache[loteKey] = contenido;
+  await storageSetValue(loteKey, JSON.stringify(contenido));
+}
+
+/* Guarda la evidencia de un registro en su lote correspondiente y deja
+   marcados record.evidenciaLote / record.evidenciaCount. No llama a
+   saveRecords(): quien invoque esta función es responsable de guardar
+   el registro después (igual que ya se hacía antes). */
+async function guardarEvidenciaRegistro(recordId, files){
+  const r = RECORDS.find(x=>x.id===recordId);
+  if(!r) return;
+
+  // Sin archivos: liberar el espacio que ocupaba en su lote (si tenía)
+  if(!files || files.length === 0){
+    if(r.evidenciaLote){
+      const lote = await cargarLote(r.evidenciaLote);
+      if(lote[recordId]){
+        delete lote[recordId];
+        await guardarLote(r.evidenciaLote, lote);
+      }
+    }
+    r.evidenciaLote = null;
+    r.evidenciaCount = 0;
+    return;
+  }
+
+  const entrada = files.map(f=>({id:f.id, name:f.name, type:f.type, size:f.size, dataUrl:f.dataUrl}));
+  const entradaSize = byteSizeOf(JSON.stringify(entrada));
+
+  // Reintenta primero en el lote donde ya vivía este registro, para no
+  // fragmentar innecesariamente su evidencia entre varios lotes.
+  let loteKey = r.evidenciaLote || await getLoteActualKey();
+  let lote = await cargarLote(loteKey);
+  const loteSinEsteRegistro = {...lote};
+  delete loteSinEsteRegistro[recordId];
+  let restoSize = byteSizeOf(JSON.stringify(loteSinEsteRegistro));
+
+  if(restoSize + entradaSize > EVIDENCIA_LOTE_MAX_BYTES){
+    // No cabe en el lote actual: se abre uno nuevo solo para este registro
+    if(lote[recordId]) delete lote[recordId];
+    await guardarLote(loteKey, lote);
+    loteKey = await avanzarLoteActual();
+    lote = await cargarLote(loteKey);
+  }
+
+  lote[recordId] = entrada;
+  await guardarLote(loteKey, lote);
+  r.evidenciaLote = loteKey;
+  r.evidenciaCount = entrada.length;
+}
+
+/* Carga (bajo demanda) la evidencia de un registro. Se usa solo cuando
+   realmente se necesita ver/editar/exportar un caso puntual. */
+async function cargarEvidenciaRegistro(r){
+  if(!r || !r.evidenciaLote || !r.evidenciaCount) return [];
+  const lote = await cargarLote(r.evidenciaLote);
+  return lote[r.id] || [];
+}
+
+/* Migración: mueve evidencia embebida en formato antiguo (record.evidencia)
+   hacia el nuevo esquema de lotes, y limpia el campo legado. Se ejecuta
+   una vez al iniciar la app y también después de restaurar un respaldo
+   antiguo (que puede volver a traer evidencia embebida). */
+async function migrarEvidenciaLegado(){
+  const pendientes = RECORDS.filter(r => Array.isArray(r.evidencia) && r.evidencia.length && !r.evidenciaLote);
+  if(pendientes.length === 0) return 0;
+  for(const r of pendientes){
+    await guardarEvidenciaRegistro(r.id, r.evidencia);
+    delete r.evidencia;
+  }
+  await saveRecords();
+  return pendientes.length;
+}
 
 /* ============================================================
    EVIDENCIA: carga, compresión y previsualización
@@ -4565,7 +4873,6 @@ form.addEventListener("submit", async (e)=>{
     costoJustificacion: document.getElementById("f-costojust").value.trim(),
     costoCategoria: document.getElementById("f-costocat").value || "No aplica",
     evidenciaCount: pendingEvidence.length,
-    evidencia: pendingEvidence.map(f=>({id:f.id, name:f.name, type:f.type, size:f.size, dataUrl:f.dataUrl})),
     avances: sortAvances(pendingAvances).map(a=>({id:a.id, fecha:a.fecha, descripcion:a.descripcion, createdAt:a.createdAt})),
     createdAt: editingId ? (RECORDS.find(r=>r.id===editingId)||{}).createdAt || Date.now() : Date.now(),
     updatedAt: Date.now()
@@ -4578,6 +4885,13 @@ form.addEventListener("submit", async (e)=>{
     RECORDS.unshift(record);
   }
 
+  // Si es una edición, se conserva el lote de evidencia donde ya vivía
+  // este caso (si lo tenía), para que guardarEvidenciaRegistro reutilice
+  // el mismo lote en vez de tratarlo como un registro nuevo.
+  if(prevRecordForNotif && prevRecordForNotif.evidenciaLote){
+    record.evidenciaLote = prevRecordForNotif.evidenciaLote;
+  }
+  await guardarEvidenciaRegistro(record.id, pendingEvidence.map(f=>({id:f.id, name:f.name, type:f.type, size:f.size, dataUrl:f.dataUrl})));
   await saveRecords();
   generateCaseDiffNotifications(prevRecordForNotif, record);
   await commitNotifications();
@@ -4620,7 +4934,7 @@ async function editRecord(id){
   document.querySelector('.tab-btn[data-view="captura"]').click();
   window.scrollTo({top:0, behavior:"smooth"});
 
-  pendingEvidence = (r.evidencia || []).map(f=>({...f}));
+  pendingEvidence = (await cargarEvidenciaRegistro(r)).map(f=>({...f}));
   renderEvidenceGrid();
   pendingAvances = (r.avances || []).map(a=>({...a}));
   renderAvancesTimeline();
@@ -4950,6 +5264,7 @@ function resetEmpForm(){
   document.getElementById("emp-sueldo").value = "";
   document.getElementById("emp-genero").value = "";
   document.getElementById("emp-ingreso").value = todayISO();
+  document.getElementById("emp-nacimiento").value = "";
   document.getElementById("emp-estatus").value = "Activo";
   document.getElementById("emp-contrato").value = "";
   document.getElementById("emp-venc1").value = "";
@@ -4971,6 +5286,7 @@ document.getElementById("emp-btn-submit").addEventListener("click", async ()=>{
   const sueldo = document.getElementById("emp-sueldo").value;
   const genero = document.getElementById("emp-genero").value;
   const ingreso = document.getElementById("emp-ingreso").value;
+  const nacimiento = document.getElementById("emp-nacimiento").value;
   const estatus = document.getElementById("emp-estatus").value;
   const contrato = document.getElementById("emp-contrato").value;
   const venc1 = document.getElementById("emp-venc1").value;
@@ -4986,6 +5302,8 @@ document.getElementById("emp-btn-submit").addEventListener("click", async ()=>{
   }
 
   const existing = editingEmpId ? EMPLEADOS.find(e=>e.id===editingEmpId) : null;
+  const esAltaNueva = !editingEmpId;
+  const pasaABaja = estatus === "Baja" && (!existing || existing.estatus !== "Baja");
   const empleado = {
     id: editingEmpId || uid(),
     nombre,
@@ -4994,6 +5312,7 @@ document.getElementById("emp-btn-submit").addEventListener("click", async ()=>{
     sueldoDiario: parseFloat(sueldo),
     genero,
     fechaIngreso: ingreso,
+    fechaNacimiento: nacimiento || null,
     estatus,
     fechaBaja: estatus === "Baja" ? ((existing && existing.fechaBaja) ? existing.fechaBaja : todayISO()) : null,
     estadoContrato: contrato,
@@ -5011,9 +5330,189 @@ document.getElementById("emp-btn-submit").addEventListener("click", async ()=>{
     EMPLEADOS.unshift(empleado);
   }
   await saveEmpleados();
-  showToast(editingEmpId ? "✓ Colaborador actualizado" : "✓ Colaborador registrado");
+
+  let checklistMsg = "";
+  if(esAltaNueva){
+    generarChecklist("onboarding", empleado);
+    checklistMsg = " · Checklist de onboarding generado";
+  } else if(pasaABaja){
+    generarChecklist("offboarding", empleado);
+    checklistMsg = " · Checklist de offboarding generado";
+  }
+  if(checklistMsg) await saveChecklists();
+
+  showToast((editingEmpId ? "✓ Colaborador actualizado" : "✓ Colaborador registrado") + checklistMsg);
   resetEmpForm();
   renderAll();
+});
+
+/* ============================================================
+   CHECKLISTS DE ONBOARDING / OFFBOARDING
+   ============================================================
+   Se generan automáticamente: onboarding al dar de alta un
+   colaborador nuevo, offboarding al cambiar su estatus a "Baja".
+   ============================================================ */
+let CHECKLISTS = [];
+const CHECKLISTS_STORAGE_KEY = "hr-checklists-v1";
+
+const CHECKLIST_ITEMS_ONBOARDING = [
+  "Alta en nómina / IMSS",
+  "Firma de contrato",
+  "Entrega de equipo de cómputo / herramientas de trabajo",
+  "Creación de accesos (correo, sistemas, credencial)",
+  "Inducción y capacitación inicial",
+  "Entrega de manual de bienvenida / políticas internas",
+  "Asignación de responsable o mentor"
+];
+const CHECKLIST_ITEMS_OFFBOARDING = [
+  "Entrevista de salida",
+  "Devolución de equipo / herramientas de trabajo",
+  "Baja de accesos (correo, sistemas, credencial)",
+  "Baja en nómina / IMSS",
+  "Cálculo y entrega de finiquito",
+  "Carta de recomendación (si aplica)",
+  "Redistribución de pendientes / actualización de organigrama"
+];
+
+async function loadChecklists(){
+  try{
+    const res = await window.storage.get(CHECKLISTS_STORAGE_KEY, true);
+    CHECKLISTS = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    CHECKLISTS = [];
+  }
+}
+async function saveChecklists(){
+  try{
+    await window.storage.set(CHECKLISTS_STORAGE_KEY, JSON.stringify(CHECKLISTS), true);
+    storageAvailable = true;
+  }catch(e){
+    console.error("Error guardando checklists", e);
+    storageAvailable = false;
+  }
+  updateStorageBanner();
+}
+
+// Genera un checklist para un empleado si no existe ya uno del mismo
+// tipo (evita duplicados si se vuelve a guardar el mismo registro,
+// p.ej. al corregir un dato mientras sigue en estatus "Baja").
+function generarChecklist(tipo, empleado){
+  const yaExiste = CHECKLISTS.some(c => c.empleadoId === empleado.id && c.tipo === tipo);
+  if(yaExiste) return null;
+  const base = tipo === "onboarding" ? CHECKLIST_ITEMS_ONBOARDING : CHECKLIST_ITEMS_OFFBOARDING;
+  const checklist = {
+    id: uid(),
+    tipo,
+    empleadoId: empleado.id,
+    empleadoNombre: empleado.nombre,
+    puesto: empleado.puesto || "",
+    departamento: empleado.departamento,
+    fecha: tipo === "onboarding" ? empleado.fechaIngreso : (empleado.fechaBaja || todayISO()),
+    items: base.map(texto => ({id: uid(), texto, hecho:false, fechaCompletado:null})),
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+  CHECKLISTS.unshift(checklist);
+  return checklist;
+}
+
+async function toggleChecklistItem(checklistId, itemId){
+  const c = CHECKLISTS.find(x=>x.id===checklistId);
+  if(!c) return;
+  const item = (c.items || []).find(x=>x.id===itemId);
+  if(!item) return;
+  item.hecho = !item.hecho;
+  item.fechaCompletado = item.hecho ? todayISO() : null;
+  c.updatedAt = Date.now();
+  await saveChecklists();
+  renderChecklists();
+}
+
+function deleteChecklist(id){
+  const c = CHECKLISTS.find(x=>x.id===id);
+  if(!c) return;
+  showConfirm(`¿Eliminar el checklist de ${c.tipo === "onboarding" ? "onboarding" : "offboarding"} de ${c.empleadoNombre}?`, async ()=>{
+    CHECKLISTS = CHECKLISTS.filter(x=>x.id!==id);
+    await saveChecklists();
+    showToast("Checklist eliminado");
+    renderChecklists();
+    updateStorageUsage();
+  });
+}
+
+function checklistProgress(c){
+  const total = (c.items || []).length;
+  const done = (c.items || []).filter(i=>i.hecho).length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  return {done, total, pct};
+}
+
+function getFilteredChecklists(){
+  const tipo = document.getElementById("chk-filter-tipo").value;
+  const estado = document.getElementById("chk-filter-estado").value;
+  return CHECKLISTS.filter(c=>{
+    if(tipo && c.tipo !== tipo) return false;
+    const {done, total} = checklistProgress(c);
+    if(estado === "pendiente" && done === total) return false;
+    if(estado === "completo" && done !== total) return false;
+    return true;
+  });
+}
+
+function renderChecklists(){
+  const empty = document.getElementById("chk-empty");
+  const content = document.getElementById("chk-content");
+  if(!empty || !content) return;
+  if(CHECKLISTS.length === 0){
+    empty.style.display = "block";
+    content.style.display = "none";
+    return;
+  }
+  empty.style.display = "none";
+  content.style.display = "block";
+
+  const filtered = getFilteredChecklists().sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
+  const list = document.getElementById("checklists-list");
+  if(filtered.length === 0){
+    list.innerHTML = '<div class="empty-state" style="padding:24px;"><div>No hay checklists que coincidan con los filtros.</div></div>';
+    return;
+  }
+  list.innerHTML = filtered.map(c=>{
+    const {done, total, pct} = checklistProgress(c);
+    const esOnboarding = c.tipo === "onboarding";
+    const icono = esOnboarding ? "🟢" : "🔴";
+    const etiqueta = esOnboarding ? "Onboarding (alta)" : "Offboarding (baja)";
+    const itemsHtml = (c.items || []).map(i=>{
+      return `<label style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12.5px;cursor:pointer;">
+        <input type="checkbox" ${i.hecho ? "checked" : ""} onchange="toggleChecklistItem('${c.id}','${i.id}')">
+        <span style="${i.hecho ? "text-decoration:line-through;color:var(--text-mute);" : ""}">${escapeHtml(i.texto)}</span>
+        ${i.hecho && i.fechaCompletado ? `<span style="margin-left:auto;font-size:10.5px;color:var(--text-mute);">${i.fechaCompletado}</span>` : ""}
+      </label>`;
+    }).join("");
+    return `<div class="table-card" style="margin-bottom:14px;">
+      <div class="table-head">
+        <div>
+          <h3>${icono} ${escapeHtml(c.empleadoNombre)}</h3>
+          <div class="sub">${etiqueta} · ${escapeHtml(c.puesto || "Sin puesto")} · ${escapeHtml(c.departamento)} · ${c.fecha}</div>
+        </div>
+        <div class="tbl-actions" style="align-items:center;">
+          <span class="pill" style="background:${done===total ? "#1F6F6B22" : "#D98C2B22"};color:${done===total ? "#1F6F6B" : "#D98C2B"};">${done}/${total} completado</span>
+          <button class="icon-btn danger" title="Eliminar checklist" onclick="deleteChecklist('${c.id}')">✕</button>
+        </div>
+      </div>
+      <div style="padding:4px 16px 14px;">
+        <div class="storage-meter" style="margin-bottom:8px;"><div class="storage-meter-fill" style="width:${pct}%;background:${done===total ? "linear-gradient(90deg,var(--teal),var(--teal))" : "linear-gradient(90deg,var(--amber),var(--blue))"};"></div></div>
+        ${itemsHtml}
+      </div>
+    </div>`;
+  }).join("");
+}
+document.getElementById("chk-filter-tipo").addEventListener("change", renderChecklists);
+document.getElementById("chk-filter-estado").addEventListener("change", renderChecklists);
+document.getElementById("chk-clear-filters").addEventListener("click", ()=>{
+  document.getElementById("chk-filter-tipo").value = "";
+  document.getElementById("chk-filter-estado").value = "";
+  renderChecklists();
 });
 
 function editEmpleado(id){
@@ -5026,6 +5525,7 @@ function editEmpleado(id){
   document.getElementById("emp-sueldo").value = e.sueldoDiario;
   document.getElementById("emp-genero").value = e.genero;
   document.getElementById("emp-ingreso").value = e.fechaIngreso;
+  document.getElementById("emp-nacimiento").value = e.fechaNacimiento || "";
   document.getElementById("emp-estatus").value = e.estatus;
   document.getElementById("emp-contrato").value = e.estadoContrato;
   document.getElementById("emp-venc1").value = e.fechaVencimiento1 || "";
@@ -5453,10 +5953,288 @@ const NOTIF_TYPES = {
   comentario:         { severity:"informativa", icon:"💬", prefKey:"comentarios" },
   evidencia:          { severity:"informativa", icon:"📎", prefKey:"evidencias" },
   documento_personal: { severity:"pendiente",   icon:"🪪", prefKey:"vencimientos" },
-  riesgo:             { severity:"critica",     icon:"⚠️", prefKey:"criticas" }
+  riesgo:             { severity:"critica",     icon:"⚠️", prefKey:"criticas" },
+  cumpleanos:         { severity:"informativa", icon:"🎂", prefKey:"cumpleanosAniversarios" },
+  aniversario:        { severity:"informativa", icon:"🎉", prefKey:"cumpleanosAniversarios" }
 };
 const PRIORIDAD_RANK = {"Baja":1,"Media":2,"Alta":3,"Crítica":4};
 const NIVEL_RIESGO_RANK = {"Bajo":1,"Medio":2,"Alto":3,"Crítico":4};
+
+/* ============================================================
+   JUNTA DE OPERACIONES Y MINUTA
+   ============================================================ */
+let MINUTAS = [];
+let editingMinutaId = null;
+let pendingAcuerdos = []; // {id, descripcion, responsable, fechaCompromiso, estado, casoId}
+const MINUTAS_STORAGE_KEY = "hr-minutas-v1";
+
+async function loadMinutas(){
+  try{
+    const res = await window.storage.get(MINUTAS_STORAGE_KEY, true);
+    MINUTAS = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){
+    MINUTAS = [];
+  }
+}
+async function saveMinutas(){
+  try{
+    await window.storage.set(MINUTAS_STORAGE_KEY, JSON.stringify(MINUTAS), true);
+    storageAvailable = true;
+  }catch(e){
+    console.error("Error guardando minutas", e);
+    storageAvailable = false;
+  }
+  updateStorageBanner();
+}
+
+function initMinutaCasoSelect(){
+  const sel = document.getElementById("ac-caso");
+  if(!sel) return;
+  const current = sel.value;
+  const opciones = RECORDS.slice()
+    .sort((a,b)=> (b.createdAt||0) - (a.createdAt||0))
+    .map(r=>`<option value="${r.id}">${escapeHtml(r.tema)} · ${escapeHtml(r.estado)}</option>`)
+    .join("");
+  sel.innerHTML = `<option value="">Ninguno</option>${opciones}`;
+  if(current && RECORDS.some(r=>r.id===current)) sel.value = current;
+}
+
+document.getElementById("min-toggle").addEventListener("click", ()=>{
+  document.getElementById("min-toggle").classList.toggle("open");
+  document.getElementById("min-panel").classList.toggle("open");
+});
+
+function renderAcuerdosPendingList(){
+  const wrap = document.getElementById("acuerdos-pending-list");
+  if(pendingAcuerdos.length === 0){
+    wrap.innerHTML = '<div class="avances-empty">Aún no hay acuerdos agregados a esta minuta.</div>';
+    return;
+  }
+  wrap.innerHTML = pendingAcuerdos.map(a=>{
+    const caso = a.casoId ? RECORDS.find(r=>r.id===a.casoId) : null;
+    const casoTxt = caso ? `🔗 ${escapeHtml(caso.tema)}` : "";
+    return `<div class="avance-bubble">
+      <button type="button" class="av-remove" title="Eliminar acuerdo" onclick="removeAcuerdoPending('${a.id}')">✕</button>
+      <div class="av-date">${a.fechaCompromiso || "Sin fecha"} ${a.responsable ? "· " + escapeHtml(a.responsable) : ""}</div>
+      <div class="av-text">${escapeHtml(a.descripcion)}</div>
+      ${casoTxt ? `<div style="font-size:11px;color:var(--blue);margin-top:2px;">${casoTxt}</div>` : ""}
+    </div>`;
+  }).join("");
+}
+function addAcuerdoPending(){
+  const descEl = document.getElementById("ac-desc");
+  const respEl = document.getElementById("ac-resp");
+  const fechaEl = document.getElementById("ac-fecha");
+  const casoEl = document.getElementById("ac-caso");
+  const descripcion = descEl.value.trim();
+  if(!descripcion){
+    alert("Escribe la descripción del acuerdo antes de agregarlo.");
+    return;
+  }
+  pendingAcuerdos.push({
+    id: uid(),
+    descripcion,
+    responsable: respEl.value.trim(),
+    fechaCompromiso: fechaEl.value || "",
+    estado: "Pendiente",
+    casoId: casoEl.value || null
+  });
+  descEl.value = "";
+  respEl.value = "";
+  fechaEl.value = "";
+  casoEl.value = "";
+  renderAcuerdosPendingList();
+}
+function removeAcuerdoPending(id){
+  pendingAcuerdos = pendingAcuerdos.filter(a=>a.id!==id);
+  renderAcuerdosPendingList();
+}
+document.getElementById("btn-add-acuerdo").addEventListener("click", addAcuerdoPending);
+
+function resetMinutaForm(){
+  document.getElementById("min-fecha").value = todayISO();
+  document.getElementById("min-titulo").value = "";
+  document.getElementById("min-asistentes").value = "";
+  document.getElementById("min-notas").value = "";
+  pendingAcuerdos = [];
+  renderAcuerdosPendingList();
+  editingMinutaId = null;
+  document.getElementById("min-toggle-label").textContent = "Nueva Minuta";
+  document.getElementById("min-toggle-icon").textContent = "➕";
+  document.getElementById("min-btn-submit").textContent = "Guardar minuta";
+  document.getElementById("min-btn-cancel-edit").style.display = "none";
+}
+document.getElementById("min-btn-reset").addEventListener("click", resetMinutaForm);
+document.getElementById("min-btn-cancel-edit").addEventListener("click", resetMinutaForm);
+
+document.getElementById("min-btn-submit").addEventListener("click", async ()=>{
+  const fecha = document.getElementById("min-fecha").value || todayISO();
+  const titulo = document.getElementById("min-titulo").value.trim();
+  const asistentes = document.getElementById("min-asistentes").value.trim();
+  const notas = document.getElementById("min-notas").value.trim();
+
+  if(!titulo){
+    alert("Escribe un título o tema para la minuta antes de guardar.");
+    return;
+  }
+  if(pendingAcuerdos.length === 0){
+    alert("Agrega al menos un acuerdo o pendiente antes de guardar la minuta.");
+    return;
+  }
+
+  const existing = editingMinutaId ? MINUTAS.find(m=>m.id===editingMinutaId) : null;
+  const minuta = {
+    id: editingMinutaId || uid(),
+    fecha, titulo, asistentes, notas,
+    acuerdos: pendingAcuerdos.map(a=>({...a})),
+    createdAt: existing ? existing.createdAt : Date.now(),
+    updatedAt: Date.now()
+  };
+
+  if(editingMinutaId){
+    const idx = MINUTAS.findIndex(m=>m.id===editingMinutaId);
+    if(idx > -1) MINUTAS[idx] = minuta;
+  } else {
+    MINUTAS.unshift(minuta);
+  }
+  await saveMinutas();
+  showToast(editingMinutaId ? "✓ Minuta actualizada" : "✓ Minuta guardada");
+  resetMinutaForm();
+  renderMinutasList();
+  updateStorageUsage();
+});
+
+function editMinuta(id){
+  const m = MINUTAS.find(x=>x.id===id);
+  if(!m) return;
+  editingMinutaId = id;
+  document.getElementById("min-fecha").value = m.fecha;
+  document.getElementById("min-titulo").value = m.titulo;
+  document.getElementById("min-asistentes").value = m.asistentes || "";
+  document.getElementById("min-notas").value = m.notas || "";
+  pendingAcuerdos = (m.acuerdos || []).map(a=>({...a}));
+  renderAcuerdosPendingList();
+  document.getElementById("min-toggle-label").textContent = "Editando: " + m.titulo;
+  document.getElementById("min-toggle-icon").textContent = "✎";
+  document.getElementById("min-btn-submit").textContent = "Actualizar minuta";
+  document.getElementById("min-btn-cancel-edit").style.display = "inline-block";
+  document.getElementById("min-toggle").classList.add("open");
+  document.getElementById("min-panel").classList.add("open");
+  document.querySelector('.tab-btn[data-view="minutas"]').click();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function deleteMinuta(id){
+  const m = MINUTAS.find(x=>x.id===id);
+  if(!m) return;
+  showConfirm(`¿Eliminar la minuta "${m.titulo}" del ${m.fecha}? Se perderán sus acuerdos registrados.`, async ()=>{
+    MINUTAS = MINUTAS.filter(x=>x.id!==id);
+    await saveMinutas();
+    showToast("Minuta eliminada");
+    renderMinutasList();
+    updateStorageUsage();
+  });
+}
+
+async function toggleAcuerdoCumplido(minutaId, acuerdoId){
+  const m = MINUTAS.find(x=>x.id===minutaId);
+  if(!m) return;
+  const a = (m.acuerdos || []).find(x=>x.id===acuerdoId);
+  if(!a) return;
+  a.estado = a.estado === "Cumplido" ? "Pendiente" : "Cumplido";
+  m.updatedAt = Date.now();
+  await saveMinutas();
+  renderMinutasList();
+}
+
+function acuerdoEstadoDisplay(a){
+  if(a.estado === "Cumplido") return {label:"Cumplido", color:"#1F6F6B"};
+  if(a.fechaCompromiso && a.fechaCompromiso < todayISO()) return {label:"Vencido", color:"#C1433D"};
+  return {label:"Pendiente", color:"#D98C2B"};
+}
+
+function getFilteredMinutas(){
+  const q = (document.getElementById("min-search").value || "").toLowerCase().trim();
+  const filtroAcuerdo = document.getElementById("min-filter-acuerdo").value;
+  return MINUTAS.filter(m=>{
+    if(q){
+      const asistentesTxt = (m.asistentes || "").toLowerCase();
+      const acuerdosTxt = (m.acuerdos || []).map(a=>`${a.descripcion} ${a.responsable || ""}`).join(" ").toLowerCase();
+      const haystack = `${m.titulo} ${asistentesTxt} ${acuerdosTxt}`.toLowerCase();
+      if(!haystack.includes(q)) return false;
+    }
+    if(filtroAcuerdo === "pendiente"){
+      if(!(m.acuerdos || []).some(a=>acuerdoEstadoDisplay(a).label !== "Cumplido")) return false;
+    }
+    if(filtroAcuerdo === "vencido"){
+      if(!(m.acuerdos || []).some(a=>acuerdoEstadoDisplay(a).label === "Vencido")) return false;
+    }
+    return true;
+  });
+}
+
+function renderMinutasList(){
+  const empty = document.getElementById("min-empty");
+  const content = document.getElementById("min-content");
+  if(!empty || !content) return;
+  if(MINUTAS.length === 0){
+    empty.style.display = "block";
+    content.style.display = "none";
+    return;
+  }
+  empty.style.display = "none";
+  content.style.display = "block";
+
+  const filtered = getFilteredMinutas().sort((a,b)=> (b.fecha||"").localeCompare(a.fecha||"") || (b.createdAt||0)-(a.createdAt||0));
+  document.getElementById("min-count").textContent = `${filtered.length} de ${MINUTAS.length} minutas`;
+  const list = document.getElementById("minutas-list");
+  if(filtered.length === 0){
+    list.innerHTML = '<div class="empty-state" style="padding:24px;"><div>No hay minutas que coincidan con los filtros.</div></div>';
+    return;
+  }
+  list.innerHTML = filtered.map(m=>{
+    const acuerdosHtml = (m.acuerdos || []).map(a=>{
+      const est = acuerdoEstadoDisplay(a);
+      const caso = a.casoId ? RECORDS.find(r=>r.id===a.casoId) : null;
+      const casoBtn = caso
+        ? `<button type="button" class="icon-btn" title="Ver caso vinculado" onclick="openDetail('${caso.id}')">🔗</button>`
+        : "";
+      return `<tr>
+        <td class="wrap">${escapeHtml(a.descripcion)}</td>
+        <td>${escapeHtml(a.responsable || "—")}</td>
+        <td>${a.fechaCompromiso || "—"}</td>
+        <td><span class="pill" style="background:${est.color}22;color:${est.color};cursor:pointer;" onclick="toggleAcuerdoCumplido('${m.id}','${a.id}')" title="Clic para cambiar de estado">${est.label}</span></td>
+        <td>${caso ? escapeHtml(caso.tema) : "—"} ${casoBtn}</td>
+      </tr>`;
+    }).join("");
+    return `<div class="table-card" style="margin-bottom:14px;">
+      <div class="table-head">
+        <div>
+          <h3>${escapeHtml(m.titulo)}</h3>
+          <div class="sub">${m.fecha} ${m.asistentes ? "· 👥 " + escapeHtml(m.asistentes) : ""}</div>
+        </div>
+        <div class="tbl-actions">
+          <button class="icon-btn" title="Editar" onclick="editMinuta('${m.id}')">✎</button>
+          <button class="icon-btn danger" title="Eliminar" onclick="deleteMinuta('${m.id}')">✕</button>
+        </div>
+      </div>
+      ${m.notas ? `<div style="padding:0 16px 10px;font-size:12.5px;color:var(--text-mute);">${escapeHtml(m.notas)}</div>` : ""}
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Acuerdo / pendiente</th><th>Responsable</th><th>Fecha compromiso</th><th>Estado</th><th>Caso vinculado</th></tr></thead>
+          <tbody>${acuerdosHtml}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join("");
+}
+document.getElementById("min-search").addEventListener("input", renderMinutasList);
+document.getElementById("min-filter-acuerdo").addEventListener("change", renderMinutasList);
+document.getElementById("min-clear-filters").addEventListener("click", ()=>{
+  document.getElementById("min-search").value = "";
+  document.getElementById("min-filter-acuerdo").value = "";
+  renderMinutasList();
+});
 
 let NOTIFICACIONES = [];
 const NOTIFICACIONES_STORAGE_KEY = "hr-notificaciones-v1";
@@ -5619,6 +6397,8 @@ function checkVencimientosYGenerar(){
     }
   });
   
+  checkCumpleanosYAniversarios();
+
   // Renderizar banner de notificaciones urgentes
   renderNotifBanner();
 }
@@ -5792,6 +6572,7 @@ function renderNotifPrefsConfig(){
   document.getElementById("cfg-notif-responsable").checked = p.cambiosResponsable !== false;
   document.getElementById("cfg-notif-prioridad").checked = p.cambiosPrioridad !== false;
   document.getElementById("cfg-notif-recordatorios").checked = p.recordatorios !== false;
+  document.getElementById("cfg-notif-cumple").checked = p.cumpleanosAniversarios !== false;
 }
 document.getElementById("cfg-notif-save").addEventListener("click", async ()=>{
   APP_SETTINGS.notificaciones = {
@@ -5801,7 +6582,8 @@ document.getElementById("cfg-notif-save").addEventListener("click", async ()=>{
     evidencias: document.getElementById("cfg-notif-evidencias").checked,
     cambiosResponsable: document.getElementById("cfg-notif-responsable").checked,
     cambiosPrioridad: document.getElementById("cfg-notif-prioridad").checked,
-    recordatorios: document.getElementById("cfg-notif-recordatorios").checked
+    recordatorios: document.getElementById("cfg-notif-recordatorios").checked,
+    cumpleanosAniversarios: document.getElementById("cfg-notif-cumple").checked
   };
   await saveSettings();
   showToast("✓ Preferencias de notificaciones actualizadas");
@@ -6674,7 +7456,7 @@ async function openDetail(id){
   modal.classList.add("show");
   updateDetailActionButtons();
 
-  const files = r.evidencia || [];
+  const files = await cargarEvidenciaRegistro(r);
   currentDetailEvidence = files;
   const evWrap = document.getElementById("dm-evidence");
   if(files && files.length > 0){
@@ -6727,7 +7509,7 @@ async function toggleDetailEdit(){
   
   // Si entra en modo edición, configurar evidencia y dropzone
   if(dmEditMode){
-    dmPendingEvidence = (r.evidencia || []).map(f=>({...f}));
+    dmPendingEvidence = (await cargarEvidenciaRegistro(r)).map(f=>({...f}));
     renderDetailEvidenceGrid();
     
     // Configurar dropzone
@@ -6783,8 +7565,7 @@ async function saveDetailEdit(){
   r.nivelRiesgo = riesgoConfig.nivel;
   
   // guardar evidencia actualizada
-  r.evidencia = dmPendingEvidence.map(f=>({id:f.id, name:f.name, type:f.type, size:f.size, dataUrl:f.dataUrl}));
-  r.evidenciaCount = dmPendingEvidence.length;
+  await guardarEvidenciaRegistro(r.id, dmPendingEvidence.map(f=>({id:f.id, name:f.name, type:f.type, size:f.size, dataUrl:f.dataUrl})));
   
   // registrar cambios en auditoría
   r.ultimaEdicion = new Date().toISOString();
@@ -7386,7 +8167,7 @@ Generado el: ${new Date().toLocaleString("es-MX")}
     zip.file("ficha_caso.txt", ficha);
   }
 
-  const files = r.evidencia || [];
+  const files = await cargarEvidenciaRegistro(r);
   if(files.length){
     const evFolder = zip.folder("evidencia");
     files.forEach(f=>{
@@ -7775,7 +8556,21 @@ function resetBackupSaveLocation(){
 }
 
 async function exportBackupJSON(){
-  const payload = { exportedAt: new Date().toISOString(), records: RECORDS, empleados: EMPLEADOS, candidatos: CANDIDATOS, notificaciones: NOTIFICACIONES, settings: APP_SETTINGS };
+  // La evidencia ya no vive embebida en cada registro (vive en lotes
+  // separados), así que se recolecta aquí para que el archivo de
+  // respaldo siga siendo un JSON autosuficiente y portátil, igual que
+  // antes. Se hace de forma secuencial (no en paralelo) para conservar
+  // la garantía original de no saturar el sistema de almacenamiento
+  // con múltiples llamadas simultáneas; los lotes ya leídos se
+  // reutilizan desde caché, así que en la práctica son pocas lecturas.
+  const evidence = {};
+  for(const r of RECORDS){
+    if(r.evidenciaCount){
+      const files = await cargarEvidenciaRegistro(r);
+      if(files.length) evidence[r.id] = files;
+    }
+  }
+  const payload = { exportedAt: new Date().toISOString(), records: RECORDS, evidence, empleados: EMPLEADOS, candidatos: CANDIDATOS, notificaciones: NOTIFICACIONES, settings: APP_SETTINGS };
   const jsonText = JSON.stringify(payload);
   const suggestedName = `respaldo_rh_${nowStamp()}.json`;
 
@@ -7853,14 +8648,22 @@ async function importBackupFile(file){
     NOTIFICACIONES = notificacionesPayload;
     APP_SETTINGS = settingsPayload;
     applySettingsToRuntime();
-    // Compatibilidad con respaldos generados por versiones anteriores,
-    // donde la evidencia viajaba aparte en payload.evidence[id].
+    // Compatibilidad con respaldos (tanto los generados por versiones
+    // anteriores, donde la evidencia viajaba embebida en cada registro,
+    // como los actuales, donde viaja aparte en payload.evidence[id]).
+    // Se limpia evidenciaLote de los registros importados porque esas
+    // llaves de lote pertenecen a la sesión/documento donde se generó
+    // el respaldo, no a este; migrarEvidenciaLegado() reconstruye los
+    // lotes desde cero aquí mismo, con la evidencia incluida en el
+    // archivo.
     if(payload && payload.evidence){
       RECORDS.forEach(r=>{
+        r.evidenciaLote = null;
         if(!r.evidencia && payload.evidence[r.id]) r.evidencia = payload.evidence[r.id];
       });
     }
     try{
+      await migrarEvidenciaLegado();
       await saveRecords();
       await saveEmpleados();
       await saveCandidatos();
@@ -7879,6 +8682,222 @@ async function importBackupFile(file){
   });
 }
 document.getElementById("btn-export-backup").addEventListener("click", exportBackupJSON);
+document.getElementById("btn-export-consulta").addEventListener("click", exportarVersionConsulta);
+
+/* ============================================================
+   EXPORTAR VERSIÓN DE SOLO CONSULTA (HTML estático, sin edición)
+   ============================================================
+   Genera un archivo .html completamente autosuficiente (sin
+   dependencias externas) para compartir con quien solo necesita
+   CONSULTAR la bitácora y las minutas, sin poder editarlas y sin
+   los módulos de planeación/analítica (Dashboard, KPIs, Calendario,
+   Gantt, Kanban) — solo el listado de casos con su detalle, y las
+   minutas de junta con sus acuerdos. La evidencia adjunta no se
+   incluye (solo se muestra cuántos archivos tiene cada caso), para
+   mantener el archivo ligero y no depender del sistema de lotes. */
+async function exportarVersionConsulta(){
+  if(RECORDS.length === 0 && MINUTAS.length === 0){
+    alert("No hay casos ni minutas para incluir en la versión de consulta.");
+    return;
+  }
+
+  const casosData = RECORDS.map(function(r){
+    return {
+      fecha: r.fecha, fechaCompromiso: r.fechaCompromiso || "", tema: r.tema, tipo: r.tipo,
+      area: r.area, macro: r.macro, descripcion: r.descripcion, responsable: r.responsable,
+      corresponsable: r.corresponsable || "", solicitante: r.solicitante, departamento: r.departamento,
+      sucursal: r.sucursal, estado: r.estado, prioridad: r.prioridad, riesgo: r.riesgo,
+      nivelRiesgo: r.nivelRiesgo, dias: calcDias(r), accion: r.accion || "", resultado: r.resultado || "",
+      fechaCierre: r.fechaCierre || "", costoFinal: (r.costoFinal != null && r.costoFinal !== "") ? Number(r.costoFinal) : null,
+      costoCategoria: r.costoCategoria || "", evidenciaCount: r.evidenciaCount || 0,
+      avances: (r.avances || []).map(function(a){ return {fecha:a.fecha, descripcion:a.descripcion}; }),
+      comentarios: r.comentarios || ""
+    };
+  });
+  const minutasData = MINUTAS.map(function(m){
+    return {
+      fecha: m.fecha, titulo: m.titulo, asistentes: m.asistentes || "", notas: m.notas || "",
+      acuerdos: (m.acuerdos || []).map(function(a){
+        const caso = a.casoId ? RECORDS.find(function(r){ return r.id === a.casoId; }) : null;
+        return {
+          descripcion: a.descripcion, responsable: a.responsable || "", fechaCompromiso: a.fechaCompromiso || "",
+          estado: acuerdoEstadoDisplay(a).label, casoTema: caso ? caso.tema : null
+        };
+      })
+    };
+  });
+  const payload = {
+    generadoEl: new Date().toLocaleDateString("es-MX", {day:"2-digit", month:"long", year:"numeric"}),
+    casos: casosData,
+    minutas: minutasData
+  };
+  const dataJson = JSON.stringify(payload).replace(/<\/script/g, "<\\/script");
+
+  const L = [];
+  L.push('<!DOCTYPE html>');
+  L.push('<html lang="es">');
+  L.push('<head>');
+  L.push('<meta charset="UTF-8">');
+  L.push('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+  L.push('<title>Bitacora RH - Version de consulta</title>');
+  L.push('<style>');
+  L.push(':root{--navy:#161B2E;--amber:#D98C2B;--blue:#3B5BA9;--teal:#1F6F6B;--red:#C1433D;--line:#E2E5EE;--muted:#7A8099;--ink:#1D2237;}');
+  L.push('*{box-sizing:border-box;}');
+  L.push('body{margin:0;font-family:Calibri,Segoe UI,Arial,sans-serif;background:#F5F6FA;color:var(--ink);}');
+  L.push('header{background:var(--navy);color:#fff;padding:18px 24px;}');
+  L.push('header h1{margin:0 0 4px;font-size:19px;}');
+  L.push('header p{margin:0;font-size:12.5px;color:#C6CAE0;}');
+  L.push('.watermark{display:inline-block;margin-top:8px;background:rgba(217,140,43,0.18);color:var(--amber);border:1px solid rgba(217,140,43,0.4);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold;}');
+  L.push('.tabs{display:flex;gap:6px;padding:12px 24px 0;background:#fff;border-bottom:1px solid var(--line);}');
+  L.push('.tabbtn{border:none;background:none;padding:10px 16px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;}');
+  L.push('.tabbtn.active{color:var(--navy);border-bottom-color:var(--amber);}');
+  L.push('main{padding:20px 24px 60px;max-width:1400px;margin:0 auto;}');
+  L.push('.panel{display:none;}');
+  L.push('.panel.active{display:block;}');
+  L.push('.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}');
+  L.push('.toolbar input,.toolbar select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;background:#fff;}');
+  L.push('.toolbar input{flex:1;min-width:220px;}');
+  L.push('.count{font-size:12px;color:var(--muted);align-self:center;margin-left:auto;}');
+  L.push('table{width:100%;border-collapse:collapse;background:#fff;font-size:12.5px;}');
+  L.push('.tcard{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px;}');
+  L.push('th{background:var(--navy);color:#fff;text-align:left;padding:9px 10px;font-size:11.5px;position:sticky;top:0;}');
+  L.push('td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}');
+  L.push('tr.rowclick{cursor:pointer;}');
+  L.push('tr.rowclick:hover{background:#F5F6FA;}');
+  L.push('.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}');
+  L.push('.detail{display:none;background:#F9FAFC;border-top:2px solid var(--amber);padding:14px 18px;}');
+  L.push('.detail.open{display:table-row;}');
+  L.push('.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;font-size:12.5px;}');
+  L.push('.detail-grid .full{grid-column:1/-1;}');
+  L.push('.detail-grid b{display:block;color:var(--muted);font-size:10.5px;text-transform:uppercase;margin-bottom:2px;}');
+  L.push('.empty{padding:40px;text-align:center;color:var(--muted);}');
+  L.push('.mcard-head{padding:12px 16px;border-bottom:1px solid var(--line);}');
+  L.push('.mcard-head h3{margin:0 0 3px;font-size:14.5px;color:var(--navy);}');
+  L.push('.mcard-head .sub{font-size:11.5px;color:var(--muted);}');
+  L.push('.mnotas{padding:0 16px 10px;font-size:12px;color:var(--muted);}');
+  L.push('footer{text-align:center;padding:20px;font-size:11px;color:var(--muted);}');
+  L.push('</style>');
+  L.push('</head>');
+  L.push('<body>');
+  L.push('<header><h1>Centro de Control - Capital Humano</h1><p>Bitacora de casos y Minutas de junta</p><span class="watermark">SOLO LECTURA</span></header>');
+  L.push('<div class="tabs">');
+  L.push('<button class="tabbtn active" data-tab="casos" onclick="showTab(\'casos\')">Bitacora de casos</button>');
+  L.push('<button class="tabbtn" data-tab="minutas" onclick="showTab(\'minutas\')">Juntas y Minutas</button>');
+  L.push('</div>');
+  L.push('<main>');
+  L.push('<div class="panel active" id="panel-casos">');
+  L.push('<div class="toolbar">');
+  L.push('<input type="text" id="q-casos" placeholder="Buscar por tema, responsable, area, departamento...">');
+  L.push('<select id="f-estado"><option value="">Estado: todos</option></select>');
+  L.push('<select id="f-area"><option value="">Area: todas</option></select>');
+  L.push('<span class="count" id="count-casos"></span>');
+  L.push('</div>');
+  L.push('<div class="tcard"><div class="table-scroll" style="overflow-x:auto;"><table id="tabla-casos"></table></div></div>');
+  L.push('</div>');
+  L.push('<div class="panel" id="panel-minutas">');
+  L.push('<div class="toolbar"><input type="text" id="q-minutas" placeholder="Buscar por titulo, asistente o acuerdo..."><span class="count" id="count-minutas"></span></div>');
+  L.push('<div id="lista-minutas"></div>');
+  L.push('</div>');
+  L.push('</main>');
+  L.push('<footer>Generado el ' + payload.generadoEl + ' &middot; ' + casosData.length + ' caso(s) &middot; ' + minutasData.length + ' minuta(s) &middot; Documento de solo consulta, sin capacidad de edicion.</footer>');
+  L.push('<script>');
+  L.push('const DATA = ' + dataJson + ';');
+  L.push('function esc(s){ if(s==null) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\'/g,"&#39;"); }');
+  L.push('function showTab(t){ document.querySelectorAll(".tabbtn").forEach(function(b){ b.classList.toggle("active", b.dataset.tab===t); }); document.querySelectorAll(".panel").forEach(function(p){ p.classList.toggle("active", p.id==="panel-"+t); }); }');
+  L.push('const COLOR_ESTADO = {"No Iniciado":"#8B90A3","En Proceso":"#3B5BA9","En Revisi\\u00f3n":"#D98C2B","Detenido":"#C1433D","Cerrado":"#1F6F6B","Cancelado":"#8B90A3"};');
+  L.push('const COLOR_ACUERDO = {"Cumplido":"#1F6F6B","Vencido":"#C1433D","Pendiente":"#D98C2B"};');
+  L.push('function pill(txt,color){ return "<span class=\\"pill\\" style=\\"background:"+color+"22;color:"+color+"\\">"+esc(txt)+"</span>"; }');
+  L.push('function initFiltrosCasos(){');
+  L.push('  const estados = Array.from(new Set(DATA.casos.map(function(c){return c.estado;}))).sort();');
+  L.push('  const areas = Array.from(new Set(DATA.casos.map(function(c){return c.area;}))).sort();');
+  L.push('  const selE = document.getElementById("f-estado"); estados.forEach(function(e){ selE.insertAdjacentHTML("beforeend","<option>"+esc(e)+"</option>"); });');
+  L.push('  const selA = document.getElementById("f-area"); areas.forEach(function(a){ selA.insertAdjacentHTML("beforeend","<option>"+esc(a)+"</option>"); });');
+  L.push('}');
+  L.push('function filtrarCasos(){');
+  L.push('  const q = document.getElementById("q-casos").value.toLowerCase().trim();');
+  L.push('  const fe = document.getElementById("f-estado").value;');
+  L.push('  const fa = document.getElementById("f-area").value;');
+  L.push('  return DATA.casos.filter(function(c){');
+  L.push('    if(fe && c.estado!==fe) return false;');
+  L.push('    if(fa && c.area!==fa) return false;');
+  L.push('    if(q){ const hay=(c.tema+" "+c.responsable+" "+c.area+" "+c.departamento+" "+c.sucursal+" "+c.solicitante).toLowerCase(); if(hay.indexOf(q)===-1) return false; }');
+  L.push('    return true;');
+  L.push('  });');
+  L.push('}');
+  L.push('function money(n){ if(n==null) return "-"; return "$"+Number(n).toLocaleString("es-MX",{minimumFractionDigits:2,maximumFractionDigits:2}); }');
+  L.push('function renderCasos(){');
+  L.push('  const filtrados = filtrarCasos();');
+  L.push('  document.getElementById("count-casos").textContent = filtrados.length+" de "+DATA.casos.length+" casos";');
+  L.push('  const tabla = document.getElementById("tabla-casos");');
+  L.push('  if(filtrados.length===0){ tabla.innerHTML = "<tr><td class=\\"empty\\">No hay casos que coincidan con los filtros.</td></tr>"; return; }');
+  L.push('  let html = "<thead><tr><th>Fecha</th><th>Tema</th><th>Area</th><th>Responsable</th><th>Estado</th><th>Prioridad</th><th>Dias</th><th>Costo</th><th>Evid.</th></tr></thead><tbody>";');
+  L.push('  filtrados.forEach(function(c,i){');
+  L.push('    html += "<tr class=\\"rowclick\\" onclick=\\"toggleDetalle("+i+")\\">";');
+  L.push('    html += "<td>"+esc(c.fecha)+"</td><td><b>"+esc(c.tema)+"</b></td><td>"+esc(c.area)+"</td><td>"+esc(c.responsable)+"</td>";');
+  L.push('    html += "<td>"+pill(c.estado, COLOR_ESTADO[c.estado]||"#8B90A3")+"</td><td>"+esc(c.prioridad)+"</td><td>"+c.dias+"</td>";');
+  L.push('    html += "<td>"+money(c.costoFinal)+"</td><td>"+(c.evidenciaCount?("\\uD83D\\uDCCE "+c.evidenciaCount):"-")+"</td></tr>";');
+  L.push('    html += "<tr id=\\"detalle-"+i+"\\"><td colspan=\\"9\\" style=\\"padding:0;\\"><div class=\\"detail\\" id=\\"det-body-"+i+"\\"></div></td></tr>";');
+  L.push('  });');
+  L.push('  tabla.innerHTML = html + "</tbody>";');
+  L.push('  window._casosFiltrados = filtrados;');
+  L.push('}');
+  L.push('function toggleDetalle(i){');
+  L.push('  const el = document.getElementById("det-body-"+i);');
+  L.push('  const abierto = el.classList.contains("open");');
+  L.push('  document.querySelectorAll(".detail.open").forEach(function(d){ d.classList.remove("open"); });');
+  L.push('  if(abierto) return;');
+  L.push('  const c = window._casosFiltrados[i];');
+  L.push('  const avancesHtml = (c.avances&&c.avances.length) ? c.avances.map(function(a){ return "<div>&bull; <b style=\\"display:inline;text-transform:none;\\">"+esc(a.fecha)+":</b> "+esc(a.descripcion)+"</div>"; }).join("") : "Sin avances registrados.";');
+  L.push('  el.innerHTML = "<div class=\\"detail-grid\\">"+');
+  L.push('    "<div class=\\"full\\"><b>Descripcion</b>"+esc(c.descripcion)+"</div>"+');
+  L.push('    "<div><b>Tipo</b>"+esc(c.tipo)+"</div><div><b>Macroproceso</b>"+esc(c.macro)+"</div>"+');
+  L.push('    "<div><b>Solicitante</b>"+esc(c.solicitante)+"</div><div><b>Departamento / Sucursal</b>"+esc(c.departamento)+" / "+esc(c.sucursal)+"</div>"+');
+  L.push('    "<div><b>Riesgo</b>"+esc(c.riesgo)+" ("+esc(c.nivelRiesgo)+")</div><div><b>Fecha compromiso</b>"+esc(c.fechaCompromiso||"-")+"</div>"+');
+  L.push('    "<div class=\\"full\\"><b>Accion realizada</b>"+esc(c.accion||"Sin capturar")+"</div>"+');
+  L.push('    "<div class=\\"full\\"><b>Resultado obtenido</b>"+esc(c.resultado||"Sin capturar")+"</div>"+');
+  L.push('    "<div class=\\"full\\"><b>Avances</b>"+avancesHtml+"</div>"+');
+  L.push('    "<div class=\\"full\\"><b>Comentarios</b>"+esc(c.comentarios||"Sin comentarios")+"</div>"+');
+  L.push('  "</div>";');
+  L.push('  el.classList.add("open");');
+  L.push('}');
+  L.push('function filtrarMinutas(){');
+  L.push('  const q = document.getElementById("q-minutas").value.toLowerCase().trim();');
+  L.push('  if(!q) return DATA.minutas;');
+  L.push('  return DATA.minutas.filter(function(m){');
+  L.push('    const acTxt = (m.acuerdos||[]).map(function(a){return a.descripcion+" "+a.responsable;}).join(" ");');
+  L.push('    const hay = (m.titulo+" "+m.asistentes+" "+acTxt).toLowerCase();');
+  L.push('    return hay.indexOf(q)!==-1;');
+  L.push('  });');
+  L.push('}');
+  L.push('function renderMinutas(){');
+  L.push('  const filtradas = filtrarMinutas();');
+  L.push('  document.getElementById("count-minutas").textContent = filtradas.length+" de "+DATA.minutas.length+" minutas";');
+  L.push('  const cont = document.getElementById("lista-minutas");');
+  L.push('  if(filtradas.length===0){ cont.innerHTML = "<div class=\\"empty\\">No hay minutas que coincidan con la busqueda.</div>"; return; }');
+  L.push('  cont.innerHTML = filtradas.map(function(m){');
+  L.push('    const rows = (m.acuerdos||[]).map(function(a){');
+  L.push('      return "<tr><td>"+esc(a.descripcion)+"</td><td>"+esc(a.responsable||"-")+"</td><td>"+esc(a.fechaCompromiso||"-")+"</td><td>"+pill(a.estado, COLOR_ACUERDO[a.estado]||"#8B90A3")+"</td><td>"+(a.casoTema?esc(a.casoTema):"-")+"</td></tr>";');
+  L.push('    }).join("");');
+  L.push('    return "<div class=\\"tcard\\"><div class=\\"mcard-head\\"><h3>"+esc(m.titulo)+"</h3><div class=\\"sub\\">"+esc(m.fecha)+(m.asistentes?(" &middot; "+esc(m.asistentes)):"")+"</div></div>"+');
+  L.push('      (m.notas?("<div class=\\"mnotas\\">"+esc(m.notas)+"</div>"):"")+');
+  L.push('      "<table><thead><tr><th>Acuerdo</th><th>Responsable</th><th>Fecha compromiso</th><th>Estado</th><th>Caso vinculado</th></tr></thead><tbody>"+rows+"</tbody></table></div>";');
+  L.push('  }).join("");');
+  L.push('}');
+  L.push('initFiltrosCasos();');
+  L.push('document.getElementById("q-casos").addEventListener("input", renderCasos);');
+  L.push('document.getElementById("f-estado").addEventListener("change", renderCasos);');
+  L.push('document.getElementById("f-area").addEventListener("change", renderCasos);');
+  L.push('document.getElementById("q-minutas").addEventListener("input", renderMinutas);');
+  L.push('renderCasos();');
+  L.push('renderMinutas();');
+  L.push('<' + '/script>');
+  L.push('</body></html>');
+  const htmlFinal = L.join("\n");
+
+  const blob = new Blob([htmlFinal], {type:"text/html"});
+  downloadBlob(blob, `bitacora_consulta_${todayISO()}.html`);
+  showToast("✓ Versión de consulta exportada");
+}
 document.getElementById("btn-change-backup-location").addEventListener("click", resetBackupSaveLocation);
 if(window.showSaveFilePicker){
   document.getElementById("btn-change-backup-location").style.display = "inline-block";
@@ -8631,16 +9650,29 @@ function renderGanttPersonal(){
    ============================================================ */
 function updateStorageUsage(){
   const el = document.getElementById("storage-usage");
+  // "Datos base" = todo lo que sigue viviendo en una sola llave cada uno
+  // (records ya sin evidencia embebida, empleados, candidatos,
+  // notificaciones, settings). Este es el bloque que realmente compite
+  // por el límite de 5MB de una llave individual.
   const mbRecords = new Blob([JSON.stringify(RECORDS)]).size / (1024*1024);
   const mbEmp = new Blob([JSON.stringify(EMPLEADOS)]).size / (1024*1024);
   const mbCand = new Blob([JSON.stringify(CANDIDATOS)]).size / (1024*1024);
   const mbNotif = new Blob([JSON.stringify(NOTIFICACIONES)]).size / (1024*1024);
   const mbSettings = new Blob([JSON.stringify(APP_SETTINGS)]).size / (1024*1024);
-  const totalMb = mbRecords + mbEmp + mbCand + mbNotif + mbSettings;
+  const mbMinutas = new Blob([JSON.stringify(MINUTAS)]).size / (1024*1024);
+  const mbChecklists = new Blob([JSON.stringify(CHECKLISTS)]).size / (1024*1024);
+  const totalMb = mbRecords + mbEmp + mbCand + mbNotif + mbSettings + mbMinutas + mbChecklists;
   const pct = Math.min(100, Math.round((totalMb / STORAGE_QUOTA_MB) * 100));
   const color = pct >= 85 ? "var(--red)" : (pct >= 65 ? "var(--amber)" : "var(--text-mute)");
+  // La evidencia ya no cuenta contra este mismo límite: vive repartida
+  // en lotes independientes (hr-evidencia-lote-N), cada uno con su
+  // propio margen de ~4.3MB. loteActualNumCache indica cuántos lotes
+  // se han abierto hasta ahora en este documento.
+  const lotesTxt = loteActualNumCache > 1
+    ? `${loteActualNumCache} lotes de evidencia en uso (~${(loteActualNumCache*4.3).toFixed(1)}MB de capacidad total)`
+    : `Evidencia en 1 lote (hasta ~4.3MB; se abre uno nuevo automáticamente si se llena)`;
   if(el){
-    el.textContent = `· Uso local: ${totalMb.toFixed(2)} MB / ${STORAGE_QUOTA_MB} MB (${pct}%)`;
+    el.textContent = `· Datos base: ${totalMb.toFixed(2)} MB / ${STORAGE_QUOTA_MB} MB (${pct}%) · ${lotesTxt}`;
     el.style.color = color;
   }
   const fill = document.getElementById("cfg-storage-fill");
@@ -8650,8 +9682,8 @@ function updateStorageUsage(){
     fill.style.background = pct >= 85 ? "var(--red)" : (pct >= 65 ? "var(--amber)" : "linear-gradient(90deg,var(--teal),var(--blue))");
   }
   if(text){
-    const warning = pct >= 85 ? " Cerca del límite: descarga respaldo y reduce evidencias adjuntas." : "";
-    text.textContent = `${totalMb.toFixed(2)} MB utilizados de ${STORAGE_QUOTA_MB} MB estimados (${pct}%).${warning}`;
+    const warning = pct >= 85 ? " Cerca del límite: descarga respaldo y revisa notificaciones/candidatos antiguos." : "";
+    text.textContent = `Datos base (casos, personal, candidatos, notificaciones, configuración): ${totalMb.toFixed(2)} MB de ${STORAGE_QUOTA_MB} MB estimados (${pct}%).${warning} La evidencia adjunta se guarda aparte: ${lotesTxt}.`;
     text.style.color = color;
   }
 }
@@ -8664,7 +9696,12 @@ function renderAll(){
   renderSemaforoVencimientos();
   renderCandidatosTable();
   renderNotifBell();
+  initMinutaCasoSelect();
+  renderMinutasList();
+  renderChecklists();
 }
+
+document.getElementById("min-fecha").value = todayISO();
 
 Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   initSelects();
@@ -8673,9 +9710,11 @@ Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   refreshAutoFields();
   checkStorageHealth();
   checkChartLibrary();
-  return Promise.all([loadRecords(), loadEmpleados(), loadCandidatos(), loadNotificaciones(), loadPlantillas()]);
+  return Promise.all([loadRecords(), loadEmpleados(), loadCandidatos(), loadNotificaciones(), loadPlantillas(), loadMinutas(), loadChecklists()]);
 }).then(async ()=>{
   initKanbanFilterSelects();
+  await migrarEvidenciaLegado();
+  await getLoteActualKey(); // solo para cachear el número de lote actual en memoria
   pruneNotificacionesAntiguas();
   checkVencimientosYGenerar();
   await saveNotificaciones();
