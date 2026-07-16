@@ -58,13 +58,13 @@
   --text:#1D2237;
   --text-soft:#4A5068;
   --text-mute:#8B90A3;
-  --amber:#D98C2B;
+  --amber:#F59E0B;
   --amber-soft:#FCEBD3;
-  --teal:#1F6F6B;
+  --teal:#10B981;
   --teal-soft:#DCEEEC;
-  --red:#C1433D;
+  --red:#EF4444;
   --red-soft:#F8DFDD;
-  --blue:#3B5BA9;
+  --blue:#4F46E5;
   --blue-soft:#E1E7F6;
   --gray-soft:#E9EBF1;
   --radius:14px;
@@ -161,7 +161,7 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
 .notif-badge{
   display:inline-flex;align-items:center;justify-content:center;
   min-width:16px;height:16px;padding:0 4px;border-radius:9px;
-  background:var(--red,#C1433D);color:#fff;font-size:9.5px;font-weight:800;
+  background:var(--red,#EF4444);color:#fff;font-size:9.5px;font-weight:800;
   margin-left:4px;vertical-align:middle;
 }
 .notif-dropdown{
@@ -178,7 +178,7 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
   font-family:'Sora',sans-serif;font-weight:700;font-size:13px;color:var(--ink);
 }
 .notif-mark-all{
-  border:none;background:none;color:var(--blue,#3B5BA9);font-size:11px;font-weight:600;cursor:pointer;
+  border:none;background:none;color:var(--blue,#4F46E5);font-size:11px;font-weight:600;cursor:pointer;
 }
 .notif-dropdown-list{overflow-y:auto;flex:1;max-height:50vh;}
 .notif-dropdown-footer{padding:8px;border-top:1px solid var(--line);}
@@ -188,15 +188,15 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
 }
 .notif-item:hover{background:#FAFAFC;}
 .notif-item.unread{background:#F7F9FF;}
-.notif-item.sev-critica{border-left-color:var(--red,#C1433D);}
-.notif-item.sev-pendiente{border-left-color:var(--amber,#D98C2B);}
-.notif-item.sev-informativa{border-left-color:var(--blue,#3B5BA9);}
+.notif-item.sev-critica{border-left-color:var(--red,#EF4444);}
+.notif-item.sev-pendiente{border-left-color:var(--amber,#F59E0B);}
+.notif-item.sev-informativa{border-left-color:var(--blue,#4F46E5);}
 .notif-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
 .notif-body{flex:1;min-width:0;}
 .notif-title{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.3;}
 .notif-msg{font-size:11.5px;color:var(--text-soft);margin-top:2px;line-height:1.4;}
 .notif-time{font-size:10px;color:var(--text-mute);margin-top:3px;}
-.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--blue,#3B5BA9);flex-shrink:0;margin-top:4px;}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--blue,#4F46E5);flex-shrink:0;margin-top:4px;}
 .notif-empty{padding:30px 16px;text-align:center;color:var(--text-mute);font-size:12.5px;}
 
 .notif-actions-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
@@ -216,7 +216,7 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
 /* ---------- BANNER DE NOTIFICACIONES URGENTES ---------- */
 #notif-banner{
   background:linear-gradient(90deg, #FBE8E8 0%, #FFF9F0 100%);
-  border-left:4px solid var(--red, #C1433D);
+  border-left:4px solid var(--red, #EF4444);
   padding:12px 16px;
   margin:0 24px 16px;
   border-radius:10px;
@@ -254,7 +254,7 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
   flex:0 0 280px;background:#F3F4F8;border-radius:12px;padding:12px;
   min-height:120px;max-height:74vh;display:flex;flex-direction:column;
 }
-.kanban-col.dragover{background:#E5EAF4;outline:2px dashed var(--blue,#3B5BA9);outline-offset:-4px;}
+.kanban-col.dragover{background:#E5EAF4;outline:2px dashed var(--blue,#4F46E5);outline-offset:-4px;}
 .kanban-col-head{
   display:flex;align-items:center;justify-content:space-between;
   font-family:'Sora',sans-serif;font-weight:700;font-size:13px;color:var(--ink);
@@ -271,16 +271,16 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
 }
 .kanban-card:active{cursor:grabbing;}
 .kanban-card.dragging{opacity:0.4;}
-.kanban-card.overdue{box-shadow:0 0 0 2px var(--red,#C1433D) inset;}
+.kanban-card.overdue{box-shadow:0 0 0 2px var(--red,#EF4444) inset;}
 .kanban-card-title{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:5px;}
 .kanban-card-meta{font-size:10.5px;color:var(--text-mute);line-height:1.5;}
 .kanban-card-meta b{color:var(--text-soft);font-weight:600;}
 .kanban-progress-bg{height:5px;border-radius:4px;background:#EEF0F5;margin-top:7px;overflow:hidden;}
-.kanban-progress-fill{height:100%;border-radius:4px;background:var(--teal,#1F6F6B);}
+.kanban-progress-fill{height:100%;border-radius:4px;background:var(--teal,#10B981);}
 .kanban-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:10px;color:var(--text-mute);}
 .kanban-chip{background:#F3F4F8;border-radius:5px;padding:1px 6px;}
 .kanban-badge-paused{
-  display:inline-block;font-size:9px;font-weight:700;color:var(--amber,#D98C2B);
+  display:inline-block;font-size:9px;font-weight:700;color:var(--amber,#F59E0B);
   background:#FCEBD3;border-radius:4px;padding:1px 5px;margin-left:5px;
 }
 
@@ -500,14 +500,14 @@ tbody td.wrap{white-space:normal;min-width:180px;max-width:260px;}
 /* ---------- ESTADO VISUAL DE VENCIMIENTOS EN TABLA ---------- */
 tr.row-overdue{
   background-color:#FBE8E8 !important;
-  border-left:4px solid var(--red, #C1433D) !important;
+  border-left:4px solid var(--red, #EF4444) !important;
 }
 tr.row-overdue:hover{
   background-color:#F8D5D5 !important;
 }
 tr.row-warning{
   background-color:#FEF7E8 !important;
-  border-left:4px solid var(--amber, #D98C2B) !important;
+  border-left:4px solid var(--amber, #F59E0B) !important;
 }
 tr.row-warning:hover{
   background-color:#FCF0D4 !important;
@@ -759,8 +759,8 @@ tr.row-warning:hover{
 .gantt-commit::after{
   content:"◆";position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:9px;color:#161B2E;
 }
-.gantt-commit.overdue{background:#C1433D;}
-.gantt-commit.overdue::after{color:#C1433D;}
+.gantt-commit.overdue{background:#EF4444;}
+.gantt-commit.overdue::after{color:#EF4444;}
 .gantt-axis{
   display:grid;grid-template-columns:220px 1fr;gap:10px;margin-bottom:8px;
 }
@@ -867,9 +867,9 @@ tr.row-warning:hover{
 .semaforo-card .sf-value{font-family:'Sora',sans-serif;font-weight:800;font-size:30px;color:var(--ink);margin:6px 0 2px;}
 .semaforo-card .sf-sub{font-size:11.5px;color:var(--text-mute);}
 
-.pill-vencido{background:#C1433D22;color:var(--red);}
-.pill-porvencer{background:#D98C2B22;color:var(--amber);}
-.pill-ok{background:#1F6F6B22;color:var(--teal);}
+.pill-vencido{background:#EF444422;color:var(--red);}
+.pill-porvencer{background:#F59E0B22;color:var(--amber);}
+.pill-ok{background:#10B98122;color:var(--teal);}
 .modal-evidence-item{
   border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;
   text-decoration:none;display:flex;flex-direction:column;
@@ -1845,60 +1845,239 @@ select:focus,textarea:focus{
 .btn-primary:hover{
   background:var(--blue-hover);
 }
+
+/* ============================================================
+   REDISEÑO DE LAYOUT: SIDEBAR OSCURO + CONTENIDO EN TARJETAS
+   ============================================================
+   Convierte la navegación horizontal en un menú lateral fijo,
+   siguiendo el mismo patrón de cascada de las capas anteriores:
+   al compartir especificidad con las reglas previas, esta capa
+   gana por ser la última en el documento, sin tocar ninguna
+   regla anterior ni ningún selector usado por el JS existente
+   (.tab-btn, .tabs, data-view siguen intactos). */
+
+.app-shell{
+  display:flex;
+  align-items:stretch;
+  min-height:100vh;
+  background:var(--th-bg-main);
+}
+
+.sidebar{
+  width:248px;
+  flex:0 0 248px;
+  background:var(--ink);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  padding:18px 14px;
+  gap:14px;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:hidden;
+}
+.sidebar .brand{padding:0 6px 12px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sidebar .brand-mark{
+  background:var(--blue);
+  color:#fff;
+  font-weight:800;
+}
+.sidebar .brand-text .t1{color:#fff;font-size:14px;line-height:1.25;}
+.sidebar .brand-text .t2{color:rgba(255,255,255,.55);font-size:11.5px;}
+
+.sidebar nav.tabs{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:0;
+  justify-self:auto;
+  max-width:none;
+}
+.sidebar .tab-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  text-align:left;
+  padding:9px 12px;
+  border-radius:10px;
+  color:rgba(255,255,255,.68);
+  font-weight:500;
+  font-size:13px;
+  font-family:'Inter',sans-serif;
+  background:transparent;
+  border:none;
+  min-height:0;
+  white-space:normal;
+  cursor:pointer;
+  transition:background-color .15s ease, color .15s ease;
+}
+.sidebar .tab-btn .tab-ico{
+  font-size:14px;
+  line-height:1;
+  width:18px;
+  text-align:center;
+  filter:grayscale(1) brightness(1.6);
+  opacity:.85;
+}
+.sidebar .tab-btn.active .tab-ico{filter:none;opacity:1;}
+.sidebar .tab-btn:not(.active):hover{
+  background:rgba(255,255,255,.08);
+  color:#fff;
+}
+.sidebar .tab-btn.active{
+  background:rgba(245,158,11,.14);
+  color:var(--amber);
+  border-left:3px solid var(--amber);
+  padding-left:9px;
+  font-weight:700;
+  box-shadow:none;
+}
+.sidebar .tab-btn.active .tab-ico{filter:none;}
+
+.sidebar-footer{margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);}
+.sidebar-backup-btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.75);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--radius-md);
+  font-size:12.5px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background-color .15s ease, color .15s ease;
+}
+.sidebar-backup-btn:hover{
+  background:rgba(255,255,255,.12);
+  color:#fff;
+}
+
+.main-content{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.content-header{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  padding:16px 28px;
+  background:var(--th-surface);
+  border-bottom:1px solid var(--th-border);
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+
+/* Tarjetas con radio y sombra ligeramente más generosos, en línea
+   con la referencia visual (esquinas más redondeadas y sombras
+   suaves en vez de bordes duros). */
+.kpi-card,.mini-kpi,.semaforo-card,.chart-card,.table-card,.card{
+  border-radius:20px;
+  box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 20px -6px rgba(15,23,42,.08);
+}
+.modal-box{border-radius:20px;}
+.btn,.btn-top,.pill,input[type=text],input[type=date],input[type=number],input[type=email],select,textarea{
+  border-radius:var(--radius-md);
+}
+
+@media(max-width:880px){
+  .app-shell{flex-direction:column;}
+  .sidebar{
+    position:relative;
+    top:auto;
+    height:auto;
+    width:100%;
+    flex:0 0 auto;
+    flex-direction:row;
+    align-items:center;
+    padding:14px 16px;
+    gap:14px;
+    overflow-x:auto;
+  }
+  .sidebar .brand{padding:0;flex:0 0 auto;}
+  .sidebar nav.tabs{flex-direction:row;flex:0 0 auto;overflow-x:auto;}
+  .sidebar .tab-btn{flex:0 0 auto;white-space:nowrap;}
+  .sidebar-footer{margin-top:0;flex:0 0 auto;border-top:none;padding-top:0;}
+  .sidebar-backup-btn{width:auto;white-space:nowrap;}
+  .content-header{padding:12px 16px;}
+}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand">
-    <div class="brand-mark" id="brand-mark">CH</div>
-    <div class="brand-text">
-      <div class="t1" id="brand-title">Centro de Control · Capital Humano</div>
-      <div class="t2" id="brand-subtitle">Seguimiento de operaciones RH</div>
-    </div>
-  </div>
-  <div class="tabs">
-    <button class="tab-btn active" data-view="captura">Captura</button>
-    <button class="tab-btn" data-view="dashboard">Dashboard</button>
-    <button class="tab-btn" data-view="personal">Personal</button>
-    <button class="tab-btn" data-view="candidatos">Candidatos</button>
-    <button class="tab-btn" data-view="kpis">KPIs</button>
-    <button class="tab-btn" data-view="kanban">Kanban</button>
-    <button class="tab-btn" data-view="calendario">Calendario</button>
-    <button class="tab-btn" data-view="minutas">Juntas y Minutas</button>
-    <button class="tab-btn" data-view="configuracion">Configuración</button>
-  </div>
-  <div class="topbar-actions">
-    <div class="notif-wrap" id="notif-wrap">
-      <button class="btn-top" id="notif-bell-btn" type="button" title="Notificaciones">🔔<span class="notif-badge" id="notif-badge" style="display:none;">0</span></button>
-      <div class="notif-dropdown" id="notif-dropdown">
-        <div class="notif-dropdown-head">
-          <b>Notificaciones</b>
-          <button class="notif-mark-all" id="notif-mark-all-quick" type="button">Marcar todas leídas</button>
-        </div>
-        <div class="notif-dropdown-list" id="notif-dropdown-list"></div>
-        <div class="notif-dropdown-footer">
-          <button class="btn btn-ghost btn-sm" id="notif-view-all" type="button" style="width:100%;">Ver todas las notificaciones</button>
-        </div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" id="brand-mark">CH</div>
+      <div class="brand-text">
+        <div class="t1" id="brand-title">Centro de Control · Capital Humano</div>
+        <div class="t2" id="brand-subtitle">Seguimiento de operaciones RH</div>
       </div>
     </div>
-    <button class="btn-top" id="btn-load-backup-top" type="button" title="Cargar un respaldo .json previamente descargado">Cargar respaldo</button>
-    <button class="btn-top" id="btn-save-backup-top" type="button" title="Descargar toda la información actual">Descargar respaldo</button>
-  </div>
-</div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-view="captura"><span class="tab-ico">✏️</span>Captura</button>
+      <button class="tab-btn" data-view="dashboard"><span class="tab-ico">📊</span>Dashboard</button>
+      <button class="tab-btn" data-view="personal"><span class="tab-ico">👥</span>Personal</button>
+      <button class="tab-btn" data-view="candidatos"><span class="tab-ico">🧑‍💼</span>Candidatos</button>
+      <button class="tab-btn" data-view="kpis"><span class="tab-ico">📈</span>KPIs</button>
+      <button class="tab-btn" data-view="kanban"><span class="tab-ico">🗂️</span>Kanban</button>
+      <button class="tab-btn" data-view="calendario"><span class="tab-ico">📅</span>Calendario</button>
+      <button class="tab-btn" data-view="minutas"><span class="tab-ico">🗒️</span>Juntas y Minutas</button>
+      <button class="tab-btn" data-view="configuracion"><span class="tab-ico">⚙️</span>Configuración</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sidebar-backup-btn" id="btn-save-backup-top" type="button" title="Descargar toda la información actual">
+        <span>🗄</span> Descargar respaldo
+      </button>
+    </div>
+  </aside>
 
-<div class="storage-banner" id="storage-banner">
-  ⚠ No se detectó guardado automático en este navegador. Descarga un <b>respaldo</b> antes de cerrar esta pestaña para no perder tu información.
-  <button class="btn btn-primary btn-sm" id="banner-backup-btn" type="button">Descargar respaldo ahora</button>
-  <button class="storage-dismiss" id="storage-banner-dismiss" type="button" title="Cerrar alerta">✕</button>
-</div>
+  <div class="main-content">
+    <div class="content-header">
+      <div class="topbar-actions">
+        <div class="notif-wrap" id="notif-wrap">
+          <button class="btn-top" id="notif-bell-btn" type="button" title="Notificaciones">🔔<span class="notif-badge" id="notif-badge" style="display:none;">0</span></button>
+          <div class="notif-dropdown" id="notif-dropdown">
+            <div class="notif-dropdown-head">
+              <b>Notificaciones</b>
+              <button class="notif-mark-all" id="notif-mark-all-quick" type="button">Marcar todas leídas</button>
+            </div>
+            <div class="notif-dropdown-list" id="notif-dropdown-list"></div>
+            <div class="notif-dropdown-footer">
+              <button class="btn btn-ghost btn-sm" id="notif-view-all" type="button" style="width:100%;">Ver todas las notificaciones</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn-top" id="btn-load-backup-top" type="button" title="Cargar un respaldo .json previamente descargado">Cargar respaldo</button>
+      </div>
+    </div>
 
-<div class="storage-banner" id="chartlib-banner" style="display:none;background:#FBE1DE;border-bottom-color:#EBB4AC;">
-  ⚠ No se pudo cargar el motor de gráficas. Las tarjetas con números seguirán funcionando, pero las gráficas se verán en blanco. Revisa tu conexión a internet y recarga la página; tus datos siguen guardados con seguridad.
-  <button class="storage-dismiss" id="chartlib-banner-dismiss" type="button" title="Cerrar alerta">✕</button>
-</div>
+    <div class="storage-banner" id="storage-banner">
+      ⚠ No se detectó guardado automático en este navegador. Descarga un <b>respaldo</b> antes de cerrar esta pestaña para no perder tu información.
+      <button class="btn btn-primary btn-sm" id="banner-backup-btn" type="button">Descargar respaldo ahora</button>
+      <button class="storage-dismiss" id="storage-banner-dismiss" type="button" title="Cerrar alerta">✕</button>
+    </div>
 
-<div class="page">
+    <div class="storage-banner" id="chartlib-banner" style="display:none;background:#FBE1DE;border-bottom-color:#EBB4AC;">
+      ⚠ No se pudo cargar el motor de gráficas. Las tarjetas con números seguirán funcionando, pero las gráficas se verán en blanco. Revisa tu conexión a internet y recarga la página; tus datos siguen guardados con seguridad.
+      <button class="storage-dismiss" id="chartlib-banner-dismiss" type="button" title="Cerrar alerta">✕</button>
+    </div>
+
+    <div class="page">
 
 
   <!-- ======================= VISTA: CAPTURA ======================= -->
@@ -3174,6 +3353,53 @@ select:focus,textarea:focus{
       </div>
 
       <div class="card config-card full">
+        <h3>Gestión de Actividades Recurrentes</h3>
+        <p class="hint" style="margin-top:-6px;">Configura actividades que deben generarse automáticamente cada mes o quincena (nómina, pagos de cuotas, impuestos, etc.). Se crean como casos en la bitácora con el prefijo <b>[RECURRENTE]</b> el día que corresponda.</p>
+        <div class="emp-form-grid">
+          <div class="field">
+            <label for="rec-titulo">Título de la actividad</label>
+            <input type="text" id="rec-titulo" placeholder="Ej. Pago de Nómina">
+          </div>
+          <div class="field">
+            <label for="rec-area">Área estratégica</label>
+            <select id="rec-area"></select>
+          </div>
+          <div class="field">
+            <label for="rec-macro">Macroproceso</label>
+            <select id="rec-macro"></select>
+          </div>
+          <div class="field">
+            <label for="rec-costocat">Categoría de costo</label>
+            <select id="rec-costocat"></select>
+          </div>
+          <div class="field">
+            <label for="rec-departamento">Departamento</label>
+            <select id="rec-departamento"></select>
+          </div>
+          <div class="field">
+            <label for="rec-sucursal">Sucursal</label>
+            <select id="rec-sucursal"></select>
+          </div>
+          <div class="field">
+            <label for="rec-diames">Día del mes de ejecución</label>
+            <input type="number" id="rec-diames" min="1" max="28" step="1" placeholder="Ej. 15">
+            <span class="hint">Limitado a 1-28 para evitar inconsistencias en meses cortos (febrero).</span>
+          </div>
+          <div class="field">
+            <label for="rec-frecuencia">Frecuencia</label>
+            <select id="rec-frecuencia">
+              <option value="mensual">Mensual (solo el día indicado)</option>
+              <option value="quincenal">Quincenal (día indicado y +15 días)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="button" id="rec-btn-add">+ Agregar actividad recurrente</button>
+        </div>
+        <div class="config-list" id="rec-list" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="card config-card full">
         <h3>Mantenimiento y diagnóstico</h3>
         <div class="diagnostic-row">
           <div>
@@ -3195,7 +3421,9 @@ select:focus,textarea:focus{
   </div>
 
   <div class="footer-note">Los datos se guardan automáticamente y son visibles para cualquier persona con acceso a este documento. Se recomienda descargar un respaldo periódicamente.</div>
-</div>
+    </div> <!-- /.page -->
+  </div> <!-- /.main-content -->
+</div> <!-- /.app-shell -->
 
 <div class="save-toast" id="save-toast">✓ Guardado correctamente</div>
 <div class="info-tip-panel" id="info-tip-panel" role="tooltip"></div>
@@ -3366,22 +3594,22 @@ const ESTADOS_CONTRATO = ["Indeterminado","Determinado a prueba","Por Proyecto"]
 const CONTRATOS_TEMPORALES = ["Determinado a prueba","Por Proyecto"];
 
 const COLOR_ESTADO = {
-  "No Iniciado":"#8B90A3","En Proceso":"#3B5BA9","En Revisión":"#D98C2B",
-  "Detenido":"#C1433D","Cerrado":"#1F6F6B","Cancelado":"#4A5068"
+  "No Iniciado":"#8B90A3","En Proceso":"#4F46E5","En Revisión":"#F59E0B",
+  "Detenido":"#EF4444","Cerrado":"#10B981","Cancelado":"#4A5068"
 };
-const COLOR_PRIORIDAD = {"Crítica":"#C1433D","Alta":"#D98C2B","Media":"#3B5BA9","Baja":"#1F6F6B"};
-const COLOR_NIVEL = {"Bajo":"#1F6F6B","Medio":"#3B5BA9","Alto":"#D98C2B","Crítico":"#C1433D"};
+const COLOR_PRIORIDAD = {"Crítica":"#EF4444","Alta":"#F59E0B","Media":"#4F46E5","Baja":"#10B981"};
+const COLOR_NIVEL = {"Bajo":"#10B981","Medio":"#4F46E5","Alto":"#F59E0B","Crítico":"#EF4444"};
 const COLOR_RIESGO = {
-  "Sin Riesgo":"#B9BDCC","Riesgo Operativo":"#3B5BA9","Riesgo Legal":"#7A4FB5",
-  "Riesgo Financiero":"#D98C2B","Riesgo Reputacional":"#C1433D",
-  "Riesgo de Cumplimiento (NOM/IMSS/INFONAVIT/SAT)":"#1F6F6B"
+  "Sin Riesgo":"#B9BDCC","Riesgo Operativo":"#4F46E5","Riesgo Legal":"#7A4FB5",
+  "Riesgo Financiero":"#F59E0B","Riesgo Reputacional":"#EF4444",
+  "Riesgo de Cumplimiento (NOM/IMSS/INFONAVIT/SAT)":"#10B981"
 };
 const COLOR_COSTO_CAT = {
-  "No aplica":"#B9BDCC","Nómina y Compensaciones":"#3B5BA9","Capacitación y Desarrollo":"#1F6F6B",
-  "Reclutamiento y Selección":"#7A4FB5","Multas o Sanciones":"#C1433D","Honorarios y Consultoría":"#D98C2B",
+  "No aplica":"#B9BDCC","Nómina y Compensaciones":"#4F46E5","Capacitación y Desarrollo":"#10B981",
+  "Reclutamiento y Selección":"#7A4FB5","Multas o Sanciones":"#EF4444","Honorarios y Consultoría":"#F59E0B",
   "Materiales y Equipo":"#4A5068","Tecnología y Sistemas":"#2E93A8","Servicios Generales":"#B96A17","Otro":"#8B90A3"
 };
-const COLOR_ESTATUS_COLAB = {"Activo":"#1F6F6B","Baja":"#C1433D"};
+const COLOR_ESTATUS_COLAB = {"Activo":"#10B981","Baja":"#EF4444"};
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const DIAS_SEMANA = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 
@@ -3442,7 +3670,8 @@ const DEFAULT_SETTINGS = {
     recordatorios: true,
     cumpleanosAniversarios: true
   },
-  storageBannerDismissed: false
+  storageBannerDismissed: false,
+  actividadesRecurrentes: [] // {id, titulo, area, macro, categoriaCosto, departamento, sucursal, diaMes, frecuencia:"mensual"|"quincenal", ultimaGeneracion}
 };
 let APP_SETTINGS = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 
@@ -4587,6 +4816,7 @@ function repopulateDynamicSelects(){
   initPersonalSelects();
   initCandidatosSelects();
   initKanbanFilterSelects();
+  initRecurrenteSelects();
   refreshAutoFields();
   renderDashboard();
   renderEmpleadosTable();
@@ -4680,6 +4910,7 @@ function renderConfigView(){
   renderBrandingConfig();
   renderNotifPrefsConfig();
   ["departamentos","sucursales","tiposActividad","costoCategorias"].forEach(renderCatalogList);
+  renderRecurrentesList();
   document.getElementById("cfg-contrato-amarillo").value = APP_SETTINGS.rules.contratoAmarilloDias;
   document.getElementById("cfg-contrato-rojo").value = APP_SETTINGS.rules.contratoRojoDias;
   document.getElementById("cfg-casos-retraso").value = APP_SETTINGS.rules.casoRetrasoDias;
@@ -4741,6 +4972,172 @@ async function saveBusinessRules(){
   renderAll();
   renderConfigView();
   showToast("✓ Reglas guardadas");
+}
+
+/* ============================================================
+   ACTIVIDADES RECURRENTES (nómina, pagos periódicos, etc.)
+   ============================================================ */
+function fillRecurrenteMacroSelect(area, selected){
+  const el = document.getElementById("rec-macro");
+  el.innerHTML = "";
+  const list = MACRO_BY_AREA[area] || [];
+  list.forEach(m=>{
+    const o = document.createElement("option");
+    o.value = m; o.textContent = m;
+    if(m === selected) o.selected = true;
+    el.appendChild(o);
+  });
+}
+function initRecurrenteSelects(){
+  fillSelect("rec-area", AREAS, null);
+  fillSelect("rec-costocat", COSTO_CATEGORIAS, null);
+  fillSelect("rec-departamento", DEPARTAMENTOS, null);
+  fillSelect("rec-sucursal", SUCURSALES, null);
+  const areaDefault = AREAS.includes("Compensaciones y Nómina") ? "Compensaciones y Nómina" : AREAS[0];
+  document.getElementById("rec-area").value = areaDefault;
+  fillRecurrenteMacroSelect(areaDefault, "Procesamiento de Nómina");
+}
+document.getElementById("rec-area").addEventListener("change", (e)=>{
+  fillRecurrenteMacroSelect(e.target.value, "");
+});
+
+function renderRecurrentesList(){
+  const list = document.getElementById("rec-list");
+  if(!list) return;
+  const items = APP_SETTINGS.actividadesRecurrentes || [];
+  if(items.length === 0){
+    list.innerHTML = '<div class="modal-empty">Sin actividades recurrentes configuradas.</div>';
+    return;
+  }
+  list.innerHTML = items.map(a=>`
+    <div class="config-item">
+      <span><b>${escapeHtml(a.titulo)}</b> · día ${a.diaMes} · ${a.frecuencia === "quincenal" ? "quincenal" : "mensual"} · ${escapeHtml(a.departamento)} / ${escapeHtml(a.sucursal)}</span>
+      <button class="icon-btn danger" type="button" title="Eliminar" data-rec-remove="${a.id}">✕</button>
+    </div>
+  `).join("");
+}
+document.getElementById("rec-btn-add").addEventListener("click", async ()=>{
+  const titulo = document.getElementById("rec-titulo").value.trim();
+  const area = document.getElementById("rec-area").value;
+  const macro = document.getElementById("rec-macro").value;
+  const categoriaCosto = document.getElementById("rec-costocat").value;
+  const departamento = document.getElementById("rec-departamento").value;
+  const sucursal = document.getElementById("rec-sucursal").value;
+  const diaMes = Math.min(Math.max(parseInt(document.getElementById("rec-diames").value, 10) || 0, 1), 28);
+  const frecuencia = document.getElementById("rec-frecuencia").value;
+
+  if(!titulo){
+    alert("Escribe un título para la actividad recurrente.");
+    return;
+  }
+  if(!document.getElementById("rec-diames").value){
+    alert("Indica el día del mes en que debe ejecutarse (1 al 31).");
+    return;
+  }
+
+  APP_SETTINGS.actividadesRecurrentes = APP_SETTINGS.actividadesRecurrentes || [];
+  APP_SETTINGS.actividadesRecurrentes.push({
+    id: uid(), titulo, area, macro, categoriaCosto, departamento, sucursal, diaMes, frecuencia,
+    ultimaGeneracion: null
+  });
+  await saveSettings();
+  document.getElementById("rec-titulo").value = "";
+  document.getElementById("rec-diames").value = "";
+  renderRecurrentesList();
+  showToast("✓ Actividad recurrente agregada");
+  await verificarYGenerarRecurrentes();
+  renderAll();
+});
+document.getElementById("rec-list").addEventListener("click", async (e)=>{
+  const btn = e.target.closest("[data-rec-remove]");
+  if(!btn) return;
+  const id = btn.dataset.recRemove;
+  const item = (APP_SETTINGS.actividadesRecurrentes || []).find(a=>a.id===id);
+  if(!item) return;
+  showConfirm(`¿Eliminar la actividad recurrente "${item.titulo}"? Los casos ya generados por ella no se eliminan, solo se detiene la generación futura.`, async ()=>{
+    APP_SETTINGS.actividadesRecurrentes = APP_SETTINGS.actividadesRecurrentes.filter(a=>a.id!==id);
+    await saveSettings();
+    renderRecurrentesList();
+    showToast("Actividad recurrente eliminada");
+  });
+});
+
+/* Calcula, para una actividad recurrente y la fecha de hoy, qué
+   ocurrencias de este mes ya deberían haberse generado (una para
+   "mensual", hasta dos —día indicado y +15— para "quincenal") y que
+   todavía no se han generado según actividad.ultimaGeneracion. */
+function calcularOcurrenciasPendientes(actividad){
+  const hoy = new Date(todayISO() + "T00:00:00");
+  const anio = hoy.getFullYear(), mes = hoy.getMonth(), diaHoy = hoy.getDate();
+  const ultimoDiaMes = new Date(anio, mes + 1, 0).getDate();
+  const ym = todayISO().slice(0, 7);
+  const ocurrencias = [];
+
+  if(actividad.frecuencia === "quincenal"){
+    const dia1 = Math.min(Math.max(actividad.diaMes, 1), ultimoDiaMes);
+    const dia2 = Math.min(dia1 + 15, ultimoDiaMes);
+    if(diaHoy >= dia1) ocurrencias.push({ clave: `${ym}-Q1`, fechaCompromiso: ymd(anio, mes, dia1) });
+    if(diaHoy >= dia2 && dia2 !== dia1) ocurrencias.push({ clave: `${ym}-Q2`, fechaCompromiso: ymd(anio, mes, dia2) });
+  } else {
+    const dia = Math.min(Math.max(actividad.diaMes, 1), ultimoDiaMes);
+    if(diaHoy >= dia) ocurrencias.push({ clave: ym, fechaCompromiso: ymd(anio, mes, dia) });
+  }
+  return ocurrencias.filter(o => o.clave > (actividad.ultimaGeneracion || ""));
+}
+
+/* Motor de proyección: revisa el catálogo de actividades recurrentes
+   y da de alta en RECORDS los casos correspondientes al periodo
+   actual que aún no se hayan generado. Se ejecuta al iniciar la app
+   (y también justo después de agregar una nueva recurrencia). */
+async function verificarYGenerarRecurrentes(){
+  const actividades = APP_SETTINGS.actividadesRecurrentes || [];
+  if(actividades.length === 0) return;
+  let huboCambios = false;
+
+  actividades.forEach(actividad=>{
+    const ocurrencias = calcularOcurrenciasPendientes(actividad);
+    ocurrencias.forEach(oc=>{
+      const nivelRiesgo = calcNivelRiesgo("Sin Riesgo", "Alta");
+      RECORDS.unshift({
+        id: uid(),
+        fecha: todayISO(),
+        fechaCompromiso: oc.fechaCompromiso,
+        tema: "[RECURRENTE] " + actividad.titulo,
+        tipo: "Administrativa",
+        area: actividad.area || "Compensaciones y Nómina",
+        macro: actividad.macro || "Procesamiento de Nómina",
+        descripcion: `Actividad recurrente automatizada programada para el día ${actividad.diaMes} de cada ${actividad.frecuencia === "quincenal" ? "quincena" : "mes"}.`,
+        responsable: "Por Asignar",
+        corresponsable: "",
+        solicitante: "Sistema de Control",
+        departamento: actividad.departamento,
+        sucursal: actividad.sucursal,
+        estado: "No Iniciado",
+        prioridad: "Alta",
+        riesgo: "Sin Riesgo",
+        nivelRiesgo,
+        accion: "",
+        resultado: "",
+        fechaCierre: "",
+        costoFinal: null,
+        costoCategoria: actividad.categoriaCosto || "No aplica",
+        costoJustificacion: "",
+        evidenciaCount: 0,
+        evidenciaLote: null,
+        avances: [],
+        comentarios: "",
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      });
+      actividad.ultimaGeneracion = oc.clave;
+      huboCambios = true;
+    });
+  });
+
+  if(huboCambios){
+    await saveSettings();
+    await saveRecords();
+  }
 }
 
 /* ============================================================
@@ -5496,7 +5893,7 @@ function renderChecklists(){
           <div class="sub">${etiqueta} · ${escapeHtml(c.puesto || "Sin puesto")} · ${escapeHtml(c.departamento)} · ${c.fecha}</div>
         </div>
         <div class="tbl-actions" style="align-items:center;">
-          <span class="pill" style="background:${done===total ? "#1F6F6B22" : "#D98C2B22"};color:${done===total ? "#1F6F6B" : "#D98C2B"};">${done}/${total} completado</span>
+          <span class="pill" style="background:${done===total ? "#10B98122" : "#F59E0B22"};color:${done===total ? "#10B981" : "#F59E0B"};">${done}/${total} completado</span>
           <button class="icon-btn danger" title="Eliminar checklist" onclick="deleteChecklist('${c.id}')">✕</button>
         </div>
       </div>
@@ -5686,7 +6083,7 @@ function openEmployeeList(list, title, sub){
   } else {
     body.innerHTML = list.map(e=>{
       const dias = daysUntil(getVencimientoEfectivo(e));
-      const color = dias < 15 ? "#C1433D" : "#D98C2B";
+      const color = dias < 15 ? "#EF4444" : "#F59E0B";
       return `<div class="recent-item" style="cursor:pointer;" onclick="closeCaseList();editEmpleado('${e.id}')">
         <div class="recent-accent" style="background:${color}"></div>
         <div class="recent-main">
@@ -5709,8 +6106,8 @@ function openEmployeeList(list, title, sub){
    ============================================================ */
 const ESTADOS_CANDIDATO = ["Postulado","Filtro Inicial","Entrevista RH","Evaluación Técnica","Oferta Económica","Contratado","Descartado"];
 const COLOR_ESTADO_CANDIDATO = {
-  "Postulado":"#8B90A3","Filtro Inicial":"#3B5BA9","Entrevista RH":"#2E93A8",
-  "Evaluación Técnica":"#2E93A8","Oferta Económica":"#D98C2B","Contratado":"#1F6F6B","Descartado":"#C1433D"
+  "Postulado":"#8B90A3","Filtro Inicial":"#4F46E5","Entrevista RH":"#2E93A8",
+  "Evaluación Técnica":"#2E93A8","Oferta Económica":"#F59E0B","Contratado":"#10B981","Descartado":"#EF4444"
 };
 
 let CANDIDATOS = [];
@@ -6148,9 +6545,9 @@ async function toggleAcuerdoCumplido(minutaId, acuerdoId){
 }
 
 function acuerdoEstadoDisplay(a){
-  if(a.estado === "Cumplido") return {label:"Cumplido", color:"#1F6F6B"};
-  if(a.fechaCompromiso && a.fechaCompromiso < todayISO()) return {label:"Vencido", color:"#C1433D"};
-  return {label:"Pendiente", color:"#D98C2B"};
+  if(a.estado === "Cumplido") return {label:"Cumplido", color:"#10B981"};
+  if(a.fechaCompromiso && a.fechaCompromiso < todayISO()) return {label:"Vencido", color:"#EF4444"};
+  return {label:"Pendiente", color:"#F59E0B"};
 }
 
 function getFilteredMinutas(){
@@ -6979,7 +7376,7 @@ function renderChartVolumen(){
     RECORDS.forEach(r=>counts[r.tipo]=(counts[r.tipo]||0)+1);
     labels = TIPOS_ACTIVIDAD.filter(t=>counts[t]>0).sort((a,b)=>counts[b]-counts[a]);
     data = labels.map(l=>counts[l]);
-    colors = labels.map(()=>"#3B5BA9");
+    colors = labels.map(()=>"#4F46E5");
     document.getElementById("chart2-sub").textContent = "Por tipo de actividad";
   } else {
     const counts = {};
@@ -6987,7 +7384,7 @@ function renderChartVolumen(){
     RECORDS.forEach(r=>counts[r.area]=(counts[r.area]||0)+1);
     labels = AREAS.filter(a=>counts[a]>0).sort((a,b)=>counts[b]-counts[a]);
     data = labels.map(l=>counts[l]);
-    colors = labels.map(()=>"#D98C2B");
+    colors = labels.map(()=>"#F59E0B");
     document.getElementById("chart2-sub").textContent = "Por área estratégica";
   }
 
@@ -7397,7 +7794,7 @@ async function renderDetailContent(r, editMode=false){
           <div class="modal-kv"><div class="k">Departamento / Sucursal</div><div class="v">${escapeHtml(r.departamento)} · ${escapeHtml(r.sucursal)}</div></div>
           <div class="modal-kv"><div class="k">Riesgo</div><div class="v">${escapeHtml(r.riesgo)} · ${pillNivel(r.nivelRiesgo)}</div></div>
           <div class="modal-kv"><div class="k">Fecha de inicio</div><div class="v">${r.fecha}</div></div>
-          <div class="modal-kv"><div class="k">Fecha compromiso</div><div class="v">${r.fechaCompromiso || "—"}${isOverdue(r) ? ' <span class="pill" style="background:#C1433D22;color:#C1433D;">Vencida</span>' : ""}</div></div>
+          <div class="modal-kv"><div class="k">Fecha compromiso</div><div class="v">${r.fechaCompromiso || "—"}${isOverdue(r) ? ' <span class="pill" style="background:#EF444422;color:#EF4444;">Vencida</span>' : ""}</div></div>
           <div class="modal-kv"><div class="k">Días transcurridos</div><div class="v">${dias}</div></div>
         </div>
       </div>
@@ -7561,8 +7958,7 @@ async function saveDetailEdit(){
   r.costoJustificacion = document.getElementById("dm-edit-costojust").value;
   
   // recalcular nivelRiesgo
-  const riesgoConfig = CONFIG.riesgosNiveles[r.riesgo] || { valor: 0, nivel: "Bajo" };
-  r.nivelRiesgo = riesgoConfig.nivel;
+  r.nivelRiesgo = calcNivelRiesgo(r.riesgo, r.prioridad);
   
   // guardar evidencia actualizada
   await guardarEvidenciaRegistro(r.id, dmPendingEvidence.map(f=>({id:f.id, name:f.name, type:f.type, size:f.size, dataUrl:f.dataUrl})));
@@ -7811,10 +8207,10 @@ async function exportToExcel(){
   const costoTotal = RECORDS.reduce((s,r)=> s + (Number(r.costoFinal) || 0), 0);
 
   const kpis = [
-    { label:"Total de casos", value: RECORDS.length, color:"#3B5BA9" },
-    { label:"Casos activos", value: activos, color:"#D98C2B" },
-    { label:"Casos cerrados", value: cerrados, color:"#1F6F6B" },
-    { label:"Casos vencidos", value: vencidos, color:"#C1433D" }
+    { label:"Total de casos", value: RECORDS.length, color:"#4F46E5" },
+    { label:"Casos activos", value: activos, color:"#F59E0B" },
+    { label:"Casos cerrados", value: cerrados, color:"#10B981" },
+    { label:"Casos vencidos", value: vencidos, color:"#EF4444" }
   ];
   const kpiRow = 6, kpiCols = ["B","C","D","E"];
   rs.getRow(kpiRow).height = 6;
@@ -7878,7 +8274,7 @@ async function exportToExcel(){
   rs.addConditionalFormatting({
     ref: `E${firstEstadoDataRow}:E${lastEstadoDataRow}`,
     rules: [{ type:"dataBar", priority:1, minLength:2, maxLength:100,
-      color:{argb:hexToArgb("#3B5BA9")}, gradient:true, border:false, cfvo:[{type:"min"},{type:"max"}] }]
+      color:{argb:hexToArgb("#4F46E5")}, gradient:true, border:false, cfvo:[{type:"min"},{type:"max"}] }]
   });
 
   // ---- Tabla de distribución por Prioridad ----
@@ -7918,7 +8314,7 @@ async function exportToExcel(){
   rs.addConditionalFormatting({
     ref: `E${firstPrioDataRow}:E${row}`,
     rules: [{ type:"dataBar", priority:2, minLength:2, maxLength:100,
-      color:{argb:hexToArgb("#D98C2B")}, gradient:true, border:false, cfvo:[{type:"min"},{type:"max"}] }]
+      color:{argb:hexToArgb("#F59E0B")}, gradient:true, border:false, cfvo:[{type:"min"},{type:"max"}] }]
   });
 
   row += 2;
@@ -8060,11 +8456,11 @@ async function exportToExcel(){
     // Resalta en rojo suave la fecha compromiso de los casos vencidos
     if(vencido){
       const cCell = ws.getCell(rowNum, colIndex.fechaCompromiso);
-      cCell.fill = { type:"pattern", pattern:"solid", fgColor:{argb: tintHex("#C1433D", 0.82)} };
-      cCell.font = { bold:true, color:{argb: hexToArgb("#C1433D")}, size:10 };
+      cCell.fill = { type:"pattern", pattern:"solid", fgColor:{argb: tintHex("#EF4444", 0.82)} };
+      cCell.font = { bold:true, color:{argb: hexToArgb("#EF4444")}, size:10 };
     }
     const vCell = ws.getCell(rowNum, colIndex.vencido);
-    const vColor = vencido ? "#C1433D" : "#1F6F6B";
+    const vColor = vencido ? "#EF4444" : "#10B981";
     const vStyle = badgeStyle(vColor);
     vCell.fill = vStyle.fill;
     vCell.font = vStyle.font;
@@ -8205,7 +8601,7 @@ function pdfAvancesHtml(avances){
   return sorted.map(a=>`
     <div style="display:flex;gap:10px;margin-bottom:7px;">
       <div style="min-width:76px;font-size:10px;font-weight:700;color:#161B2E;padding-top:2px;">${a.fecha}</div>
-      <div style="flex:1;font-size:11.5px;line-height:1.5;color:#1D2237;background:#F7F8FA;border-left:3px solid #1F6F6B;padding:6px 10px;border-radius:5px;">${escapeHtml(a.descripcion)}</div>
+      <div style="flex:1;font-size:11.5px;line-height:1.5;color:#1D2237;background:#F7F8FA;border-left:3px solid #10B981;padding:6px 10px;border-radius:5px;">${escapeHtml(a.descripcion)}</div>
     </div>`).join("");
 }
 const PDF_VARIANT_LABELS = {
@@ -8741,7 +9137,7 @@ async function exportarVersionConsulta(){
   L.push('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
   L.push('<title>Bitacora RH - Version de consulta</title>');
   L.push('<style>');
-  L.push(':root{--navy:#161B2E;--amber:#D98C2B;--blue:#3B5BA9;--teal:#1F6F6B;--red:#C1433D;--line:#E2E5EE;--muted:#7A8099;--ink:#1D2237;}');
+  L.push(':root{--navy:#161B2E;--amber:#F59E0B;--blue:#4F46E5;--teal:#10B981;--red:#EF4444;--line:#E2E5EE;--muted:#7A8099;--ink:#1D2237;}');
   L.push('*{box-sizing:border-box;}');
   L.push('body{margin:0;font-family:Calibri,Segoe UI,Arial,sans-serif;background:#F5F6FA;color:var(--ink);}');
   L.push('header{background:var(--navy);color:#fff;padding:18px 24px;}');
@@ -8788,8 +9184,8 @@ async function exportarVersionConsulta(){
   L.push('<div class="panel active" id="panel-casos">');
   L.push('<div class="toolbar">');
   L.push('<input type="text" id="q-casos" placeholder="Buscar por tema, responsable, area, departamento...">');
-  L.push('<select id="f-estado"><option value="">Estado: todos</option></select>');
-  L.push('<select id="f-area"><option value="">Area: todas</option></select>');
+  L.push('<select id="flt-estado"><option value="">Estado: todos</option></select>');
+  L.push('<select id="flt-area"><option value="">Area: todas</option></select>');
   L.push('<span class="count" id="count-casos"></span>');
   L.push('</div>');
   L.push('<div class="tcard"><div class="table-scroll" style="overflow-x:auto;"><table id="tabla-casos"></table></div></div>');
@@ -8804,19 +9200,19 @@ async function exportarVersionConsulta(){
   L.push('const DATA = ' + dataJson + ';');
   L.push('function esc(s){ if(s==null) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\'/g,"&#39;"); }');
   L.push('function showTab(t){ document.querySelectorAll(".tabbtn").forEach(function(b){ b.classList.toggle("active", b.dataset.tab===t); }); document.querySelectorAll(".panel").forEach(function(p){ p.classList.toggle("active", p.id==="panel-"+t); }); }');
-  L.push('const COLOR_ESTADO = {"No Iniciado":"#8B90A3","En Proceso":"#3B5BA9","En Revisi\\u00f3n":"#D98C2B","Detenido":"#C1433D","Cerrado":"#1F6F6B","Cancelado":"#8B90A3"};');
-  L.push('const COLOR_ACUERDO = {"Cumplido":"#1F6F6B","Vencido":"#C1433D","Pendiente":"#D98C2B"};');
+  L.push('const COLOR_ESTADO = {"No Iniciado":"#8B90A3","En Proceso":"#4F46E5","En Revisi\\u00f3n":"#F59E0B","Detenido":"#EF4444","Cerrado":"#10B981","Cancelado":"#8B90A3"};');
+  L.push('const COLOR_ACUERDO = {"Cumplido":"#10B981","Vencido":"#EF4444","Pendiente":"#F59E0B"};');
   L.push('function pill(txt,color){ return "<span class=\\"pill\\" style=\\"background:"+color+"22;color:"+color+"\\">"+esc(txt)+"</span>"; }');
   L.push('function initFiltrosCasos(){');
   L.push('  const estados = Array.from(new Set(DATA.casos.map(function(c){return c.estado;}))).sort();');
   L.push('  const areas = Array.from(new Set(DATA.casos.map(function(c){return c.area;}))).sort();');
-  L.push('  const selE = document.getElementById("f-estado"); estados.forEach(function(e){ selE.insertAdjacentHTML("beforeend","<option>"+esc(e)+"</option>"); });');
-  L.push('  const selA = document.getElementById("f-area"); areas.forEach(function(a){ selA.insertAdjacentHTML("beforeend","<option>"+esc(a)+"</option>"); });');
+  L.push('  const selE = document.getElementById("flt-estado"); estados.forEach(function(e){ selE.insertAdjacentHTML("beforeend","<option>"+esc(e)+"</option>"); });');
+  L.push('  const selA = document.getElementById("flt-area"); areas.forEach(function(a){ selA.insertAdjacentHTML("beforeend","<option>"+esc(a)+"</option>"); });');
   L.push('}');
   L.push('function filtrarCasos(){');
   L.push('  const q = document.getElementById("q-casos").value.toLowerCase().trim();');
-  L.push('  const fe = document.getElementById("f-estado").value;');
-  L.push('  const fa = document.getElementById("f-area").value;');
+  L.push('  const fe = document.getElementById("flt-estado").value;');
+  L.push('  const fa = document.getElementById("flt-area").value;');
   L.push('  return DATA.casos.filter(function(c){');
   L.push('    if(fe && c.estado!==fe) return false;');
   L.push('    if(fa && c.area!==fa) return false;');
@@ -8885,8 +9281,8 @@ async function exportarVersionConsulta(){
   L.push('}');
   L.push('initFiltrosCasos();');
   L.push('document.getElementById("q-casos").addEventListener("input", renderCasos);');
-  L.push('document.getElementById("f-estado").addEventListener("change", renderCasos);');
-  L.push('document.getElementById("f-area").addEventListener("change", renderCasos);');
+  L.push('document.getElementById("flt-estado").addEventListener("change", renderCasos);');
+  L.push('document.getElementById("flt-area").addEventListener("change", renderCasos);');
   L.push('document.getElementById("q-minutas").addEventListener("input", renderMinutas);');
   L.push('renderCasos();');
   L.push('renderMinutas();');
@@ -9038,13 +9434,13 @@ function renderKpiProductividad(){
   const porResp = {};
   cerrados.forEach(r=>{ porResp[r.responsable] = (porResp[r.responsable]||0)+1; });
   const respLabels = Object.keys(porResp).sort((a,b)=>porResp[b]-porResp[a]).slice(0,10);
-  renderSimpleHBar("prod-chart-productividad", respLabels, respLabels.map(l=>porResp[l]), "#1F6F6B");
+  renderSimpleHBar("prod-chart-productividad", respLabels, respLabels.map(l=>porResp[l]), "#10B981");
 
   const activos = RECORDS.filter(r=>ESTADOS_ACTIVOS.includes(r.estado));
   const cargaResp = {};
   activos.forEach(r=>{ cargaResp[r.responsable] = (cargaResp[r.responsable]||0)+1; });
   const cargaLabels = Object.keys(cargaResp).sort((a,b)=>cargaResp[b]-cargaResp[a]).slice(0,10);
-  renderSimpleHBar("prod-chart-carga", cargaLabels, cargaLabels.map(l=>cargaResp[l]), "#3B5BA9");
+  renderSimpleHBar("prod-chart-carga", cargaLabels, cargaLabels.map(l=>cargaResp[l]), "#4F46E5");
 
   const months = lastNMonthKeys(12);
   const countsPorMes = months.map(mk => RECORDS.filter(r=>monthKey(r.fecha) === mk).length);
@@ -9052,7 +9448,7 @@ function renderKpiProductividad(){
   if(charts.prodTendencia) charts.prodTendencia.destroy();
   charts.prodTendencia = new Chart(ctx, {
     type:"line",
-    data:{ labels: months.map(monthKeyLabel), datasets:[{ data:countsPorMes, borderColor:"#3B5BA9", backgroundColor:"rgba(59,91,169,0.12)", fill:true, tension:0.3, pointRadius:3 }] },
+    data:{ labels: months.map(monthKeyLabel), datasets:[{ data:countsPorMes, borderColor:"#4F46E5", backgroundColor:"rgba(59,91,169,0.12)", fill:true, tension:0.3, pointRadius:3 }] },
     options:{
       responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
       scales:{ y:{beginAtZero:true, ticks:{precision:0}, grid:{color:"#EEF0F5"}}, x:{grid:{display:false}, ticks:{font:{size:10}}} }
@@ -9071,7 +9467,7 @@ function renderKpiEstrategicos(){
   const macroCounts = {};
   RECORDS.forEach(r=>{ macroCounts[r.macro] = (macroCounts[r.macro]||0)+1; });
   const macroLabels = Object.keys(macroCounts).sort((a,b)=>macroCounts[b]-macroCounts[a]).slice(0,10);
-  renderSimpleHBar("est-chart-macro", macroLabels, macroLabels.map(l=>macroCounts[l]), "#D98C2B");
+  renderSimpleHBar("est-chart-macro", macroLabels, macroLabels.map(l=>macroCounts[l]), "#F59E0B");
 
   const areaCounts = {};
   AREAS.forEach(a=>areaCounts[a]=0);
@@ -9083,13 +9479,13 @@ function renderKpiEstrategicos(){
   DEPARTAMENTOS.forEach(d=>deptoCounts[d]=0);
   RECORDS.forEach(r=>{ deptoCounts[r.departamento]=(deptoCounts[r.departamento]||0)+1; });
   const deptoLabels = DEPARTAMENTOS.filter(d=>deptoCounts[d]>0).sort((a,b)=>deptoCounts[b]-deptoCounts[a]);
-  renderSimpleHBar("est-chart-depto", deptoLabels, deptoLabels.map(l=>deptoCounts[l]), "#3B5BA9");
+  renderSimpleHBar("est-chart-depto", deptoLabels, deptoLabels.map(l=>deptoCounts[l]), "#4F46E5");
 
   const sucCounts = {};
   SUCURSALES.forEach(s=>sucCounts[s]=0);
   RECORDS.forEach(r=>{ sucCounts[r.sucursal]=(sucCounts[r.sucursal]||0)+1; });
   const sucLabels = SUCURSALES.filter(s=>sucCounts[s]>0);
-  renderSimpleHBar("est-chart-sucursal", sucLabels, sucLabels.map(l=>sucCounts[l]), "#1F6F6B");
+  renderSimpleHBar("est-chart-sucursal", sucLabels, sucLabels.map(l=>sucCounts[l]), "#10B981");
 }
 
 /* ---- IV. ANALÍTICOS ---- */
@@ -9142,8 +9538,8 @@ function renderKpiTalento(){
     data:{
       labels: months.map(monthKeyLabel),
       datasets:[
-        { label:"Altas", data: altasPorMes, borderColor:"#1F6F6B", backgroundColor:"rgba(31,111,107,0.12)", fill:true, tension:0.3, pointRadius:3 },
-        { label:"Bajas", data: bajasPorMes, borderColor:"#C1433D", backgroundColor:"rgba(193,67,61,0.12)", fill:true, tension:0.3, pointRadius:3 }
+        { label:"Altas", data: altasPorMes, borderColor:"#10B981", backgroundColor:"rgba(31,111,107,0.12)", fill:true, tension:0.3, pointRadius:3 },
+        { label:"Bajas", data: bajasPorMes, borderColor:"#EF4444", backgroundColor:"rgba(193,67,61,0.12)", fill:true, tension:0.3, pointRadius:3 }
       ]
     },
     options:{
@@ -9163,7 +9559,7 @@ function renderKpiTalento(){
   if(charts.talMasa) charts.talMasa.destroy();
   charts.talMasa = new Chart(ctx2, {
     type:"bar",
-    data:{ labels: labels.length?labels:["Sin datos"], datasets:[{ data: labels.length?data:[0], backgroundColor:"#D98C2B", borderRadius:5, barThickness:18 }] },
+    data:{ labels: labels.length?labels:["Sin datos"], datasets:[{ data: labels.length?data:[0], backgroundColor:"#F59E0B", borderRadius:5, barThickness:18 }] },
     options:{
       indexAxis:"y", responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:(c)=> ` ${money(c.raw)}` } } },
@@ -9194,8 +9590,8 @@ function renderParetoChart(){
     data:{
       labels: sorted,
       datasets:[
-        { type:"bar", label:"Casos", data, backgroundColor:"#3B5BA9", borderRadius:4, yAxisID:"y" },
-        { type:"line", label:"% acumulado", data:cumPct, borderColor:"#D98C2B", backgroundColor:"#D98C2B", tension:0.25, yAxisID:"y1", pointRadius:3 }
+        { type:"bar", label:"Casos", data, backgroundColor:"#4F46E5", borderRadius:4, yAxisID:"y" },
+        { type:"line", label:"% acumulado", data:cumPct, borderColor:"#F59E0B", backgroundColor:"#F59E0B", tension:0.25, yAxisID:"y1", pointRadius:3 }
       ]
     },
     options:{
@@ -9296,7 +9692,7 @@ function renderTendenciaRiesgos(){
   if(charts.riesgoTend) charts.riesgoTend.destroy();
   charts.riesgoTend = new Chart(ctx, {
     type:"line",
-    data:{ labels: months.map(monthKeyLabel), datasets:[{ data:counts, borderColor:"#C1433D", backgroundColor:"rgba(193,67,61,0.12)", fill:true, tension:0.3, pointRadius:3 }] },
+    data:{ labels: months.map(monthKeyLabel), datasets:[{ data:counts, borderColor:"#EF4444", backgroundColor:"rgba(193,67,61,0.12)", fill:true, tension:0.3, pointRadius:3 }] },
     options:{
       responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
       scales:{ y:{beginAtZero:true, ticks:{precision:0}, grid:{color:"#EEF0F5"}}, x:{grid:{display:false}, ticks:{font:{size:10}}} }
@@ -9353,8 +9749,8 @@ function renderForecastChart(){
   charts.forecast = new Chart(ctx, {
     type:"line",
     data:{ labels: allLabels, datasets:[
-      { label:"Histórico", data: historicalData, borderColor:"#3B5BA9", backgroundColor:"rgba(59,91,169,0.1)", spanGaps:false, tension:0.3, pointRadius:3 },
-      { label:"Proyección", data: forecastData, borderColor:"#D98C2B", borderDash:[6,4], backgroundColor:"rgba(217,140,43,0.1)", tension:0.3, pointRadius:3 }
+      { label:"Histórico", data: historicalData, borderColor:"#4F46E5", backgroundColor:"rgba(59,91,169,0.1)", spanGaps:false, tension:0.3, pointRadius:3 },
+      { label:"Proyección", data: forecastData, borderColor:"#F59E0B", borderDash:[6,4], backgroundColor:"rgba(217,140,43,0.1)", tension:0.3, pointRadius:3 }
     ]},
     options:{
       responsive:true, maintainAspectRatio:false,
@@ -9433,6 +9829,18 @@ function renderMonthCalendar(){
     });
   });
 
+  // Cumpleaños del personal activo: se agrupan por "MM-DD" (sin año) para
+  // que se muestren en la celda correcta sin importar el año en curso.
+  const cumpleByMonthDay = {};
+  EMPLEADOS.filter(e => e.estatus === "Activo" && e.fechaNacimiento).forEach(e=>{
+    const partes = e.fechaNacimiento.split("-"); // YYYY-MM-DD
+    const clave = partes[1] + "-" + partes[2];
+    if(!cumpleByMonthDay[clave]) cumpleByMonthDay[clave] = [];
+    cumpleByMonthDay[clave].push(e);
+  });
+
+  const actividadesRecurrentes = APP_SETTINGS.actividadesRecurrentes || [];
+
   const totalCells = Math.ceil((firstDow + daysInMonth) / 7) * 7;
   for(let i=0;i<totalCells;i++){
     const cell = document.createElement("div");
@@ -9483,7 +9891,7 @@ function renderMonthCalendar(){
     const dayVenc = vencByDay[dateStr] || [];
     dayVenc.forEach(e=>{
       const dias = daysUntil(dateStr);
-      const color = dias < 15 ? "#C1433D" : "#D98C2B";
+      const color = dias < 15 ? "#EF4444" : "#F59E0B";
       const chip = document.createElement("div");
       chip.className = "cal-chip chip-alert";
       chip.style.background = color + "22";
@@ -9495,12 +9903,47 @@ function renderMonthCalendar(){
       cell.appendChild(chip);
     });
 
+    // Cumpleaños del personal que caen en este día (independiente del año)
+    const claveMesDia = String(cellMonth + 1).padStart(2,"0") + "-" + String(dayNum).padStart(2,"0");
+    (cumpleByMonthDay[claveMesDia] || []).forEach(e=>{
+      const chip = document.createElement("div");
+      chip.className = "cal-chip";
+      chip.style.background = "var(--amber-soft)";
+      chip.style.color = "var(--amber)";
+      chip.style.borderLeftColor = "var(--amber)";
+      chip.textContent = "🎂 " + e.nombre;
+      chip.title = `Cumpleaños: ${e.nombre} · ${e.departamento || ""}`;
+      chip.addEventListener("click", ()=>editEmpleado(e.id));
+      cell.appendChild(chip);
+    });
+
+    // Actividades recurrentes programadas para este día del mes
+    const ultimoDiaCelda = new Date(cellYear, cellMonth + 1, 0).getDate();
+    actividadesRecurrentes.forEach(act=>{
+      const dia1 = Math.min(Math.max(act.diaMes, 1), ultimoDiaCelda);
+      const diasProgramados = act.frecuencia === "quincenal"
+        ? [dia1, Math.min(dia1 + 15, ultimoDiaCelda)]
+        : [dia1];
+      if(diasProgramados.includes(dayNum)){
+        const chip = document.createElement("div");
+        chip.className = "cal-chip";
+        chip.style.background = "var(--blue-soft)";
+        chip.style.color = "var(--blue)";
+        chip.style.borderLeftColor = "var(--blue)";
+        chip.textContent = "🔁 Prog: " + act.titulo;
+        chip.title = `Actividad recurrente: ${act.titulo} (${act.frecuencia})`;
+        cell.appendChild(chip);
+      }
+    });
+
     grid.appendChild(cell);
   }
 
   document.getElementById("cal-legend").innerHTML = ESTADOS.map(e=>
     `<span class="legend-item"><span class="legend-dot" style="background:${COLOR_ESTADO[e]}"></span>${e}</span>`
-  ).join("") + `<span class="legend-item"><span class="legend-dot" style="background:#D98C2B"></span>⏰ Vencimiento de contrato</span>`;
+  ).join("") + `<span class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span>⏰ Vencimiento de contrato</span>`
+    + `<span class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>🎂 Cumpleaños</span>`
+    + `<span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>🔁 Actividad recurrente</span>`;
 }
 document.getElementById("cal-prev").addEventListener("click", ()=>{
   calMonth--; if(calMonth < 0){ calMonth = 11; calYear--; }
@@ -9630,7 +10073,7 @@ function renderGanttPersonal(){
     const leftPct = ((barStart - monthStart) / 86400000 / daysInMonth) * 100;
     const widthPct = Math.max((((barEnd - barStart) / 86400000) + 1) / daysInMonth * 100, 2.2);
     const dias = daysUntil(efectivo);
-    const color = e.estatus === "Baja" ? "#8B90A3" : (dias < 15 ? "#C1433D" : (dias < 30 ? "#D98C2B" : "#1F6F6B"));
+    const color = e.estatus === "Baja" ? "#8B90A3" : (dias < 15 ? "#EF4444" : (dias < 30 ? "#F59E0B" : "#10B981"));
     const label = `${e.fechaIngreso} → vence ${efectivo}`;
 
     return `<div class="gantt-row">
@@ -9707,6 +10150,7 @@ Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   initSelects();
   initPersonalSelects();
   initCandidatosSelects();
+  initRecurrenteSelects();
   refreshAutoFields();
   checkStorageHealth();
   checkChartLibrary();
@@ -9717,6 +10161,7 @@ Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   await getLoteActualKey(); // solo para cachear el número de lote actual en memoria
   pruneNotificacionesAntiguas();
   checkVencimientosYGenerar();
+  await verificarYGenerarRecurrentes();
   await saveNotificaciones();
   renderAll();
   renderConfigView();
