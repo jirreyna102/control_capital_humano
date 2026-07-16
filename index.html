@@ -5773,15 +5773,15 @@ const CHECKLIST_ITEMS_OFFBOARDING = [
 
 async function loadChecklists(){
   try{
-    const res = await window.storage.get(CHECKLISTS_STORAGE_KEY, true);
-    CHECKLISTS = res && res.value ? JSON.parse(res.value) : [];
+    const raw = await storageGetValue(CHECKLISTS_STORAGE_KEY);
+    CHECKLISTS = raw ? JSON.parse(raw) : [];
   }catch(e){
     CHECKLISTS = [];
   }
 }
 async function saveChecklists(){
   try{
-    await window.storage.set(CHECKLISTS_STORAGE_KEY, JSON.stringify(CHECKLISTS), true);
+    await storageSetValue(CHECKLISTS_STORAGE_KEY, JSON.stringify(CHECKLISTS));
     storageAvailable = true;
   }catch(e){
     console.error("Error guardando checklists", e);
@@ -6116,15 +6116,15 @@ const CANDIDATOS_STORAGE_KEY = "hr-candidatos-v1";
 
 async function loadCandidatos(){
   try{
-    const res = await window.storage.get(CANDIDATOS_STORAGE_KEY, true);
-    CANDIDATOS = res && res.value ? JSON.parse(res.value) : [];
+    const raw = await storageGetValue(CANDIDATOS_STORAGE_KEY);
+    CANDIDATOS = raw ? JSON.parse(raw) : [];
   }catch(e){
     CANDIDATOS = [];
   }
 }
 async function saveCandidatos(){
   try{
-    await window.storage.set(CANDIDATOS_STORAGE_KEY, JSON.stringify(CANDIDATOS), true);
+    await storageSetValue(CANDIDATOS_STORAGE_KEY, JSON.stringify(CANDIDATOS));
     storageAvailable = true;
   }catch(e){
     console.error("Error guardando candidatos", e);
@@ -6367,15 +6367,15 @@ const MINUTAS_STORAGE_KEY = "hr-minutas-v1";
 
 async function loadMinutas(){
   try{
-    const res = await window.storage.get(MINUTAS_STORAGE_KEY, true);
-    MINUTAS = res && res.value ? JSON.parse(res.value) : [];
+    const raw = await storageGetValue(MINUTAS_STORAGE_KEY);
+    MINUTAS = raw ? JSON.parse(raw) : [];
   }catch(e){
     MINUTAS = [];
   }
 }
 async function saveMinutas(){
   try{
-    await window.storage.set(MINUTAS_STORAGE_KEY, JSON.stringify(MINUTAS), true);
+    await storageSetValue(MINUTAS_STORAGE_KEY, JSON.stringify(MINUTAS));
     storageAvailable = true;
   }catch(e){
     console.error("Error guardando minutas", e);
@@ -6640,8 +6640,8 @@ let notifModalFilter = "todas";
 
 async function loadNotificaciones(){
   try{
-    const res = await window.storage.get(NOTIFICACIONES_STORAGE_KEY, true);
-    NOTIFICACIONES = res && res.value ? JSON.parse(res.value) : [];
+    const raw = await storageGetValue(NOTIFICACIONES_STORAGE_KEY);
+    NOTIFICACIONES = raw ? JSON.parse(raw) : [];
   }catch(e){
     NOTIFICACIONES = [];
   }
@@ -6660,7 +6660,7 @@ function pruneNotificacionesAntiguas(){
 }
 async function saveNotificaciones(){
   try{
-    await window.storage.set(NOTIFICACIONES_STORAGE_KEY, JSON.stringify(NOTIFICACIONES), true);
+    await storageSetValue(NOTIFICACIONES_STORAGE_KEY, JSON.stringify(NOTIFICACIONES));
     storageAvailable = true;
   }catch(e){
     console.error("Error guardando notificaciones", e);
