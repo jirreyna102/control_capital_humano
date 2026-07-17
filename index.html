@@ -10423,7 +10423,7 @@ function setupRealtimeSync(){
     .subscribe();
 }
 
-initAuthAndApp();
+window.LIB_LOAD_PROMISE.then(initAuthAndApp);
 </script>
 </body>
 </html>
