@@ -109,9 +109,9 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
   flex-shrink:0;overflow:hidden;
 }
 .brand-mark img{width:100%;height:100%;object-fit:contain;display:block;background:#fff;}
-.brand-text{min-width:0;}
-.brand-text .t1{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;letter-spacing:.2px;line-height:1.2;white-space:nowrap;}
-.brand-text .t2{font-size:11px;color:#9AA0BC;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;}
+.brand-text{min-width:0;overflow:hidden;}
+.brand-text .t1{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;letter-spacing:.2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.brand-text .t2{font-size:11px;color:#9AA0BC;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;line-height:1.3;}
 
 /* ---------- ÍCONO DE AYUDA / TOOLTIP GLOSARIO ---------- */
 .info-icon{
@@ -476,11 +476,31 @@ input:focus,select:focus,textarea:focus{
 
 .table-scroll{overflow-x:auto;border-radius:10px;border:1px solid var(--line);}
 table{width:100%;border-collapse:collapse;min-width:1180px;}
+table.configurable-table{width:max-content;min-width:100%;}
 thead th{
   background:var(--ink);color:#C6CAE0;font-family:'Sora',sans-serif;font-weight:600;
   font-size:11px;text-transform:uppercase;letter-spacing:.4px;text-align:left;
   padding:11px 12px;white-space:nowrap;position:sticky;top:0;
 }
+.configurable-table thead th{position:sticky;top:0;position:relative;overflow:hidden;text-overflow:ellipsis;}
+.col-resize-handle{
+  position:absolute;right:0;top:0;bottom:0;width:7px;cursor:col-resize;user-select:none;
+  z-index:2;
+}
+.col-resize-handle:hover,.col-resize-handle.resizing{background:rgba(198,202,224,.35);}
+.btn-col-config{display:inline-flex;align-items:center;gap:5px;}
+
+/* ---- Modal de configuración de columnas ---- */
+.colcfg-list{display:flex;flex-direction:column;gap:2px;max-height:50vh;overflow-y:auto;}
+.colcfg-item{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;
+  border:1px solid var(--line);background:#fff;cursor:grab;
+}
+.colcfg-item.dragging{opacity:.4;}
+.colcfg-item.drag-over{border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.15);}
+.colcfg-handle{color:var(--text-mute);font-size:13px;cursor:grab;}
+.colcfg-item label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);flex:1;cursor:pointer;}
+.colcfg-item input[type=checkbox]{cursor:pointer;}
 tbody td{
   padding:11px 12px;font-size:13px;border-top:1px solid var(--line);color:var(--text);
   white-space:nowrap;
@@ -717,12 +737,22 @@ tr.row-warning:hover{
   font-family:'Sora',sans-serif;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;font-weight:600;
 }
 .cal-day{
-  min-height:96px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  min-height:96px;min-width:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
   padding:6px;background:#fff;display:flex;flex-direction:column;gap:3px;
 }
 .cal-day:nth-child(7n){border-right:none;}
 .cal-day.other-month{background:#FBFBFD;}
 .cal-day.today{background:var(--amber-soft);}
+/* Tamaños de celda escalables (Compacto / Normal / Amplio) */
+.cal-grid.cal-size-compacto .cal-day{min-height:64px;}
+.cal-grid.cal-size-compacto .cal-chip{font-size:9px;padding:1px 5px;}
+.cal-grid.cal-size-normal .cal-day{min-height:96px;}
+.cal-grid.cal-size-amplio .cal-day{min-height:140px;}
+.cal-grid.cal-size-amplio .cal-chip{font-size:11px;padding:3px 7px;}
+.cal-size-select{
+  border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;
+  font-family:'Sora',sans-serif;font-weight:600;color:var(--text-soft);cursor:pointer;
+}
 .cal-day .cal-daynum{
   font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text-soft);
   margin-bottom:2px;
@@ -1887,8 +1917,9 @@ select:focus,textarea:focus{
   color:#fff;
   font-weight:800;
 }
-.sidebar .brand-text .t1{color:#fff;font-size:14px;line-height:1.25;}
-.sidebar .brand-text .t2{color:rgba(255,255,255,.55);font-size:11.5px;}
+.sidebar .brand-text{width:100%;}
+.sidebar .brand-text .t1{color:#fff;font-size:14px;line-height:1.3;}
+.sidebar .brand-text .t2{color:rgba(255,255,255,.55);font-size:11.5px;margin-top:3px;}
 
 .sidebar nav.tabs{
   display:flex;
@@ -2567,6 +2598,7 @@ select:focus,textarea:focus{
                 </button>
               </div>
             </div>
+            <button class="btn btn-ghost btn-sm btn-col-config" id="btn-col-config-bitacora" type="button">🧩 Columnas</button>
             <button class="btn btn-ghost btn-sm" id="btn-export-backup" type="button">🗄 Descargar respaldo</button>
             <button class="btn btn-ghost btn-sm" id="btn-export-consulta" type="button" title="Genera un archivo HTML de solo lectura con la bitácora y las minutas, sin edición ni gráficas">📄 Exportar versión de consulta</button>
             <button class="btn btn-ghost btn-sm" id="btn-change-backup-location" type="button" style="display:none;" title="Elegir una nueva carpeta para los próximos respaldos">📂 Cambiar ubicación</button>
@@ -2586,27 +2618,10 @@ select:focus,textarea:focus{
           <button class="clear-btn" id="clear-filters">Limpiar filtros</button>
         </div>
         <div class="table-scroll">
-          <table>
+          <table class="configurable-table" id="bitacora-table">
+            <colgroup id="bitacora-colgroup"></colgroup>
             <thead>
-              <tr>
-                <th>Fecha inicio</th>
-                <th>Tema / Caso</th>
-                <th>Tipo</th>
-                <th>Área estratégica</th>
-                <th>Macroproceso</th>
-                <th>Responsable</th>
-                <th>Solicitante</th>
-                <th>Departamento</th>
-                <th>Sucursal</th>
-                <th>Estado</th>
-                <th>Prioridad</th>
-                <th>Riesgo</th>
-                <th>Nivel</th>
-                <th>Días</th>
-                <th>Costo final</th>
-                <th>Evidencia</th>
-                <th>Acciones</th>
-              </tr>
+              <tr id="bitacora-thead-row"></tr>
             </thead>
             <tbody id="table-body"></tbody>
           </table>
@@ -2718,6 +2733,7 @@ select:focus,textarea:focus{
       <div class="table-head">
         <h3>Bitácora de Personal</h3>
         <span class="count" id="emp-table-count">0 registros</span>
+        <button class="btn btn-ghost btn-sm btn-col-config" id="btn-col-config-personal" type="button" style="margin-left:auto;">🧩 Columnas</button>
       </div>
       <div class="filters-row">
         <select id="emp-filter-depto"><option value="">Departamento: todos</option></select>
@@ -2725,23 +2741,10 @@ select:focus,textarea:focus{
         <button class="clear-btn" id="emp-clear-filters">Limpiar filtros</button>
       </div>
       <div class="table-scroll">
-        <table>
+        <table class="configurable-table" id="personal-table">
+          <colgroup id="personal-colgroup"></colgroup>
           <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Puesto</th>
-              <th>Departamento</th>
-              <th>Sueldo diario</th>
-              <th>Género</th>
-              <th>Fecha ingreso</th>
-              <th>Estatus</th>
-              <th>Contrato</th>
-              <th>Venc. 1</th>
-              <th>Días venc. 1</th>
-              <th>Venc. 2</th>
-              <th>Días venc. 2</th>
-              <th>Acciones</th>
-            </tr>
+            <tr id="personal-thead-row"></tr>
           </thead>
           <tbody id="emp-table-body"></tbody>
         </table>
@@ -3164,10 +3167,15 @@ select:focus,textarea:focus{
           <div class="cal-month-label" id="cal-month-label"></div>
           <button type="button" id="cal-next">›</button>
           <button type="button" class="cal-today-btn" id="cal-today">Hoy</button>
+          <select class="cal-size-select" id="cal-size-select" title="Tamaño de las celdas del calendario">
+            <option value="compacto">Tamaño: Compacto</option>
+            <option value="normal" selected>Tamaño: Normal</option>
+            <option value="amplio">Tamaño: Amplio</option>
+          </select>
         </div>
         <div class="cal-legend" id="cal-legend"></div>
       </div>
-      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-grid cal-size-normal" id="cal-grid"></div>
     </div>
 
     <div class="card gantt-card">
@@ -3590,6 +3598,26 @@ select:focus,textarea:focus{
       <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
         <button class="btn btn-ghost" id="confirm-cancel" type="button">Cancelar</button>
         <button class="btn btn-primary" id="confirm-ok" type="button">Continuar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="colcfg-modal">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-head">
+      <div><h2 style="font-size:16px;" id="colcfg-title">Configurar columnas</h2></div>
+      <button class="modal-close" id="colcfg-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--text-mute);line-height:1.5;margin:0 0 12px;">
+        Arrastra <b>☰</b> para reordenar las columnas. Desmarca una para ocultarla.
+        Para cambiar el ancho, arrastra el borde derecho del encabezado de cada columna dentro de la tabla.
+      </p>
+      <div class="colcfg-list" id="colcfg-list"></div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px;">
+        <button class="btn btn-ghost" id="colcfg-reset" type="button">Restablecer</button>
+        <button class="btn btn-primary" id="colcfg-done" type="button">Listo</button>
       </div>
     </div>
   </div>
@@ -6198,6 +6226,206 @@ function pillEstatusColab(estatus){
   const c = COLOR_ESTATUS_COLAB[estatus] || "#8B90A3";
   return `<span class="pill" style="background:${c}22;color:${c}">${estatus}</span>`;
 }
+/* ============================================================
+   GESTOR DE COLUMNAS CONFIGURABLES
+   Permite mostrar/ocultar, reordenar (arrastrar) y escalar (resize)
+   las columnas de la Bitácora general y de la tabla de Personal.
+   La configuración se guarda por navegador en localStorage.
+   ============================================================ */
+const COLUMN_DEFS = {
+  bitacora: [
+    {key:"fecha",        label:"Fecha inicio",      width:110},
+    {key:"tema",         label:"Tema / Caso",       width:220},
+    {key:"tipo",         label:"Tipo",              width:120},
+    {key:"area",         label:"Área estratégica",  width:150},
+    {key:"macro",        label:"Macroproceso",      width:150},
+    {key:"responsable",  label:"Responsable",       width:130},
+    {key:"solicitante",  label:"Solicitante",       width:130},
+    {key:"departamento", label:"Departamento",      width:130},
+    {key:"sucursal",     label:"Sucursal",          width:110},
+    {key:"estado",       label:"Estado",            width:110},
+    {key:"prioridad",    label:"Prioridad",         width:100},
+    {key:"riesgo",       label:"Riesgo",            width:150},
+    {key:"nivel",        label:"Nivel",             width:90},
+    {key:"dias",         label:"Días",              width:70},
+    {key:"costo",        label:"Costo final",       width:110},
+    {key:"evidencia",    label:"Evidencia",         width:95},
+    {key:"acciones",     label:"Acciones",          width:170}
+  ],
+  personal: [
+    {key:"nombre",       label:"Nombre",            width:180},
+    {key:"puesto",       label:"Puesto",            width:130},
+    {key:"departamento", label:"Departamento",      width:130},
+    {key:"sueldo",       label:"Sueldo diario",     width:110},
+    {key:"genero",       label:"Género",            width:100},
+    {key:"ingreso",      label:"Fecha ingreso",     width:110},
+    {key:"estatus",      label:"Estatus",           width:100},
+    {key:"contrato",     label:"Contrato",          width:130},
+    {key:"venc1",        label:"Venc. 1",           width:100},
+    {key:"dias1",        label:"Días venc. 1",      width:100},
+    {key:"venc2",        label:"Venc. 2",           width:100},
+    {key:"dias2",        label:"Días venc. 2",      width:100},
+    {key:"acciones",     label:"Acciones",          width:110}
+  ]
+};
+function loadColumnState(tableKey){
+  const defs = COLUMN_DEFS[tableKey];
+  const defKeys = defs.map(c=>c.key);
+  let saved = null;
+  try{ saved = JSON.parse(localStorage.getItem("colcfg-" + tableKey) || "null"); }catch(e){}
+  let order, hidden, widths;
+  if(saved && Array.isArray(saved.order)){
+    order = saved.order.filter(k=>defKeys.includes(k));
+    defKeys.forEach(k=>{ if(!order.includes(k)) order.push(k); });
+    hidden = Array.isArray(saved.hidden) ? saved.hidden.filter(k=>defKeys.includes(k)) : [];
+    widths = (saved.widths && typeof saved.widths === "object") ? saved.widths : {};
+  } else {
+    order = defKeys.slice();
+    hidden = [];
+    widths = {};
+  }
+  return {order, hidden, widths};
+}
+function saveColumnState(tableKey, state){
+  try{ localStorage.setItem("colcfg-" + tableKey, JSON.stringify(state)); }catch(e){}
+}
+const COLUMN_STATE = {
+  bitacora: loadColumnState("bitacora"),
+  personal: loadColumnState("personal")
+};
+function getVisibleOrderedColumns(tableKey){
+  const defs = COLUMN_DEFS[tableKey];
+  const state = COLUMN_STATE[tableKey];
+  const byKey = {};
+  defs.forEach(c=>{ byKey[c.key] = c; });
+  return state.order
+    .filter(k=> !state.hidden.includes(k) && byKey[k])
+    .map(k=> ({...byKey[k], width: state.widths[k] || byKey[k].width}));
+}
+function renderTableHeader(tableKey, theadRowId, colgroupId){
+  const cols = getVisibleOrderedColumns(tableKey);
+  const row = document.getElementById(theadRowId);
+  const colgroup = document.getElementById(colgroupId);
+  if(!row || !colgroup) return;
+  colgroup.innerHTML = cols.map(c=>`<col style="width:${c.width}px;">`).join("");
+  row.innerHTML = cols.map(c=>
+    `<th data-col-key="${c.key}">${escapeHtml(c.label)}<span class="col-resize-handle" data-col-key="${c.key}" title="Arrastra para cambiar el ancho"></span></th>`
+  ).join("");
+  row.querySelectorAll(".col-resize-handle").forEach(handle=>{
+    handle.addEventListener("mousedown", (ev)=>{
+      ev.preventDefault();
+      const key = handle.dataset.colKey;
+      const th = handle.closest("th");
+      const startX = ev.clientX;
+      const startWidth = th.offsetWidth;
+      const idx = cols.findIndex(c=>c.key === key);
+      handle.classList.add("resizing");
+      function onMove(e){
+        const newWidth = Math.max(50, startWidth + (e.clientX - startX));
+        COLUMN_STATE[tableKey].widths[key] = newWidth;
+        const colEl = colgroup.children[idx];
+        if(colEl) colEl.style.width = newWidth + "px";
+      }
+      function onUp(){
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+        handle.classList.remove("resizing");
+        saveColumnState(tableKey, COLUMN_STATE[tableKey]);
+      }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
+  });
+}
+let colcfgCurrentTable = null;
+function openColumnConfig(tableKey, titleText){
+  colcfgCurrentTable = tableKey;
+  document.getElementById("colcfg-title").textContent = titleText;
+  renderColumnConfigList();
+  document.getElementById("colcfg-modal").classList.add("show");
+}
+function renderColumnConfigList(){
+  const tableKey = colcfgCurrentTable;
+  if(!tableKey) return;
+  const defs = COLUMN_DEFS[tableKey];
+  const state = COLUMN_STATE[tableKey];
+  const byKey = {};
+  defs.forEach(c=>{ byKey[c.key] = c; });
+  const list = document.getElementById("colcfg-list");
+  list.innerHTML = state.order.filter(k=>byKey[k]).map(k=>{
+    const c = byKey[k];
+    const checked = !state.hidden.includes(k) ? "checked" : "";
+    return `<div class="colcfg-item" draggable="true" data-key="${k}">
+      <span class="colcfg-handle">☰</span>
+      <label><input type="checkbox" data-key="${k}" ${checked}> ${escapeHtml(c.label)}</label>
+    </div>`;
+  }).join("");
+
+  list.querySelectorAll("input[type=checkbox]").forEach(chk=>{
+    chk.addEventListener("change", ()=>{
+      const key = chk.dataset.key;
+      const st = COLUMN_STATE[tableKey];
+      if(chk.checked){
+        st.hidden = st.hidden.filter(k=>k!==key);
+      } else if(!st.hidden.includes(key)){
+        st.hidden.push(key);
+      }
+    });
+  });
+
+  let dragKey = null;
+  list.querySelectorAll(".colcfg-item").forEach(item=>{
+    item.addEventListener("dragstart", ()=>{
+      dragKey = item.dataset.key;
+      item.classList.add("dragging");
+    });
+    item.addEventListener("dragend", ()=>{
+      item.classList.remove("dragging");
+      list.querySelectorAll(".colcfg-item").forEach(i=>i.classList.remove("drag-over"));
+    });
+    item.addEventListener("dragover", (ev)=>{
+      ev.preventDefault();
+      item.classList.add("drag-over");
+    });
+    item.addEventListener("dragleave", ()=>{ item.classList.remove("drag-over"); });
+    item.addEventListener("drop", (ev)=>{
+      ev.preventDefault();
+      item.classList.remove("drag-over");
+      const targetKey = item.dataset.key;
+      if(!dragKey || dragKey === targetKey) return;
+      const st = COLUMN_STATE[tableKey];
+      const order = st.order.filter(k=>k!==dragKey);
+      const idx = order.indexOf(targetKey);
+      order.splice(idx, 0, dragKey);
+      st.order = order;
+      renderColumnConfigList();
+    });
+  });
+}
+function closeColumnConfig(){
+  document.getElementById("colcfg-modal").classList.remove("show");
+  if(!colcfgCurrentTable) return;
+  saveColumnState(colcfgCurrentTable, COLUMN_STATE[colcfgCurrentTable]);
+  if(colcfgCurrentTable === "bitacora"){
+    renderTableHeader("bitacora", "bitacora-thead-row", "bitacora-colgroup");
+    renderTable();
+  } else if(colcfgCurrentTable === "personal"){
+    renderTableHeader("personal", "personal-thead-row", "personal-colgroup");
+    renderEmpleadosTable();
+  }
+  colcfgCurrentTable = null;
+}
+document.getElementById("colcfg-close").addEventListener("click", closeColumnConfig);
+document.getElementById("colcfg-done").addEventListener("click", closeColumnConfig);
+document.getElementById("colcfg-reset").addEventListener("click", ()=>{
+  if(!colcfgCurrentTable) return;
+  try{ localStorage.removeItem("colcfg-" + colcfgCurrentTable); }catch(e){}
+  COLUMN_STATE[colcfgCurrentTable] = loadColumnState(colcfgCurrentTable);
+  renderColumnConfigList();
+});
+document.getElementById("btn-col-config-bitacora").addEventListener("click", ()=> openColumnConfig("bitacora", "Columnas de la Bitácora general"));
+document.getElementById("btn-col-config-personal").addEventListener("click", ()=> openColumnConfig("personal", "Columnas de Personal"));
+
 function renderEmpleadosTable(){
   const empty = document.getElementById("emp-empty");
   const content = document.getElementById("emp-content");
@@ -6210,37 +6438,41 @@ function renderEmpleadosTable(){
   empty.style.display = "none";
   content.style.display = "block";
 
+  renderTableHeader("personal", "personal-thead-row", "personal-colgroup");
   const filtered = getFilteredEmpleados();
   document.getElementById("emp-table-count").textContent = `${filtered.length} de ${EMPLEADOS.length} registros`;
   const body = document.getElementById("emp-table-body");
+  const cols = getVisibleOrderedColumns("personal");
+  const colCount = cols.length || 1;
   if(filtered.length === 0){
-    body.innerHTML = `<tr><td colspan="13" style="text-align:center;color:var(--text-mute);padding:30px;">No hay colaboradores que coincidan con los filtros.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;color:var(--text-mute);padding:30px;">No hay colaboradores que coincidan con los filtros.</td></tr>`;
     return;
   }
   body.innerHTML = filtered.map(e=>{
     const dias1 = daysUntil(e.fechaVencimiento1);
     const dias2 = daysUntil(e.fechaVencimiento2);
-    return `<tr>
-      <td class="wrap"><b>${escapeHtml(e.nombre)}</b></td>
-      <td>${escapeHtml(e.puesto || "—")}</td>
-      <td>${escapeHtml(e.departamento)}</td>
-      <td class="mono">${money(e.sueldoDiario)}</td>
-      <td>${escapeHtml(e.genero)}</td>
-      <td>${e.fechaIngreso}</td>
-      <td>${pillEstatusColab(e.estatus)}</td>
-      <td>${escapeHtml(e.estadoContrato)}</td>
-      <td>${e.fechaVencimiento1 || "—"}</td>
-      <td>${pillVencimiento(dias1)}</td>
-      <td>${e.fechaVencimiento2 || "—"}</td>
-      <td>${pillVencimiento(dias2)}</td>
-      <td>
+    const cellByKey = {
+      nombre: `<td class="wrap"><b>${escapeHtml(e.nombre)}</b></td>`,
+      puesto: `<td>${escapeHtml(e.puesto || "—")}</td>`,
+      departamento: `<td>${escapeHtml(e.departamento)}</td>`,
+      sueldo: `<td class="mono">${money(e.sueldoDiario)}</td>`,
+      genero: `<td>${escapeHtml(e.genero)}</td>`,
+      ingreso: `<td>${e.fechaIngreso}</td>`,
+      estatus: `<td>${pillEstatusColab(e.estatus)}</td>`,
+      contrato: `<td>${escapeHtml(e.estadoContrato)}</td>`,
+      venc1: `<td>${e.fechaVencimiento1 || "—"}</td>`,
+      dias1: `<td>${pillVencimiento(dias1)}</td>`,
+      venc2: `<td>${e.fechaVencimiento2 || "—"}</td>`,
+      dias2: `<td>${pillVencimiento(dias2)}</td>`,
+      acciones: `<td>
         <div class="tbl-actions">
           <button class="icon-btn" title="Editar" onclick="editEmpleado('${e.id}')">✎</button>
           ${e.estatus === "Activo" ? `<button class="icon-btn" title="Dar de baja" onclick="darDeBajaEmpleado('${e.id}')">🚪</button>` : ""}
           <button class="icon-btn danger" title="Eliminar" onclick="deleteEmpleado('${e.id}')">✕</button>
         </div>
-      </td>
-    </tr>`;
+      </td>`
+    };
+    return `<tr>${cols.map(c=>cellByKey[c.key] || "<td>—</td>").join("")}</tr>`;
   }).join("");
 }
 document.getElementById("emp-filter-depto").addEventListener("change", renderEmpleadosTable);
@@ -7755,11 +7987,14 @@ function pillNivel(n){
 }
 
 function renderTable(){
+  renderTableHeader("bitacora", "bitacora-thead-row", "bitacora-colgroup");
   const filtered = getFilteredRecords();
   document.getElementById("table-count").textContent = `${filtered.length} de ${RECORDS.length} registros`;
   const body = document.getElementById("table-body");
+  const cols = getVisibleOrderedColumns("bitacora");
+  const colCount = cols.length || 1;
   if(filtered.length === 0){
-    body.innerHTML = `<tr><td colspan="17" style="text-align:center;color:var(--text-mute);padding:30px;">No hay registros que coincidan con los filtros.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;color:var(--text-mute);padding:30px;">No hay registros que coincidan con los filtros.</td></tr>`;
     return;
   }
   body.innerHTML = filtered.map(r=>{
@@ -7780,25 +8015,25 @@ function renderTable(){
         alertIcon = "⏰";
       }
     }
-    
-    return `<tr class="${rowClass}">
-      <td>${r.fecha}</td>
-      <td class="wrap"><b>${escapeHtml(r.tema)} ${alertIcon}</b></td>
-      <td>${escapeHtml(r.tipo)}</td>
-      <td class="wrap">${escapeHtml(r.area)}</td>
-      <td class="wrap">${escapeHtml(r.macro)}</td>
-      <td>${escapeHtml(r.responsable)}</td>
-      <td>${escapeHtml(r.solicitante)}</td>
-      <td>${escapeHtml(r.departamento)}</td>
-      <td>${escapeHtml(r.sucursal)}</td>
-      <td>${pillEstado(r.estado)}</td>
-      <td>${pillPrioridad(r.prioridad)}</td>
-      <td class="wrap">${escapeHtml(r.riesgo)}</td>
-      <td>${pillNivel(r.nivelRiesgo)}</td>
-      <td class="days-val">${dias}</td>
-      <td class="mono">${costoTxt}</td>
-      <td>${evTxt}</td>
-      <td>
+
+    const cellByKey = {
+      fecha: `<td>${r.fecha}</td>`,
+      tema: `<td class="wrap"><b>${escapeHtml(r.tema)} ${alertIcon}</b></td>`,
+      tipo: `<td>${escapeHtml(r.tipo)}</td>`,
+      area: `<td class="wrap">${escapeHtml(r.area)}</td>`,
+      macro: `<td class="wrap">${escapeHtml(r.macro)}</td>`,
+      responsable: `<td>${escapeHtml(r.responsable)}</td>`,
+      solicitante: `<td>${escapeHtml(r.solicitante)}</td>`,
+      departamento: `<td>${escapeHtml(r.departamento)}</td>`,
+      sucursal: `<td>${escapeHtml(r.sucursal)}</td>`,
+      estado: `<td>${pillEstado(r.estado)}</td>`,
+      prioridad: `<td>${pillPrioridad(r.prioridad)}</td>`,
+      riesgo: `<td class="wrap">${escapeHtml(r.riesgo)}</td>`,
+      nivel: `<td>${pillNivel(r.nivelRiesgo)}</td>`,
+      dias: `<td class="days-val">${dias}</td>`,
+      costo: `<td class="mono">${costoTxt}</td>`,
+      evidencia: `<td>${evTxt}</td>`,
+      acciones: `<td>
         <div class="tbl-actions">
           <button class="icon-btn" title="Ver detalle" onclick="openDetail('${r.id}')">👁</button>
           <button class="icon-btn" title="Enviar por WhatsApp" onclick="shareToWhatsApp('${r.id}')">💬</button>
@@ -7807,8 +8042,10 @@ function renderTable(){
           <button class="icon-btn" title="Duplicar" onclick="duplicateRecord('${r.id}')">⧉</button>
           <button class="icon-btn danger" title="Eliminar" onclick="deleteRecord('${r.id}')">✕</button>
         </div>
-      </td>
-    </tr>`;
+      </td>`
+    };
+
+    return `<tr class="${rowClass}">${cols.map(c=>cellByKey[c.key] || "<td>—</td>").join("")}</tr>`;
   }).join("");
 }
 
@@ -10054,6 +10291,16 @@ function renderMonthCalendar(){
     cumpleByMonthDay[clave].push(e);
   });
 
+  // Aniversarios laborales del personal activo: se agrupan por "MM-DD"
+  // (sin año) para que se muestren cada año en la celda correcta.
+  const aniversarioByMonthDay = {};
+  EMPLEADOS.filter(e => e.estatus === "Activo" && e.fechaIngreso).forEach(e=>{
+    const partes = e.fechaIngreso.split("-"); // YYYY-MM-DD
+    const clave = partes[1] + "-" + partes[2];
+    if(!aniversarioByMonthDay[clave]) aniversarioByMonthDay[clave] = [];
+    aniversarioByMonthDay[clave].push(e);
+  });
+
   const actividadesRecurrentes = APP_SETTINGS.actividadesRecurrentes || [];
 
   const totalCells = Math.ceil((firstDow + daysInMonth) / 7) * 7;
@@ -10132,6 +10379,23 @@ function renderMonthCalendar(){
       cell.appendChild(chip);
     });
 
+    // Aniversarios laborales del personal que caen en este día (solo a
+    // partir del primer año cumplido; el propio día de ingreso no cuenta)
+    (aniversarioByMonthDay[claveMesDia] || []).forEach(e=>{
+      const anioIngreso = parseInt(e.fechaIngreso.split("-")[0], 10);
+      const anios = cellYear - anioIngreso;
+      if(anios < 1) return;
+      const chip = document.createElement("div");
+      chip.className = "cal-chip";
+      chip.style.background = "#EDE4FB";
+      chip.style.color = "#6D28D9";
+      chip.style.borderLeftColor = "#6D28D9";
+      chip.textContent = `🎉 ${e.nombre} (${anios} año${anios === 1 ? "" : "s"})`;
+      chip.title = `Aniversario laboral: ${e.nombre} · ${anios} año${anios === 1 ? "" : "s"} · ${e.departamento || ""}`;
+      chip.addEventListener("click", ()=>editEmpleado(e.id));
+      cell.appendChild(chip);
+    });
+
     // Actividades recurrentes programadas para este día del mes
     const ultimoDiaCelda = new Date(cellYear, cellMonth + 1, 0).getDate();
     actividadesRecurrentes.forEach(act=>{
@@ -10158,6 +10422,7 @@ function renderMonthCalendar(){
     `<span class="legend-item"><span class="legend-dot" style="background:${COLOR_ESTADO[e]}"></span>${e}</span>`
   ).join("") + `<span class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span>⏰ Vencimiento de contrato</span>`
     + `<span class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>🎂 Cumpleaños</span>`
+    + `<span class="legend-item"><span class="legend-dot" style="background:#6D28D9"></span>🎉 Aniversario laboral</span>`
     + `<span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>🔁 Actividad recurrente</span>`;
 }
 document.getElementById("cal-prev").addEventListener("click", ()=>{
@@ -10173,6 +10438,19 @@ document.getElementById("cal-today").addEventListener("click", ()=>{
   calYear = n.getFullYear(); calMonth = n.getMonth();
   renderCalendarView();
 });
+(function initCalSizeSelect(){
+  const sel = document.getElementById("cal-size-select");
+  const grid = document.getElementById("cal-grid");
+  if(!sel || !grid) return;
+  let saved = "normal";
+  try{ saved = localStorage.getItem("cal-size-pref") || "normal"; }catch(e){}
+  sel.value = saved;
+  grid.className = "cal-grid cal-size-" + saved;
+  sel.addEventListener("change", ()=>{
+    grid.className = "cal-grid cal-size-" + sel.value;
+    try{ localStorage.setItem("cal-size-pref", sel.value); }catch(e){}
+  });
+})();
 
 function renderGantt(){
   const monthStart = new Date(calYear, calMonth, 1);
