@@ -45,7 +45,11 @@
     loadScriptWithFallback([
       "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
       "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
-    ], "html2canvas")
+    ], "html2canvas"),
+    loadScriptWithFallback([
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
+      "https://unpkg.com/@supabase/supabase-js@2"
+    ], "supabase")
   ]);
 </script>
 <style>
@@ -1942,7 +1946,8 @@ select:focus,textarea:focus{
 }
 .sidebar .tab-btn.active .tab-ico{filter:none;}
 
-.sidebar-footer{margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);}
+.sidebar-footer{margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:8px;}
+.sidebar-user{font-size:11px;color:rgba(255,255,255,.45);padding:0 2px 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sidebar-backup-btn{
   width:100%;
   display:flex;
@@ -2015,10 +2020,77 @@ select:focus,textarea:focus{
   .sidebar-backup-btn{width:auto;white-space:nowrap;}
   .content-header{padding:12px 16px;}
 }
+
+/* ============================================================
+   PANTALLA DE LOGIN (Supabase Auth)
+   ============================================================ */
+.auth-screen{
+  position:fixed;
+  inset:0;
+  background:var(--ink);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:500;
+  padding:20px;
+}
+.auth-box{
+  width:100%;
+  max-width:380px;
+  background:var(--th-surface);
+  border-radius:20px;
+  padding:28px 26px;
+}
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.auth-brand .brand-mark{background:var(--blue);color:#fff;font-weight:800;}
+.auth-title{font-size:14px;font-weight:600;color:var(--ink);}
+.auth-sub{font-size:12px;color:#64748B;margin-top:1px;}
+#auth-form-login label{
+  display:block;font-size:12px;font-weight:600;color:#475569;
+  margin:14px 0 5px;
+}
+#auth-form-login input{
+  width:100%;padding:10px 12px;border-radius:10px;
+  border:1px solid var(--th-border);font-size:13.5px;font-family:'Inter',sans-serif;
+}
+#auth-form-login input:focus{outline:2px solid var(--blue);outline-offset:1px;}
+.auth-error{
+  background:#FEE2E2;color:#991B1B;font-size:12px;font-weight:500;
+  padding:9px 12px;border-radius:10px;margin-top:12px;
+}
+.auth-link{
+  display:block;width:100%;text-align:center;background:none;border:none;
+  color:var(--blue);font-size:12.5px;font-weight:500;margin-top:16px;cursor:pointer;
+}
+.auth-link:hover{text-decoration:underline;}
+#app-root{min-height:100vh;}
 </style>
 </head>
 <body>
 
+<div class="auth-screen" id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-brand">
+      <div class="brand-mark">CH</div>
+      <div>
+        <div class="auth-title">Centro de Control · Capital Humano</div>
+        <div class="auth-sub">Inicia sesión para continuar</div>
+      </div>
+    </div>
+
+    <form id="auth-form-login">
+      <label for="auth-email">Correo</label>
+      <input type="email" id="auth-email" required autocomplete="username" placeholder="tu@empresa.com">
+      <label for="auth-password">Contraseña</label>
+      <input type="password" id="auth-password" required autocomplete="current-password" placeholder="••••••••">
+      <div class="auth-error" id="auth-error" style="display:none;"></div>
+      <button type="submit" class="btn btn-primary" id="auth-btn-login" style="width:100%;margin-top:6px;">Iniciar sesión</button>
+    </form>
+    <button type="button" class="auth-link" id="auth-toggle-mode">¿No tienes cuenta? Regístrate</button>
+  </div>
+</div>
+
+<div id="app-root" style="display:none;">
 <div class="app-shell">
   <aside class="sidebar">
     <div class="brand">
@@ -2040,8 +2112,12 @@ select:focus,textarea:focus{
       <button class="tab-btn" data-view="configuracion"><span class="tab-ico">⚙️</span>Configuración</button>
     </nav>
     <div class="sidebar-footer">
+      <div class="sidebar-user" id="sidebar-user-email"></div>
       <button class="sidebar-backup-btn" id="btn-save-backup-top" type="button" title="Descargar toda la información actual">
         <span>🗄</span> Descargar respaldo
+      </button>
+      <button class="sidebar-backup-btn" id="btn-cerrar-sesion" type="button">
+        <span>🚪</span> Cerrar sesión
       </button>
     </div>
   </aside>
@@ -3541,8 +3617,130 @@ select:focus,textarea:focus{
     </div>
   </div>
 </div>
+</div> <!-- /#app-root -->
 
 <script>
+/* ============================================================
+   SUPABASE — CONEXIÓN Y AUTENTICACIÓN
+   ============================================================
+   1. Reemplaza los dos valores de abajo con los de tu proyecto:
+      Supabase Dashboard > Project Settings > API
+      - SUPABASE_URL: el "Project URL"
+      - SUPABASE_ANON_KEY: la llave "anon / public" (NO la
+        "service_role", esa nunca debe ir en un archivo HTML).
+   2. Antes de usar la app, corre el archivo supabase_setup.sql
+      en Supabase Dashboard > SQL Editor. */
+const SUPABASE_URL = https://urrzfbhxzkwojmfehpkp.supabase.co/rest/v1/;        // ej. https://xxxxx.supabase.co
+const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVycnpmYmh4emt3b2ptZmVocGtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMzY2MzgsImV4cCI6MjA5OTgxMjYzOH0.REDvl2-K9_d66evNhoj-OGDvUX8YPaU_d2WXJwiv_u8;
+
+let supabaseClient = null;
+let currentUser = null;
+
+function initSupabaseClient(){
+  if(typeof window.supabase === "undefined"){
+    document.getElementById("auth-error").textContent = "No se pudo cargar el conector de Supabase. Revisa tu conexión a internet y recarga la página.";
+    document.getElementById("auth-error").style.display = "block";
+    return false;
+  }
+  if(SUPABASE_URL.includes("TU_SUPABASE_URL_AQUI") || SUPABASE_ANON_KEY.includes("TU_SUPABASE_ANON_KEY_AQUI")){
+    document.getElementById("auth-error").textContent = "Falta configurar SUPABASE_URL y SUPABASE_ANON_KEY al inicio del script (busca esta constante en el archivo).";
+    document.getElementById("auth-error").style.display = "block";
+    return false;
+  }
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return true;
+}
+
+let authMode = "login"; // "login" | "signup"
+function showAuthScreen(){
+  document.getElementById("auth-screen").style.display = "flex";
+  document.getElementById("app-root").style.display = "none";
+}
+function showApp(){
+  document.getElementById("auth-screen").style.display = "none";
+  document.getElementById("app-root").style.display = "block";
+  const emailEl = document.getElementById("sidebar-user-email");
+  if(emailEl && currentUser) emailEl.textContent = currentUser.email;
+}
+
+document.getElementById("auth-toggle-mode").addEventListener("click", ()=>{
+  authMode = authMode === "login" ? "signup" : "login";
+  document.getElementById("auth-btn-login").textContent = authMode === "login" ? "Iniciar sesión" : "Crear cuenta";
+  document.getElementById("auth-toggle-mode").textContent = authMode === "login" ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión";
+  document.getElementById("auth-error").style.display = "none";
+});
+
+document.getElementById("auth-form-login").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const errorBox = document.getElementById("auth-error");
+  errorBox.style.display = "none";
+  const email = document.getElementById("auth-email").value.trim();
+  const password = document.getElementById("auth-password").value;
+  const btn = document.getElementById("auth-btn-login");
+  btn.disabled = true;
+  btn.textContent = "Un momento...";
+  try{
+    if(authMode === "login"){
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      // onAuthStateChange se encarga de mostrar la app
+    } else {
+      const { error } = await supabaseClient.auth.signUp({ email, password });
+      if(error) throw error;
+      errorBox.style.background = "#DCFCE7";
+      errorBox.style.color = "#166534";
+      errorBox.textContent = "Cuenta creada. Revisa tu correo si se pide confirmación, o inicia sesión directamente.";
+      errorBox.style.display = "block";
+    }
+  }catch(err){
+    errorBox.style.background = "#FEE2E2";
+    errorBox.style.color = "#991B1B";
+    errorBox.textContent = err.message === "Invalid login credentials"
+      ? "Correo o contraseña incorrectos."
+      : (err.message || "Ocurrió un error al iniciar sesión.");
+    errorBox.style.display = "block";
+  }finally{
+    btn.disabled = false;
+    btn.textContent = authMode === "login" ? "Iniciar sesión" : "Crear cuenta";
+  }
+});
+
+async function cerrarSesion(){
+  if(supabaseClient) await supabaseClient.auth.signOut();
+}
+document.getElementById("btn-cerrar-sesion").addEventListener("click", ()=>{
+  showConfirm("¿Cerrar sesión?", cerrarSesion);
+});
+
+/* Se llama una sola vez al cargar la página. Muestra login o la app
+   según haya sesión activa, y queda escuchando cambios de sesión
+   (login, logout, expiración) en cualquier momento. */
+async function initAuthAndApp(){
+  if(!initSupabaseClient()){
+    showAuthScreen();
+    return;
+  }
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if(session){
+    currentUser = session.user;
+    showApp();
+    startApp();
+  } else {
+    showAuthScreen();
+  }
+  supabaseClient.auth.onAuthStateChange((event, session)=>{
+    if(event === "SIGNED_IN" && (!currentUser || currentUser.id !== session.user.id)){
+      currentUser = session.user;
+      showApp();
+      startApp();
+    } else if(event === "SIGNED_OUT"){
+      currentUser = null;
+      showAuthScreen();
+      location.reload(); // limpia el estado en memoria para el siguiente inicio de sesión
+    }
+  });
+}
+
 /* ============================================================
    DATOS MAESTROS
    ============================================================ */
@@ -3906,27 +4104,44 @@ function downloadBlob(blob, filename){
 /* ============================================================
    PERSISTENCIA (window.storage)
    ============================================================ */
+/* ============================================================
+   PERSISTENCIA (Supabase — tabla app_data compartida por el equipo)
+   ============================================================
+   Mismo modelo que antes (un bloque JSON por módulo bajo una
+   "key"), solo que ahora vive en una base de datos compartida en
+   vez del navegador de cada persona. Por eso ninguna de las
+   funciones loadRecords/saveRecords/loadEmpleados/etc. tuvo que
+   cambiar: todas hablan con storageGetValue/storageSetValue,
+   exactamente como antes. */
 async function storageGetValue(key){
-  if(window.storage){
-    const res = await window.storage.get(key, true);
-    return res && res.value ? res.value : null;
+  try{
+    const { data, error } = await supabaseClient
+      .from("app_data")
+      .select("value")
+      .eq("key", key)
+      .maybeSingle();
+    if(error) throw error;
+    return data ? JSON.stringify(data.value) : null;
+  }catch(e){
+    console.error("Error leyendo de Supabase:", key, e);
+    return null;
   }
-  return localStorage.getItem(key);
 }
 async function storageSetValue(key, value){
-  if(window.storage){
-    await window.storage.set(key, value, true);
-  } else {
-    localStorage.setItem(key, value);
-  }
+  const { error } = await supabaseClient
+    .from("app_data")
+    .upsert({
+      key,
+      value: JSON.parse(value),
+      updated_at: new Date().toISOString(),
+      updated_by: currentUser ? currentUser.id : null
+    }, { onConflict: "key" });
+  if(error) throw error;
+  lastLocalSaveAt[key] = Date.now();
 }
 async function storageRemoveValue(key){
-  if(window.storage && typeof window.storage.remove === "function"){
-    await window.storage.remove(key, true);
-  } else if(window.storage) {
-    await window.storage.set(key, "", true);
-  }
-  localStorage.removeItem(key);
+  const { error } = await supabaseClient.from("app_data").delete().eq("key", key);
+  if(error) console.error("Error borrando de Supabase:", key, error);
 }
 function cloneDefaults(){
   return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
@@ -8885,7 +9100,7 @@ document.addEventListener("click", ()=>{
 function safeTruncate(str, maxLen){
   // Usamos Array.from para recorrer por "punto de código" Unicode real, no
   // por unidad UTF-16. slice() normal puede cortar a la mitad un emoji u
-  // otro carácter especial y producir el símbolo de reemplazo "�".
+  // otro carácter especial y producir el símbolo de reemplazo " ".
   if(!str) return "";
   const chars = Array.from(str);
   if(chars.length <= maxLen) return str;
@@ -10146,7 +10361,11 @@ function renderAll(){
 
 document.getElementById("min-fecha").value = todayISO();
 
-Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
+let appStarted = false;
+async function startApp(){
+  if(appStarted) return;
+  appStarted = true;
+  await Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]);
   initSelects();
   initPersonalSelects();
   initCandidatosSelects();
@@ -10154,8 +10373,7 @@ Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   refreshAutoFields();
   checkStorageHealth();
   checkChartLibrary();
-  return Promise.all([loadRecords(), loadEmpleados(), loadCandidatos(), loadNotificaciones(), loadPlantillas(), loadMinutas(), loadChecklists()]);
-}).then(async ()=>{
+  await Promise.all([loadRecords(), loadEmpleados(), loadCandidatos(), loadNotificaciones(), loadPlantillas(), loadMinutas(), loadChecklists()]);
   initKanbanFilterSelects();
   await migrarEvidenciaLegado();
   await getLoteActualKey(); // solo para cachear el número de lote actual en memoria
@@ -10165,7 +10383,47 @@ Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]).then(()=>{
   await saveNotificaciones();
   renderAll();
   renderConfigView();
-});
+  setupRealtimeSync();
+}
+
+/* ============================================================
+   SINCRONIZACIÓN EN TIEMPO REAL
+   ============================================================
+   Cuando alguien más del equipo guarda un cambio, Supabase avisa
+   por este canal y recargamos solo el módulo correspondiente
+   (sin recargar la página completa). Se ignoran los ecos del
+   propio guardado reciente para no recargar lo que uno mismo
+   acaba de escribir. */
+const lastLocalSaveAt = {};
+const REALTIME_KEY_HANDLERS = {
+  [STORAGE_KEY]: async ()=>{ await loadRecords(); renderAll(); },
+  [EMPLEADOS_STORAGE_KEY]: async ()=>{ await loadEmpleados(); renderAll(); },
+  [CANDIDATOS_STORAGE_KEY]: async ()=>{ await loadCandidatos(); renderAll(); },
+  [NOTIFICACIONES_STORAGE_KEY]: async ()=>{ await loadNotificaciones(); renderNotifBell(); },
+  [MINUTAS_STORAGE_KEY]: async ()=>{ await loadMinutas(); renderMinutasList(); },
+  [CHECKLISTS_STORAGE_KEY]: async ()=>{ await loadChecklists(); renderChecklists(); },
+  [PLANTILLAS_STORAGE_KEY]: async ()=>{ await loadPlantillas(); },
+  [SETTINGS_STORAGE_KEY]: async ()=>{ await loadSettings(); applySettingsToRuntime(); renderAll(); renderConfigView(); }
+};
+const realtimeDebounceTimers = {};
+function setupRealtimeSync(){
+  supabaseClient.channel("app_data_sync")
+    .on("postgres_changes", { event:"*", schema:"public", table:"app_data" }, (payload)=>{
+      const key = (payload.new && payload.new.key) || (payload.old && payload.old.key);
+      if(!key) return;
+      const recienGuardadoPorMi = Date.now() - (lastLocalSaveAt[key] || 0) < 3000;
+      if(recienGuardadoPorMi) return;
+      const handler = REALTIME_KEY_HANDLERS[key];
+      if(!handler) return;
+      clearTimeout(realtimeDebounceTimers[key]);
+      realtimeDebounceTimers[key] = setTimeout(()=>{
+        handler().then(()=> showToast("↻ Datos actualizados por un compañero"));
+      }, 400);
+    })
+    .subscribe();
+}
+
+initAuthAndApp();
 </script>
 </body>
 </html>
