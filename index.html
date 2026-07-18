@@ -1,9 +1,18 @@
-su<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Centro de Control · Capital Humano</title>
+<script>
+  // Aplica el modo oscuro guardado ANTES de pintar la página, para
+  // evitar un parpadeo claro→oscuro al recargar con el tema activo.
+  try{
+    if(localStorage.getItem("theme-pref") === "dark"){
+      document.documentElement.setAttribute("data-theme","dark");
+    }
+  }catch(e){}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -585,6 +594,51 @@ th.sel-col,td.sel-col{width:38px;padding-left:14px !important;}
 }
 .chart-canvas-box:hover .chart-export-btn{opacity:1;}
 .chart-export-btn:hover{background:var(--gray-soft);}
+
+/* ============================================================
+   ROLES Y PERMISOS (lectura / captura / admin)
+   ------------------------------------------------------------
+   Esto es una capa de UX: la seguridad real vive en las políticas
+   de RLS de Supabase (ver migración SQL). Aun si alguien manipulara
+   el navegador para mostrar estos botones, la base de datos
+   rechazará la operación si su rol no la permite.
+   ============================================================ */
+.role-badge{
+  display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;
+  padding:2px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;margin-top:4px;
+}
+.role-badge.role-admin{background:rgba(245,158,11,.18);color:#FBBF24;}
+.role-badge.role-captura{background:rgba(79,70,229,.2);color:#A5B4FC;}
+.role-badge.role-lectura{background:rgba(255,255,255,.1);color:rgba(255,255,255,.65);}
+
+/* Solo admin puede eliminar */
+body.role-lectura .icon-btn.danger,
+body.role-captura .icon-btn.danger{display:none !important;}
+
+/* Solo admin y captura pueden crear/editar; lectura es solo consulta */
+body.role-lectura .icon-btn-edit,
+body.role-lectura .write-only,
+body.role-lectura .tab-btn[data-view="captura"],
+body.role-lectura .bulk-bar,
+body.role-lectura .sel-col{display:none !important;}
+
+.pending-screen{
+  position:fixed;inset:0;background:var(--th-bg-main,#0F1420);z-index:900;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.pending-box{
+  max-width:420px;background:#fff;border-radius:16px;padding:32px 28px;text-align:center;
+  box-shadow:0 20px 60px -10px rgba(15,23,42,.35);
+}
+.pending-box .pb-icon{font-size:38px;margin-bottom:10px;}
+.pending-box h2{font-size:17px;margin:0 0 10px;color:var(--ink);}
+.pending-box p{font-size:13px;color:var(--text-mute);line-height:1.6;margin:0 0 20px;}
+
+/* ---- Panel de gestión de usuarios (Configuración, solo admin) ---- */
+.users-admin-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.users-admin-table th{text-align:left;padding:8px 10px;color:var(--text-mute);font-weight:700;border-bottom:1px solid var(--line);}
+.users-admin-table td{padding:8px 10px;border-bottom:1px solid var(--line);}
+.users-admin-table select{border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:12px;}
 
 /* ---- Búsqueda global (Ctrl+K) ---- */
 .gsearch-backdrop{
@@ -2223,6 +2277,105 @@ select:focus,textarea:focus{
 }
 .auth-link:hover{text-decoration:underline;}
 #app-root{min-height:100vh;}
+
+/* ============================================================
+   MODO OSCURO
+   ------------------------------------------------------------
+   Se activa poniendo data-theme="dark" en <html> (ver botón en el
+   sidebar). La mayor parte del diseño ya usa variables CSS, así
+   que redefinirlas aquí resuelve la mayoría de las superficies;
+   el resto son overrides puntuales para elementos que tenían un
+   color fijo en vez de variable. Si detectas algún rincón que se
+   quedó claro, dilo y lo ajusto puntualmente.
+   ============================================================ */
+:root[data-theme="dark"]{
+  --canvas:#0B0F19;
+  --paper:#161B2A;
+  --th-bg-main:#0B0F19;
+  --th-surface:#161B2A;
+  --th-border:#2A3145;
+  --line:#2A3145;
+  --ink:#EDEFF7;
+  --text:#C7CCDC;
+  --text-main:#C7CCDC;
+  --text-soft:#9BA3B8;
+  --text-mute:#6B7385;
+  --gray-soft:#1E2536;
+  --gray-cool:#8B90A3;
+  --gray-cool-soft:#232A3D;
+  --teal-soft:rgba(16,185,129,.16);
+  --amber-soft:rgba(245,158,11,.16);
+  --red-soft:rgba(239,68,68,.18);
+  --purple-soft:rgba(122,79,181,.22);
+  --cyan-soft:rgba(46,147,168,.22);
+  --brown-soft:rgba(185,106,23,.22);
+  --shadow:0 4px 10px -2px rgba(0,0,0,.45),0 2px 6px -3px rgba(0,0,0,.4);
+  --shadow-lg:0 24px 60px -12px rgba(0,0,0,.6);
+}
+[data-theme="dark"] body{background:var(--th-bg-main);color:var(--text-main);}
+[data-theme="dark"] input[type=text],[data-theme="dark"] input[type=date],[data-theme="dark"] input[type=number],
+[data-theme="dark"] input[type=email],[data-theme="dark"] input[type=password],
+[data-theme="dark"] select,[data-theme="dark"] textarea{
+  background:var(--th-surface);color:var(--text-main);border-color:var(--th-border);
+}
+[data-theme="dark"] input::placeholder,[data-theme="dark"] textarea::placeholder{color:var(--text-mute);}
+[data-theme="dark"] .card,[data-theme="dark"] .chart-card,[data-theme="dark"] .table-card,
+[data-theme="dark"] .mini-kpi,[data-theme="dark"] .semaforo-card,[data-theme="dark"] .collapse-toggle,
+[data-theme="dark"] .collapse-panel{
+  background:var(--paper);border-color:var(--th-border);
+}
+[data-theme="dark"] .card h3{border-bottom-color:var(--th-border);color:var(--text-soft);}
+[data-theme="dark"] .chart-head{border-bottom-color:var(--th-border);}
+[data-theme="dark"] .chart-canvas-box{background:rgba(255,255,255,.02);border-color:var(--th-border);}
+[data-theme="dark"] .legend-row{border-top-color:var(--th-border);}
+[data-theme="dark"] .kpi-sub,[data-theme="dark"] .mk-sub,[data-theme="dark"] .sf-sub{color:var(--text-mute);}
+[data-theme="dark"] .subtabs{background:var(--gray-soft);}
+[data-theme="dark"] .filters-row{background:var(--gray-soft);border-color:var(--th-border);}
+[data-theme="dark"] .filters-row .clear-btn{background:var(--paper);border-color:var(--th-border);color:var(--text-soft);}
+[data-theme="dark"] .table-head{border-bottom-color:var(--th-border);}
+[data-theme="dark"] thead th{background:#1B2233;color:#B7BFD6;}
+[data-theme="dark"] tbody td{border-color:var(--th-border);}
+[data-theme="dark"] tbody tr:nth-child(even){background:rgba(255,255,255,.015);}
+[data-theme="dark"] tbody tr:hover{background:var(--gray-soft);}
+[data-theme="dark"] .modal-box{background:var(--th-surface);color:var(--text-main);}
+[data-theme="dark"] .modal-kv,[data-theme="dark"] .modal-text{background:var(--gray-soft);border-color:var(--th-border);color:var(--text-main);}
+[data-theme="dark"] .notif-dropdown{background:var(--th-surface);border-color:var(--th-border);}
+[data-theme="dark"] .notif-dropdown-head{border-bottom-color:var(--th-border);color:var(--ink);}
+[data-theme="dark"] .kanban-col{background:var(--gray-soft);}
+[data-theme="dark"] .kanban-col.dragover{background:rgba(79,70,229,.18);}
+[data-theme="dark"] .kanban-col-count{background:var(--paper);}
+[data-theme="dark"] .kanban-card{background:var(--paper);border-color:var(--th-border);}
+[data-theme="dark"] .cal-day{background:var(--paper);border-color:var(--th-border);}
+[data-theme="dark"] .cal-day.other-month{background:var(--th-bg-main);}
+[data-theme="dark"] .cal-day.today{background:rgba(245,158,11,.14);}
+[data-theme="dark"] .cal-month-label{color:var(--ink);}
+[data-theme="dark"] .cal-today-btn,[data-theme="dark"] .cal-size-select,
+[data-theme="dark"] .pg-size-select,[data-theme="dark"] .pg-btn,
+[data-theme="dark"] .dash-range-bar select,[data-theme="dark"] .dash-range-bar input[type=date]{
+  background:var(--paper);border-color:var(--th-border);color:var(--text-soft);
+}
+[data-theme="dark"] .colcfg-item{background:var(--paper);border-color:var(--th-border);}
+[data-theme="dark"] .gsearch-box,[data-theme="dark"] .pending-box{background:var(--th-surface);color:var(--text-main);}
+[data-theme="dark"] .gsearch-item:hover,[data-theme="dark"] .gsearch-item.active{background:var(--gray-soft);}
+[data-theme="dark"] .gsearch-esc{border-color:var(--th-border);color:var(--text-mute);}
+[data-theme="dark"] .filter-chip{background:var(--gray-soft);border-color:var(--th-border);color:var(--text-soft);}
+[data-theme="dark"] .draft-banner{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:#FCD34D;}
+[data-theme="dark"] .bulk-bar{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3);}
+[data-theme="dark"] .bulk-count{color:#93C5FD;}
+[data-theme="dark"] .pinned-kpi-bar{background:linear-gradient(135deg,rgba(245,158,11,.08),var(--paper));border-color:rgba(245,158,11,.25);}
+[data-theme="dark"] .pinned-kpi-chip .pk-value{color:var(--ink);}
+[data-theme="dark"] .chart-export-btn{background:var(--paper);border-color:var(--th-border);color:var(--text-soft);}
+[data-theme="dark"] .icon-btn:hover{background:var(--gray-soft);}
+[data-theme="dark"] .btn-ghost{background:var(--gray-soft);color:var(--text-main);border-color:var(--th-border);}
+[data-theme="dark"] .auth-screen,[data-theme="dark"] .pending-screen{background:var(--th-bg-main);}
+[data-theme="dark"] .auth-box{background:var(--th-surface);color:var(--text-main);}
+[data-theme="dark"] .empty-state,[data-theme="dark"] .dropzone{background:var(--gray-soft);border-color:var(--th-border);color:var(--text-mute);}
+[data-theme="dark"] ::-webkit-scrollbar{width:10px;height:10px;}
+[data-theme="dark"] ::-webkit-scrollbar-track{background:var(--th-bg-main);}
+[data-theme="dark"] ::-webkit-scrollbar-thumb{background:#2E3650;border-radius:6px;}
+[data-theme="dark"] .theme-toggle-btn .sun{display:none;}
+[data-theme="dark"] .theme-toggle-btn .moon{display:inline;}
+.theme-toggle-btn .moon{display:none;}
 </style>
 </head>
 <body>
@@ -2249,6 +2402,15 @@ select:focus,textarea:focus{
   </div>
 </div>
 
+<div class="pending-screen" id="pending-screen" style="display:none;">
+  <div class="pending-box">
+    <div class="pb-icon">⏳</div>
+    <h2>Tu cuenta está pendiente de aprobación</h2>
+    <p>Un administrador del sistema todavía no te asigna un rol de acceso. Pídele que te dé de alta desde <b>Configuración → Gestión de usuarios</b>, o intenta de nuevo en unos minutos.</p>
+    <button type="button" class="btn btn-ghost" id="pending-logout-btn">Cerrar sesión</button>
+  </div>
+</div>
+
 <div id="app-root" style="display:none;">
 <div class="app-shell">
   <aside class="sidebar">
@@ -2261,6 +2423,9 @@ select:focus,textarea:focus{
     </div>
     <button type="button" class="sidebar-search-btn" id="btn-global-search">
       <span>🔍</span> Buscar<span class="kbd-hint">Ctrl K</span>
+    </button>
+    <button type="button" class="sidebar-search-btn theme-toggle-btn" id="btn-theme-toggle">
+      <span class="sun">☀️</span><span class="moon">🌙</span> <span id="theme-toggle-label">Modo oscuro</span>
     </button>
     <nav class="tabs">
       <button class="tab-btn active" data-view="captura"><span class="tab-ico">✏️</span>Captura</button>
@@ -2275,6 +2440,7 @@ select:focus,textarea:focus{
     </nav>
     <div class="sidebar-footer">
       <div class="sidebar-user" id="sidebar-user-email"></div>
+      <span class="role-badge" id="sidebar-role-badge" style="display:none;"></span>
       <button class="sidebar-backup-btn" id="btn-save-backup-top" type="button" title="Descargar toda la información actual">
         <span>🗄</span> Descargar respaldo
       </button>
@@ -2802,11 +2968,11 @@ select:focus,textarea:focus{
       <p>Altas, bajas y estatus contractual de la plantilla, de forma independiente a la bitácora de casos.</p>
     </div>
 
-    <div class="collapse-toggle" id="emp-toggle">
+    <div class="collapse-toggle write-only" id="emp-toggle">
       <h3><span id="emp-toggle-icon">➕</span> <span id="emp-toggle-label">Nueva Alta de Personal</span></h3>
       <span class="chev">▾</span>
     </div>
-    <div class="collapse-panel" id="emp-panel">
+    <div class="collapse-panel write-only" id="emp-panel">
       <div class="collapse-panel-inner">
         <div class="emp-form-grid">
           <div class="field">
@@ -2952,11 +3118,11 @@ select:focus,textarea:focus{
       <p>Bitácora de reclutamiento y selección, independiente de la plantilla activa.</p>
     </div>
 
-    <div class="collapse-toggle" id="cand-toggle">
+    <div class="collapse-toggle write-only" id="cand-toggle">
       <h3><span id="cand-toggle-icon">➕</span> <span id="cand-toggle-label">Nueva Postulación de Candidato</span></h3>
       <span class="chev">▾</span>
     </div>
-    <div class="collapse-panel" id="cand-panel">
+    <div class="collapse-panel write-only" id="cand-panel">
       <div class="collapse-panel-inner">
         <div class="emp-form-grid">
           <div class="field">
@@ -3379,11 +3545,11 @@ select:focus,textarea:focus{
       <p>Registra acuerdos y pendientes de las juntas operativas, y vincúlalos a casos de la bitácora para darles seguimiento.</p>
     </div>
 
-    <div class="collapse-toggle" id="min-toggle">
+    <div class="collapse-toggle write-only" id="min-toggle">
       <h3><span id="min-toggle-icon">➕</span> <span id="min-toggle-label">Nueva Minuta</span></h3>
       <span class="chev">▾</span>
     </div>
-    <div class="collapse-panel" id="min-panel">
+    <div class="collapse-panel write-only" id="min-panel">
       <div class="collapse-panel-inner">
         <div class="emp-form-grid">
           <div class="field">
@@ -3474,6 +3640,24 @@ select:focus,textarea:focus{
     </div>
 
     <div class="config-grid">
+      <div class="card config-card full" id="cfg-users-nav-item" style="display:none;">
+        <h3>👥 Gestión de usuarios y roles</h3>
+        <p class="hint" style="margin:-4px 0 14px;">
+          Controla quién puede solo consultar (lectura), quién puede capturar/editar (captura) y quién tiene control total (admin).
+          Esto se aplica de verdad en la base de datos mediante políticas de RLS en Supabase, no solo en la interfaz.
+        </p>
+        <div id="cfg-users-error" class="auth-error" style="display:none;"></div>
+        <div style="overflow-x:auto;">
+          <table class="users-admin-table" id="cfg-users-table">
+            <thead><tr><th>Correo</th><th>Alta</th><th>Rol</th></tr></thead>
+            <tbody id="cfg-users-tbody"><tr><td colspan="3" style="color:var(--text-mute);padding:16px;">Cargando usuarios…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-ghost btn-sm" type="button" id="cfg-users-refresh">↻ Actualizar lista</button>
+        </div>
+      </div>
+
       <div class="card config-card full">
         <h3>Identidad del sistema</h3>
         <div class="identity-grid">
@@ -3839,6 +4023,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 let supabaseClient = null;
 let currentUser = null;
+let currentUserRole = null; // "lectura" | "captura" | "admin" | null (pendiente/sin rol)
 
 function initSupabaseClient(){
   if(typeof window.supabase === "undefined"){
@@ -3858,10 +4043,17 @@ function initSupabaseClient(){
 let authMode = "login"; // "login" | "signup"
 function showAuthScreen(){
   document.getElementById("auth-screen").style.display = "flex";
+  document.getElementById("pending-screen").style.display = "none";
+  document.getElementById("app-root").style.display = "none";
+}
+function showPendingScreen(){
+  document.getElementById("auth-screen").style.display = "none";
+  document.getElementById("pending-screen").style.display = "flex";
   document.getElementById("app-root").style.display = "none";
 }
 function showApp(){
   document.getElementById("auth-screen").style.display = "none";
+  document.getElementById("pending-screen").style.display = "none";
   document.getElementById("app-root").style.display = "block";
   const emailEl = document.getElementById("sidebar-user-email");
   if(emailEl && currentUser) emailEl.textContent = currentUser.email;
@@ -3893,7 +4085,7 @@ document.getElementById("auth-form-login").addEventListener("submit", async (e)=
       if(error) throw error;
       errorBox.style.background = "#DCFCE7";
       errorBox.style.color = "#166534";
-      errorBox.textContent = "Cuenta creada. Revisa tu correo si se pide confirmación, o inicia sesión directamente.";
+      errorBox.textContent = "Cuenta creada. Un administrador debe asignarte un rol antes de que puedas usar el sistema.";
       errorBox.style.display = "block";
     }
   }catch(err){
@@ -3915,6 +4107,47 @@ async function cerrarSesion(){
 document.getElementById("btn-cerrar-sesion").addEventListener("click", ()=>{
   showConfirm("¿Cerrar sesión?", cerrarSesion);
 });
+document.getElementById("pending-logout-btn").addEventListener("click", cerrarSesion);
+
+/* ============================================================
+   ROLES: carga del rol del usuario y aplicación de permisos
+   ============================================================ */
+async function loadCurrentUserRole(){
+  try{
+    const { data, error } = await supabaseClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", currentUser.id)
+      .maybeSingle();
+    if(error) throw error;
+    return (data && data.role && data.role !== "pendiente") ? data.role : null;
+  }catch(e){
+    console.error("No se pudo leer el rol del usuario", e);
+    return null;
+  }
+}
+function applyRolePermissions(role){
+  document.body.classList.remove("role-lectura","role-captura","role-admin");
+  document.body.classList.add("role-" + role);
+  const badge = document.getElementById("sidebar-role-badge");
+  if(badge){
+    const labels = {lectura:"👁 Solo lectura", captura:"✏️ Captura", admin:"⭐ Administrador"};
+    badge.textContent = labels[role] || role;
+    badge.className = "role-badge role-" + role;
+    badge.style.display = "inline-flex";
+  }
+  // Si un usuario de solo lectura queda parado en la vista de Captura
+  // (vista activa por default), lo mandamos a Dashboard.
+  if(role === "lectura"){
+    const capturaView = document.getElementById("view-captura");
+    if(capturaView && capturaView.classList.contains("active")){
+      const dashBtn = document.querySelector('.tab-btn[data-view="dashboard"]');
+      if(dashBtn) dashBtn.click();
+    }
+  }
+  const usersPanelNav = document.getElementById("cfg-users-nav-item");
+  if(usersPanelNav) usersPanelNav.style.display = role === "admin" ? "" : "none";
+}
 
 /* Se llama una sola vez al cargar la página. Muestra login o la app
    según haya sesión activa, y queda escuchando cambios de sesión
@@ -3927,18 +4160,33 @@ async function initAuthAndApp(){
   const { data: { session } } = await supabaseClient.auth.getSession();
   if(session){
     currentUser = session.user;
-    showApp();
-    startApp();
+    const role = await loadCurrentUserRole();
+    if(!role){
+      showPendingScreen();
+    } else {
+      currentUserRole = role;
+      applyRolePermissions(role);
+      showApp();
+      startApp();
+    }
   } else {
     showAuthScreen();
   }
-  supabaseClient.auth.onAuthStateChange((event, session)=>{
+  supabaseClient.auth.onAuthStateChange(async (event, session)=>{
     if(event === "SIGNED_IN" && (!currentUser || currentUser.id !== session.user.id)){
       currentUser = session.user;
-      showApp();
-      startApp();
+      const role = await loadCurrentUserRole();
+      if(!role){
+        showPendingScreen();
+      } else {
+        currentUserRole = role;
+        applyRolePermissions(role);
+        showApp();
+        startApp();
+      }
     } else if(event === "SIGNED_OUT"){
       currentUser = null;
+      currentUserRole = null;
       showAuthScreen();
       location.reload(); // limpia el estado en memoria para el siguiente inicio de sesión
     }
@@ -5349,7 +5597,62 @@ function renderConfigView(){
   document.getElementById("cfg-meta-resolucion").value = APP_SETTINGS.kpis.metaResolucionDias;
   document.getElementById("cfg-presupuesto").value = APP_SETTINGS.kpis.presupuestoMensual || "";
   updateStorageUsage();
+  if(currentUserRole === "admin") renderUsersAdminPanel();
 }
+const ROLE_OPTIONS = [
+  {value:"pendiente", label:"Pendiente (sin acceso)"},
+  {value:"lectura",   label:"Solo lectura"},
+  {value:"captura",   label:"Captura"},
+  {value:"admin",     label:"Administrador"}
+];
+async function renderUsersAdminPanel(){
+  const tbody = document.getElementById("cfg-users-tbody");
+  const errBox = document.getElementById("cfg-users-error");
+  if(!tbody) return;
+  errBox.style.display = "none";
+  try{
+    const { data, error } = await supabaseClient.rpc("list_users_with_roles");
+    if(error) throw error;
+    if(!data || data.length === 0){
+      tbody.innerHTML = `<tr><td colspan="3" style="color:var(--text-mute);padding:16px;">No hay usuarios registrados.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = data.map(u=>{
+      const roleSelect = ROLE_OPTIONS.map(o=>
+        `<option value="${o.value}" ${o.value === (u.role||"pendiente") ? "selected":""}>${o.label}</option>`
+      ).join("");
+      const alta = u.created_at ? u.created_at.slice(0,10) : "—";
+      const isSelf = u.user_id === currentUser.id;
+      return `<tr>
+        <td>${escapeHtml(u.email || "—")}${isSelf ? ' <span class="hint">(tú)</span>' : ""}</td>
+        <td>${alta}</td>
+        <td><select data-user-id="${u.user_id}" ${isSelf ? "disabled title=\"No puedes cambiar tu propio rol desde aquí\"" : ""}>${roleSelect}</select></td>
+      </tr>`;
+    }).join("");
+    tbody.querySelectorAll("select[data-user-id]").forEach(sel=>{
+      sel.addEventListener("change", async ()=>{
+        const userId = sel.dataset.userId;
+        const newRole = sel.value;
+        sel.disabled = true;
+        try{
+          const { error } = await supabaseClient.rpc("set_user_role", { target_user_id:userId, new_role:newRole });
+          if(error) throw error;
+          showToast("Rol actualizado");
+        }catch(e){
+          errBox.textContent = "No se pudo actualizar el rol: " + (e.message || "error desconocido");
+          errBox.style.display = "block";
+        }finally{
+          sel.disabled = false;
+        }
+      });
+    });
+  }catch(e){
+    errBox.textContent = "No se pudo cargar la lista de usuarios: " + (e.message || "error desconocido");
+    errBox.style.display = "block";
+    tbody.innerHTML = `<tr><td colspan="3" style="color:var(--text-mute);padding:16px;">—</td></tr>`;
+  }
+}
+document.getElementById("cfg-users-refresh").addEventListener("click", renderUsersAdminPanel);
 async function addCatalogItem(key){
   const input = document.getElementById(`cfg-${key}-input`);
   const value = (input.value || "").trim();
@@ -6143,6 +6446,56 @@ function runGlobalSearchAction(action, target){
   else if(action === "caso"){ goToView("captura"); setTimeout(()=>openDetail(target), 80); }
 }
 document.getElementById("btn-global-search").addEventListener("click", openGlobalSearch);
+
+/* ============================================================
+   MODO OSCURO
+   ------------------------------------------------------------
+   Chart.js no lee variables CSS directamente: sus colores de eje,
+   rejilla y leyenda hay que actualizarlos "a mano" y volver a
+   dibujar las gráficas visibles para que adopten el tema nuevo.
+   ============================================================ */
+function isDarkTheme(){
+  return document.documentElement.getAttribute("data-theme") === "dark";
+}
+function applyChartJsThemeDefaults(){
+  if(typeof Chart === "undefined") return;
+  if(isDarkTheme()){
+    Chart.defaults.color = "#9BA3B8";
+    Chart.defaults.borderColor = "#2A3145";
+  } else {
+    Chart.defaults.color = "#4D5A6E";
+    Chart.defaults.borderColor = "#EEF2F6";
+  }
+}
+function rerenderVisibleCharts(){
+  applyChartJsThemeDefaults();
+  // Vuelve a dibujar solo lo que ya está montado en pantalla, para que
+  // los ejes/leyendas tomen los nuevos colores sin recargar la página.
+  const activeView = document.querySelector(".view.active");
+  if(!activeView) return;
+  const id = activeView.id;
+  if(id === "view-dashboard") safeRender("renderDashboard", renderDashboard);
+  else if(id === "view-kpis"){
+    const activeKpiBtn = document.querySelector("#kpi-subnav .tab-btn.active, #kpi-subnav button.active");
+    renderKpiSection(activeKpiBtn ? activeKpiBtn.dataset.kpi : "operativos");
+  }
+}
+function setTheme(theme){
+  if(theme === "dark") document.documentElement.setAttribute("data-theme","dark");
+  else document.documentElement.removeAttribute("data-theme");
+  try{ localStorage.setItem("theme-pref", theme); }catch(e){}
+  const label = document.getElementById("theme-toggle-label");
+  if(label) label.textContent = theme === "dark" ? "Modo claro" : "Modo oscuro";
+  rerenderVisibleCharts();
+}
+document.getElementById("btn-theme-toggle").addEventListener("click", ()=>{
+  setTheme(isDarkTheme() ? "light" : "dark");
+});
+(function initThemeToggleLabel(){
+  const label = document.getElementById("theme-toggle-label");
+  if(label) label.textContent = isDarkTheme() ? "Modo claro" : "Modo oscuro";
+  applyChartJsThemeDefaults();
+})();
 document.getElementById("gsearch-input").addEventListener("input", (e)=> renderGlobalSearchResults(e.target.value));
 document.getElementById("gsearch-modal").addEventListener("click", (e)=>{
   if(e.target.id === "gsearch-modal") closeGlobalSearch();
@@ -6973,23 +7326,28 @@ function renderBulkBar(tableKey, containerId, opts){
   const state = TABLE_UX_STATE[tableKey];
   if(state.selected.size === 0){ el.style.display = "none"; el.innerHTML=""; return; }
   el.style.display = "flex";
+  const deleteBtnHtml = currentUserRole === "admin"
+    ? `<button type="button" class="btn btn-ghost btn-sm danger-text" id="${containerId}-delete">🗑 Eliminar seleccionados</button>`
+    : "";
   el.innerHTML = `
     <span class="bulk-count">${state.selected.size} seleccionado${state.selected.size===1?"":"s"}</span>
     <button type="button" class="btn btn-ghost btn-sm" id="${containerId}-export">⬇ Exportar CSV</button>
-    <button type="button" class="btn btn-ghost btn-sm danger-text" id="${containerId}-delete">🗑 Eliminar seleccionados</button>
+    ${deleteBtnHtml}
     <button type="button" class="btn btn-ghost btn-sm" id="${containerId}-clear">Cancelar selección</button>`;
   document.getElementById(containerId+"-clear").addEventListener("click", ()=>{
     state.selected.clear();
     opts.rerender();
   });
   document.getElementById(containerId+"-export").addEventListener("click", ()=> opts.onExport(Array.from(state.selected)));
-  document.getElementById(containerId+"-delete").addEventListener("click", ()=>{
-    showConfirm(`¿Eliminar ${state.selected.size} registro(s) seleccionado(s)? Esta acción no se puede deshacer.`, ()=>{
-      opts.onDelete(Array.from(state.selected));
-      state.selected.clear();
-      opts.rerender();
+  if(currentUserRole === "admin"){
+    document.getElementById(containerId+"-delete").addEventListener("click", ()=>{
+      showConfirm(`¿Eliminar ${state.selected.size} registro(s) seleccionado(s)? Esta acción no se puede deshacer.`, ()=>{
+        opts.onDelete(Array.from(state.selected));
+        state.selected.clear();
+        opts.rerender();
+      });
     });
-  });
+  }
 }
 function renderFilterChips(containerId, chips, onClear){
   const el = document.getElementById(containerId);
@@ -7071,8 +7429,8 @@ function renderEmpleadosTable(){
       dias2: `<td>${pillVencimiento(dias2)}</td>`,
       acciones: `<td>
         <div class="tbl-actions">
-          <button class="icon-btn" title="Editar" onclick="editEmpleado('${e.id}')">✎</button>
-          ${e.estatus === "Activo" ? `<button class="icon-btn" title="Dar de baja" onclick="darDeBajaEmpleado('${e.id}')">🚪</button>` : ""}
+          <button class="icon-btn icon-btn-edit" title="Editar" onclick="editEmpleado('${e.id}')">✎</button>
+          ${e.estatus === "Activo" ? `<button class="icon-btn icon-btn-edit" title="Dar de baja" onclick="darDeBajaEmpleado('${e.id}')">🚪</button>` : ""}
           <button class="icon-btn danger" title="Eliminar" onclick="deleteEmpleado('${e.id}')">✕</button>
         </div>
       </td>`
@@ -7411,7 +7769,7 @@ function renderCandidatosTable(){
   body.innerHTML = pageRows.map(c=>{
     const contacto = c.telefono || c.email || "Sin datos";
     const transferBtn = c.estatus === "Contratado"
-      ? `<button class="icon-btn" title="Transferir a Personal" onclick="transferirCandidatoAEmpleado('${c.id}')">👥</button>`
+      ? `<button class="icon-btn icon-btn-edit" title="Transferir a Personal" onclick="transferirCandidatoAEmpleado('${c.id}')">👥</button>`
       : "";
     const cellByKey = {
       nombre: `<td class="wrap"><b>${escapeHtml(c.nombre)}</b></td>`,
@@ -7423,7 +7781,7 @@ function renderCandidatosTable(){
       acciones: `<td>
         <div class="tbl-actions">
           ${transferBtn}
-          <button class="icon-btn" title="Editar" onclick="editCandidato('${c.id}')">✎</button>
+          <button class="icon-btn icon-btn-edit" title="Editar" onclick="editCandidato('${c.id}')">✎</button>
           <button class="icon-btn danger" title="Eliminar" onclick="deleteCandidato('${c.id}')">✕</button>
         </div>
       </td>`
@@ -8351,7 +8709,7 @@ function renderRecent(){
         <div class="rs">${escapeHtml(r.area)} · ${escapeHtml(r.responsable)} · ${escapeHtml(r.estado)} · ${r.fecha}</div>
       </div>
       <div class="recent-actions">
-        <button class="icon-btn" title="Editar" onclick="editRecord('${r.id}')">✎</button>
+        <button class="icon-btn icon-btn-edit" title="Editar" onclick="editRecord('${r.id}')">✎</button>
         <button class="icon-btn danger" title="Eliminar" onclick="deleteRecord('${r.id}')">✕</button>
       </div>
     </div>`;
@@ -8920,8 +9278,8 @@ function renderTable(){
           <button class="icon-btn" title="Ver detalle" onclick="openDetail('${r.id}')">👁</button>
           <button class="icon-btn" title="Enviar por WhatsApp" onclick="shareToWhatsApp('${r.id}')">💬</button>
           <button class="icon-btn" title="Agregar a calendario" onclick="exportToCalendar('${r.id}')">📅</button>
-          <button class="icon-btn" title="Editar" onclick="editRecord('${r.id}')">✎</button>
-          <button class="icon-btn" title="Duplicar" onclick="duplicateRecord('${r.id}')">⧉</button>
+          <button class="icon-btn icon-btn-edit" title="Editar" onclick="editRecord('${r.id}')">✎</button>
+          <button class="icon-btn icon-btn-edit" title="Duplicar" onclick="duplicateRecord('${r.id}')">⧉</button>
           <button class="icon-btn danger" title="Eliminar" onclick="deleteRecord('${r.id}')">✕</button>
         </div>
       </td>`
