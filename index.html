@@ -56,6 +56,10 @@
       "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
     ], "html2canvas"),
     loadScriptWithFallback([
+      "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+      "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
+    ], "jspdf"),
+    loadScriptWithFallback([
       "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
       "https://unpkg.com/@supabase/supabase-js@2"
     ], "supabase")
@@ -594,6 +598,22 @@ th.sel-col,td.sel-col{width:38px;padding-left:14px !important;}
 }
 .chart-canvas-box:hover .chart-export-btn{opacity:1;}
 .chart-export-btn:hover{background:var(--gray-soft);}
+
+/* ============================================================
+   CAMPOS OBLIGATORIOS: asterisco rojo visible
+   ------------------------------------------------------------
+   Se agrega automáticamente (sin tocar cada formulario) a la
+   etiqueta de cualquier campo cuyo input/select/textarea tenga
+   el atributo required. Requiere que el navegador soporte :has()
+   (Chrome/Edge/Safari/Firefox recientes lo soportan).
+   ============================================================ */
+.field:has(> input[required]) > label::after,
+.field:has(> select[required]) > label::after,
+.field:has(> textarea[required]) > label::after{
+  content:" *";
+  color:var(--red);
+  font-weight:800;
+}
 
 /* ============================================================
    ROLES Y PERMISOS (lectura / captura / admin)
@@ -2212,25 +2232,47 @@ select:focus,textarea:focus{
   border-radius:var(--radius-md);
 }
 
+/* ============================================================
+   MENÚ MÓVIL (≤880px): sidebar como panel deslizable (drawer)
+   ------------------------------------------------------------
+   En vez de comprimir el sidebar en una barra horizontal con
+   scroll lateral, se oculta fuera de pantalla y se desliza al
+   presionar el botón de hamburguesa en la barra superior móvil.
+   ============================================================ */
+.mobile-topbar{display:none;}
+.mobile-overlay{
+  display:none;position:fixed;inset:0;background:rgba(10,13,22,.55);z-index:690;
+}
+.mobile-overlay.show{display:block;}
+
 @media(max-width:880px){
   .app-shell{flex-direction:column;}
-  .sidebar{
-    position:relative;
-    top:auto;
-    height:auto;
-    width:100%;
-    flex:0 0 auto;
-    flex-direction:row;
-    align-items:center;
-    padding:14px 16px;
-    gap:14px;
-    overflow-x:auto;
+  .mobile-topbar{
+    display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:650;
+    background:#0F172A;padding:10px 14px;
   }
-  .sidebar .brand{padding:0;flex:0 0 auto;}
-  .sidebar nav.tabs{flex-direction:row;flex:0 0 auto;overflow-x:auto;}
-  .sidebar .tab-btn{flex:0 0 auto;white-space:nowrap;}
-  .sidebar-footer{margin-top:0;flex:0 0 auto;border-top:none;padding-top:0;}
-  .sidebar-backup-btn{width:auto;white-space:nowrap;}
+  .mobile-menu-btn{
+    display:flex;align-items:center;justify-content:center;width:38px;height:38px;
+    border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);
+    color:#fff;font-size:17px;cursor:pointer;flex:0 0 auto;
+  }
+  .mobile-topbar .brand{padding:0;flex:1;min-width:0;}
+  .mobile-topbar .brand-mark{width:30px;height:30px;font-size:12px;}
+  .mobile-topbar .brand-text .t1{font-size:12.5px;}
+  .mobile-topbar .brand-text .t2{display:none;}
+
+  .sidebar{
+    position:fixed;top:0;left:0;height:100vh;width:280px;max-width:82vw;
+    flex-direction:column;align-items:stretch;padding:18px 16px;gap:10px;
+    overflow-y:auto;overflow-x:hidden;
+    transform:translateX(-100%);transition:transform .25s ease;z-index:700;
+  }
+  .sidebar.open{transform:translateX(0);box-shadow:20px 0 50px -20px rgba(0,0,0,.5);}
+  .sidebar .brand{padding:0 6px 12px;flex:0 0 auto;}
+  .sidebar nav.tabs{flex-direction:column;flex:1;overflow-x:visible;overflow-y:auto;}
+  .sidebar .tab-btn{flex:0 0 auto;white-space:normal;width:100%;justify-content:flex-start;}
+  .sidebar-footer{margin-top:0;flex:0 0 auto;}
+  .sidebar-backup-btn{width:100%;white-space:normal;}
   .content-header{padding:12px 16px;}
 }
 
@@ -2375,6 +2417,7 @@ select:focus,textarea:focus{
 [data-theme="dark"] ::-webkit-scrollbar-thumb{background:#2E3650;border-radius:6px;}
 [data-theme="dark"] .theme-toggle-btn .sun{display:none;}
 [data-theme="dark"] .theme-toggle-btn .moon{display:inline;}
+[data-theme="dark"] .sidebar,[data-theme="dark"] .mobile-topbar{background:#0F172A;}
 .theme-toggle-btn .moon{display:none;}
 </style>
 </head>
@@ -2412,7 +2455,18 @@ select:focus,textarea:focus{
 </div>
 
 <div id="app-root" style="display:none;">
+<div class="mobile-overlay" id="mobile-overlay"></div>
 <div class="app-shell">
+  <div class="mobile-topbar">
+    <button type="button" class="mobile-menu-btn" id="btn-mobile-menu" aria-label="Abrir menú">☰</button>
+    <div class="brand">
+      <div class="brand-mark">CH</div>
+      <div class="brand-text">
+        <div class="t1">Centro de Control</div>
+        <div class="t2">Capital Humano</div>
+      </div>
+    </div>
+  </div>
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-mark" id="brand-mark">CH</div>
@@ -2732,6 +2786,7 @@ select:focus,textarea:focus{
         <span class="dash-range-sep" id="dash-range-sep" style="display:none;">–</span>
         <input type="date" id="dash-range-to" style="display:none;">
         <button type="button" class="btn btn-ghost btn-sm" id="dash-range-clear" style="display:none;">Limpiar</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-export-pdf-report" style="margin-left:auto;">📄 Reporte PDF ejecutivo</button>
       </div>
 
       <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);">
@@ -6355,8 +6410,23 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
     if(btn.dataset.view === "candidatos") renderCandidatosTable();
     if(btn.dataset.view === "kanban") renderKanban();
     if(btn.dataset.view === "configuracion") renderConfigView();
+    closeMobileMenu();
   });
 });
+
+/* ============================================================
+   MENÚ MÓVIL (drawer con hamburguesa)
+   ============================================================ */
+function openMobileMenu(){
+  document.querySelector(".sidebar").classList.add("open");
+  document.getElementById("mobile-overlay").classList.add("show");
+}
+function closeMobileMenu(){
+  document.querySelector(".sidebar").classList.remove("open");
+  document.getElementById("mobile-overlay").classList.remove("show");
+}
+document.getElementById("btn-mobile-menu").addEventListener("click", openMobileMenu);
+document.getElementById("mobile-overlay").addEventListener("click", closeMobileMenu);
 
 /* ============================================================
    BÚSQUEDA GLOBAL (Ctrl+K / Cmd+K)
@@ -6707,6 +6777,8 @@ document.getElementById("emp-btn-submit").addEventListener("click", async ()=>{
     return;
   }
 
+  const finalizarGuardadoEmpleado = async ()=>{
+
   const existing = editingEmpId ? EMPLEADOS.find(e=>e.id===editingEmpId) : null;
   const esAltaNueva = !editingEmpId;
   const pasaABaja = estatus === "Baja" && (!existing || existing.estatus !== "Baja");
@@ -6750,6 +6822,15 @@ document.getElementById("emp-btn-submit").addEventListener("click", async ()=>{
   showToast((editingEmpId ? "✓ Colaborador actualizado" : "✓ Colaborador registrado") + checklistMsg);
   resetEmpForm();
   renderAll();
+  }; // fin de finalizarGuardadoEmpleado
+
+  const nombreNorm = nombre.toLowerCase();
+  const dupEmpleado = EMPLEADOS.find(e => e.id !== editingEmpId && (e.nombre||"").trim().toLowerCase() === nombreNorm);
+  if(dupEmpleado){
+    showConfirm(`Ya existe un colaborador registrado con el nombre "${dupEmpleado.nombre}" (${dupEmpleado.departamento || "sin departamento"}, estatus: ${dupEmpleado.estatus}). ¿Deseas guardar de todas formas?`, finalizarGuardadoEmpleado);
+  } else {
+    await finalizarGuardadoEmpleado();
+  }
 });
 
 /* ============================================================
@@ -7633,6 +7714,8 @@ document.getElementById("cand-btn-submit").addEventListener("click", async ()=>{
     return;
   }
 
+  const finalizarGuardadoCandidato = async ()=>{
+
   const existing = editingCandId ? CANDIDATOS.find(c=>c.id===editingCandId) : null;
   const candidato = {
     id: editingCandId || uid(),
@@ -7658,6 +7741,26 @@ document.getElementById("cand-btn-submit").addEventListener("click", async ()=>{
   renderCandidatosTable();
   safeRender("renderCandidatosDashboard", renderCandidatosDashboard);
   updateStorageUsage();
+  }; // fin de finalizarGuardadoCandidato
+
+  const nombreNorm = nombre.toLowerCase();
+  const telNorm = telefono.toLowerCase();
+  const emailNorm = email.toLowerCase();
+  const dupCandidato = CANDIDATOS.find(c=>{
+    if(c.id === editingCandId) return false;
+    if((c.nombre||"").trim().toLowerCase() === nombreNorm) return true;
+    if(telNorm && (c.telefono||"").trim().toLowerCase() === telNorm) return true;
+    if(emailNorm && (c.email||"").trim().toLowerCase() === emailNorm) return true;
+    return false;
+  });
+  if(dupCandidato){
+    let motivo = "el nombre";
+    if(telNorm && (dupCandidato.telefono||"").trim().toLowerCase() === telNorm) motivo = "el teléfono";
+    else if(emailNorm && (dupCandidato.email||"").trim().toLowerCase() === emailNorm) motivo = "el correo";
+    showConfirm(`Ya existe un candidato ("${dupCandidato.nombre}") registrado con ${motivo} coincidente (estatus: ${dupCandidato.estatus}). ¿Deseas guardar de todas formas?`, finalizarGuardadoCandidato);
+  } else {
+    await finalizarGuardadoCandidato();
+  }
 });
 
 function editCandidato(id){
@@ -9165,6 +9268,208 @@ function attachChartExportButtons(){
     box.appendChild(btn);
   });
 }
+
+/* ============================================================
+   REPORTE PDF EJECUTIVO (Dashboard)
+   ------------------------------------------------------------
+   Combina los KPIs actuales, las 4 gráficas del Dashboard y una
+   tabla resumen de los casos activos más urgentes en 1-2 páginas
+   listas para enviar a dirección. Respeta el rango de fechas
+   seleccionado en el Dashboard.
+   ============================================================ */
+async function exportExecutiveReportPDF(){
+  const btn = document.getElementById("btn-export-pdf-report");
+  if(typeof window.jspdf === "undefined"){
+    showToast("No se pudo cargar el generador de PDF. Revisa tu conexión e intenta de nuevo.");
+    return;
+  }
+  btn.disabled = true;
+  const originalLabel = btn.textContent;
+  btn.textContent = "Generando…";
+  try{
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:"pt", format:"letter" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 40;
+    let y = margin;
+
+    const branding = (APP_SETTINGS && APP_SETTINGS.branding) || {};
+    const titulo = branding.titulo || "Centro de Control · Capital Humano";
+    const subtitulo = branding.subtitulo || "Seguimiento de operaciones RH";
+
+    // ---- Encabezado ----
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(16);
+    doc.setTextColor(15,23,42);
+    doc.text(titulo, margin, y);
+    y += 16;
+    doc.setFont("helvetica","normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(100,110,130);
+    doc.text(subtitulo, margin, y);
+    y += 16;
+
+    const {from, to} = getDashboardDateRange();
+    const rangoTxt = (!from && !to) ? "Todo el histórico" : `${from || "…"} a ${to || "…"}`;
+    const generadoTxt = `Reporte ejecutivo · Rango: ${rangoTxt} · Generado: ${new Date().toLocaleString("es-MX")}`;
+    doc.setFontSize(8.5);
+    doc.setTextColor(140,148,166);
+    doc.text(generadoTxt, margin, y);
+    y += 14;
+    doc.setDrawColor(226,229,238);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 20;
+
+    // ---- KPIs ----
+    const kpiDefs = [
+      {id:"kpi-activos",   label:"Casos activos"},
+      {id:"kpi-cerrados",  label:"Casos cerrados"},
+      {id:"kpi-criticos",  label:"Alerta máxima"},
+      {id:"kpi-promedio",  label:"Prom. días abiertos"},
+      {id:"kpi-costo",     label:"Costo acumulado"}
+    ];
+    const gap = 8;
+    const kpiBoxW = (pageWidth - margin*2 - gap*(kpiDefs.length-1)) / kpiDefs.length;
+    const kpiBoxH = 52;
+    kpiDefs.forEach((k,i)=>{
+      const el = document.getElementById(k.id);
+      const value = el ? el.textContent.trim() : "—";
+      const x = margin + i*(kpiBoxW+gap);
+      doc.setFillColor(246,248,251);
+      doc.roundedRect(x, y, kpiBoxW, kpiBoxH, 4, 4, "F");
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(7.3);
+      doc.setTextColor(120,130,150);
+      doc.text(k.label, x+7, y+15, {maxWidth:kpiBoxW-14});
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(13);
+      doc.setTextColor(20,25,40);
+      doc.text(value, x+7, y+37, {maxWidth:kpiBoxW-14});
+    });
+    y += kpiBoxH + 24;
+
+    // ---- Gráficas (2 columnas) ----
+    const chartDefs = [
+      {chart:charts.estado, title:"Distribución por estado"},
+      {chart:charts.volumen, title:"Volumen (tipo / área)"},
+      {chart:charts.riesgo, title:"Riesgo por sucursal"},
+      {chart:charts.costo, title:"Costo por categoría"}
+    ].filter(c=>c.chart);
+
+    if(chartDefs.length){
+      const chartGap = 16;
+      const chartW = (pageWidth - margin*2 - chartGap) / 2;
+      const chartH = 130;
+      chartDefs.forEach((c,i)=>{
+        const col = i % 2, row = Math.floor(i/2);
+        const x = margin + col*(chartW+chartGap);
+        const yy = y + row*(chartH+26);
+        doc.setFont("helvetica","bold");
+        doc.setFontSize(9);
+        doc.setTextColor(70,80,100);
+        doc.text(c.title, x, yy);
+        try{
+          const img = c.chart.toBase64Image("image/png", 1.0);
+          doc.addImage(img, "PNG", x, yy+6, chartW, chartH);
+        }catch(e){ /* si una gráfica no se puede capturar, se omite sin romper el resto */ }
+      });
+      y += Math.ceil(chartDefs.length/2) * (chartH+26) + 8;
+    }
+
+    // ---- Tabla resumen: casos activos más urgentes ----
+    if(y > pageHeight - 160){ doc.addPage(); y = margin; }
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(11);
+    doc.setTextColor(20,25,40);
+    doc.text("Casos activos más urgentes", margin, y);
+    y += 14;
+
+    const scopedRecords = getDashboardScopedRecords();
+    const urgentes = scopedRecords
+      .filter(r=>ESTADOS_ACTIVOS.includes(r.estado))
+      .map(r=>({ r, dias: calcDias(r) }))
+      .sort((a,b)=>{
+        const pr = {"Crítica":0,"Alta":1,"Media":2,"Baja":3};
+        const pa = pr[a.r.prioridad] ?? 9, pb = pr[b.r.prioridad] ?? 9;
+        if(pa !== pb) return pa - pb;
+        return (b.dias||0) - (a.dias||0);
+      })
+      .slice(0, 10);
+
+    const cols = [
+      {label:"Tema / Caso", w:0.34},
+      {label:"Responsable", w:0.18},
+      {label:"Estado", w:0.16},
+      {label:"Prioridad", w:0.14},
+      {label:"Días", w:0.09}
+    ];
+    const tableW = pageWidth - margin*2;
+    let colX = margin;
+    const colXs = cols.map(c=>{ const x = colX; colX += c.w * tableW; return x; });
+
+    doc.setFillColor(15,23,42);
+    doc.rect(margin, y, tableW, 18, "F");
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(8);
+    doc.setTextColor(255,255,255);
+    cols.forEach((c,i)=> doc.text(c.label, colXs[i]+6, y+12));
+    y += 18;
+
+    if(urgentes.length === 0){
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(9);
+      doc.setTextColor(120,130,150);
+      doc.text("No hay casos activos en el rango seleccionado.", margin+6, y+14);
+      y += 22;
+    } else {
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(8.3);
+      urgentes.forEach((item,i)=>{
+        const rowH = 16;
+        if(y + rowH > pageHeight - margin){ doc.addPage(); y = margin; }
+        if(i % 2 === 1){
+          doc.setFillColor(248,250,252);
+          doc.rect(margin, y, tableW, rowH, "F");
+        }
+        doc.setTextColor(30,35,50);
+        const vals = [
+          item.r.tema || "—",
+          item.r.responsable || "—",
+          item.r.estado || "—",
+          item.r.prioridad || "—",
+          String(item.dias ?? "—")
+        ];
+        vals.forEach((v,ci)=>{
+          const maxW = cols[ci].w * tableW - 10;
+          doc.text(String(v), colXs[ci]+6, y+11, {maxWidth:maxW});
+        });
+        y += rowH;
+      });
+    }
+
+    // ---- Pie de página ----
+    const totalPages = doc.internal.getNumberOfPages();
+    for(let p=1; p<=totalPages; p++){
+      doc.setPage(p);
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(7.5);
+      doc.setTextColor(150,158,175);
+      doc.text(`Página ${p} de ${totalPages}`, pageWidth - margin - 60, pageHeight - 18);
+      doc.text(titulo, margin, pageHeight - 18);
+    }
+
+    doc.save(`reporte-ejecutivo-${todayISO()}.pdf`);
+    showToast("Reporte PDF generado");
+  }catch(e){
+    console.error("Error generando el reporte PDF", e);
+    showToast("No se pudo generar el reporte PDF");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+  }
+}
+document.getElementById("btn-export-pdf-report").addEventListener("click", exportExecutiveReportPDF);
 
 /* ============================================================
    RENDER: TABLA
