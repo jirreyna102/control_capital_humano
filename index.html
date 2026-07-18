@@ -501,6 +501,114 @@ thead th{
 .colcfg-handle{color:var(--text-mute);font-size:13px;cursor:grab;}
 .colcfg-item label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);flex:1;cursor:pointer;}
 .colcfg-item input[type=checkbox]{cursor:pointer;}
+
+/* ---- Paginación de tablas ---- */
+.pg-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 4px;font-size:12.5px;color:var(--text-soft);}
+.pg-info{color:var(--text-mute);}
+.pg-controls{display:flex;align-items:center;gap:8px;}
+.pg-size-select,.pg-btn{
+  border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;
+  font-family:'Sora',sans-serif;font-weight:600;color:var(--text-soft);cursor:pointer;
+}
+.pg-btn:disabled{opacity:.4;cursor:not-allowed;}
+.pg-btn:not(:disabled):hover{background:var(--gray-soft);}
+.pg-page{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--text-mute);}
+
+/* ---- Barra de acciones en lote ---- */
+.bulk-bar{
+  display:none;align-items:center;gap:10px;flex-wrap:wrap;
+  background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:9px 14px;margin-bottom:10px;
+}
+.bulk-count{font-size:12.5px;font-weight:700;color:#1D4ED8;margin-right:4px;}
+.bulk-bar .danger-text{color:var(--red);}
+
+/* ---- Chips de filtros activos ---- */
+.filter-chips{display:none;flex-wrap:wrap;gap:8px;margin:-4px 0 12px;}
+.filter-chip{
+  display:inline-flex;align-items:center;gap:6px;background:var(--gray-soft);border:1px solid var(--line);
+  border-radius:999px;padding:5px 6px 5px 12px;font-size:11.5px;font-weight:600;color:var(--text-soft);
+}
+.filter-chip button{
+  border:none;background:rgba(0,0,0,.06);border-radius:50%;width:16px;height:16px;font-size:9px;
+  cursor:pointer;color:var(--text-soft);display:flex;align-items:center;justify-content:center;
+}
+.filter-chip button:hover{background:rgba(0,0,0,.12);}
+
+/* ---- Encabezados ordenables ---- */
+.configurable-table thead th .th-label{cursor:pointer;}
+.configurable-table thead th .th-label:hover{color:#fff;}
+th.sel-col,td.sel-col{width:38px;padding-left:14px !important;}
+
+/* ---- Autoguardado de borrador (Captura) ---- */
+.draft-banner{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  background:#FFFBEB;border:1px solid #FDE68A;color:#92400E;border-radius:10px;
+  padding:11px 16px;margin-bottom:16px;font-size:13px;
+}
+.draft-banner-actions{display:flex;gap:8px;}
+.draft-indicator{margin-right:auto;font-size:11.5px;color:var(--text-mute);font-style:italic;}
+
+/* ---- Rango de fechas del Dashboard ---- */
+.dash-range-bar{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;
+}
+.dash-range-label{font-size:12.5px;font-weight:700;color:var(--text-soft);}
+.dash-range-bar select,.dash-range-bar input[type=date]{
+  border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font-size:12.5px;
+  font-family:'Inter',sans-serif;color:var(--text);cursor:pointer;
+}
+.dash-range-sep{color:var(--text-mute);}
+
+/* ---- KPIs fijados ---- */
+.kpi-card{position:relative;}
+.kpi-pin-btn{
+  position:absolute;top:8px;right:8px;background:none;border:none;font-size:13px;
+  opacity:.25;cursor:pointer;padding:2px;line-height:1;transition:opacity .12s ease;
+}
+.kpi-card:hover .kpi-pin-btn{opacity:.55;}
+.kpi-pin-btn:hover{opacity:1 !important;}
+.kpi-pin-btn.pinned{opacity:1;filter:drop-shadow(0 0 0 var(--amber));}
+.pinned-kpi-bar{
+  display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;
+  background:linear-gradient(135deg,#FFFBEB,#FFF);border:1px solid #FDE68A;border-radius:12px;
+}
+.pinned-kpi-chip{display:flex;flex-direction:column;gap:2px;min-width:110px;}
+.pinned-kpi-chip .pk-label{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:#92400E;font-weight:700;}
+.pinned-kpi-chip .pk-value{font-size:19px;font-weight:800;color:var(--ink);font-family:'IBM Plex Mono',monospace;}
+
+/* ---- Exportar gráfica individual como imagen ---- */
+.chart-canvas-box{position:relative;}
+.chart-export-btn{
+  position:absolute;top:0;right:0;z-index:3;background:#fff;border:1px solid var(--line);
+  border-radius:7px;width:26px;height:26px;font-size:12px;cursor:pointer;color:var(--text-soft);
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .12s ease;
+}
+.chart-canvas-box:hover .chart-export-btn{opacity:1;}
+.chart-export-btn:hover{background:var(--gray-soft);}
+
+/* ---- Búsqueda global (Ctrl+K) ---- */
+.gsearch-backdrop{
+  display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:600;
+  align-items:flex-start;justify-content:center;padding:14vh 20px 20px;
+}
+.gsearch-backdrop.show{display:flex;}
+.gsearch-box{
+  width:100%;max-width:560px;background:#fff;border-radius:14px;overflow:hidden;
+  box-shadow:0 20px 60px -10px rgba(15,23,42,.35);max-height:70vh;display:flex;flex-direction:column;
+}
+.gsearch-input-row{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);}
+.gsearch-input-row span{font-size:16px;color:var(--text-mute);}
+#gsearch-input{flex:1;border:none;outline:none;font-size:15px;font-family:'Inter',sans-serif;color:var(--ink);}
+.gsearch-esc{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-mute);border:1px solid var(--line);border-radius:5px;padding:2px 6px;}
+.gsearch-results{overflow-y:auto;padding:8px;}
+.gsearch-group-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;color:var(--text-mute);padding:10px 10px 4px;}
+.gsearch-item{
+  display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text);
+}
+.gsearch-item .gs-ico{font-size:15px;width:20px;text-align:center;}
+.gsearch-item .gs-sub{margin-left:auto;font-size:11px;color:var(--text-mute);}
+.gsearch-item:hover,.gsearch-item.active{background:var(--gray-soft);}
+.gsearch-empty{padding:24px;text-align:center;color:var(--text-mute);font-size:13px;}
 tbody td{
   padding:11px 12px;font-size:13px;border-top:1px solid var(--line);color:var(--text);
   white-space:nowrap;
@@ -1777,6 +1885,14 @@ tbody tr:hover{
   --red:#EF4444;
   --red-soft:#FEE2E2;
   --gray-soft:#F1F5F9;
+  --purple:#7A4FB5;
+  --purple-soft:#EDE4FB;
+  --cyan:#2E93A8;
+  --cyan-soft:#DCF3F7;
+  --brown:#B96A17;
+  --brown-soft:#FCEEDD;
+  --gray-cool:#8B90A3;
+  --gray-cool-soft:#E7E9EF;
   --radius:16px;
   --shadow:0 4px 6px -1px rgba(15,23,42,.05),0 2px 4px -2px rgba(15,23,42,.05);
 }
@@ -1978,6 +2094,18 @@ select:focus,textarea:focus{
 .sidebar .tab-btn.active .tab-ico{filter:none;}
 
 .sidebar-footer{margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:8px;}
+.sidebar-search-btn{
+  display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;margin:2px 0 4px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;
+  color:rgba(255,255,255,.75);font-size:12.5px;font-weight:600;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:background-color .15s ease,color .15s ease;
+}
+.sidebar-search-btn:hover{background:rgba(255,255,255,.12);color:#fff;}
+.sidebar-search-btn .kbd-hint{
+  margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);
+  border-radius:5px;padding:2px 6px;color:rgba(255,255,255,.55);
+}
 .sidebar-user{font-size:11px;color:rgba(255,255,255,.45);padding:0 2px 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sidebar-backup-btn{
   width:100%;
@@ -2131,6 +2259,9 @@ select:focus,textarea:focus{
         <div class="t2" id="brand-subtitle">Seguimiento de operaciones RH</div>
       </div>
     </div>
+    <button type="button" class="sidebar-search-btn" id="btn-global-search">
+      <span>🔍</span> Buscar<span class="kbd-hint">Ctrl K</span>
+    </button>
     <nav class="tabs">
       <button class="tab-btn active" data-view="captura"><span class="tab-ico">✏️</span>Captura</button>
       <button class="tab-btn" data-view="dashboard"><span class="tab-ico">📊</span>Dashboard</button>
@@ -2195,6 +2326,13 @@ select:focus,textarea:focus{
     </div>
     
     <div id="notif-banner"></div>
+    <div class="draft-banner" id="draft-banner" style="display:none;">
+      <span>📝 Tienes un borrador sin guardar de una captura anterior (<span id="draft-banner-time"></span>).</span>
+      <div class="draft-banner-actions">
+        <button type="button" class="btn btn-primary btn-sm" id="draft-restore-btn">Restaurar borrador</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="draft-discard-btn">Descartar</button>
+      </div>
+    </div>
 
     <form id="hr-form" class="form-grid">
       <input type="hidden" id="f-id">
@@ -2378,6 +2516,7 @@ select:focus,textarea:focus{
       </div>
 
       <div class="form-actions">
+        <span class="draft-indicator" id="draft-indicator"></span>
         <button type="button" class="btn btn-ghost" id="btn-cancel-edit" style="display:none;">Cancelar edición</button>
         <button type="button" class="btn btn-ghost" onclick="crearDesdePlantilla()">📋 Usar plantilla</button>
         <button type="button" class="btn btn-ghost" id="btn-reset">Limpiar</button>
@@ -2411,8 +2550,27 @@ select:focus,textarea:focus{
     </div>
 
     <div id="dash-content">
+      <div class="pinned-kpi-bar" id="pinned-kpi-bar" style="display:none;"></div>
+
+      <div class="dash-range-bar">
+        <span class="dash-range-label">📅 Rango de fecha:</span>
+        <select id="dash-range-preset">
+          <option value="all">Todo el histórico</option>
+          <option value="7">Últimos 7 días</option>
+          <option value="30">Últimos 30 días</option>
+          <option value="90">Últimos 90 días</option>
+          <option value="ytd">Año en curso</option>
+          <option value="custom">Personalizado…</option>
+        </select>
+        <input type="date" id="dash-range-from" style="display:none;">
+        <span class="dash-range-sep" id="dash-range-sep" style="display:none;">–</span>
+        <input type="date" id="dash-range-to" style="display:none;">
+        <button type="button" class="btn btn-ghost btn-sm" id="dash-range-clear" style="display:none;">Limpiar</button>
+      </div>
+
       <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);">
-        <div class="kpi-card clickable" onclick="showKpiCaseList('activos')" title="Ver listado de casos activos">
+        <div class="kpi-card clickable" data-kpi-id="activos" onclick="showKpiCaseList('activos')" title="Ver listado de casos activos">
+          <button type="button" class="kpi-pin-btn" data-kpi-id="activos" title="Fijar este KPI arriba" onclick="event.stopPropagation();toggleKpiPin('activos')">📌</button>
           <div class="kpi-top">
             <span class="kpi-label">Casos activos</span>
             <span class="kpi-icon">📂</span>
@@ -2420,7 +2578,8 @@ select:focus,textarea:focus{
           <div class="kpi-value mono" id="kpi-activos">0</div>
           <div class="kpi-sub">No Iniciado · En Proceso · En Revisión · Detenido</div>
         </div>
-        <div class="kpi-card clickable" style="border-left-color:var(--teal);" onclick="showKpiCaseList('cerrados')" title="Ver listado de casos cerrados">
+        <div class="kpi-card clickable" style="border-left-color:var(--teal);" data-kpi-id="cerrados" onclick="showKpiCaseList('cerrados')" title="Ver listado de casos cerrados">
+          <button type="button" class="kpi-pin-btn" data-kpi-id="cerrados" title="Fijar este KPI arriba" onclick="event.stopPropagation();toggleKpiPin('cerrados')">📌</button>
           <div class="kpi-top">
             <span class="kpi-label">Casos cerrados</span>
             <span class="kpi-icon" style="background:var(--teal-soft);color:var(--teal);">✅</span>
@@ -2428,7 +2587,8 @@ select:focus,textarea:focus{
           <div class="kpi-value mono" id="kpi-cerrados">0</div>
           <div class="kpi-sub">Estado: Cerrado</div>
         </div>
-        <div class="kpi-card crit clickable" onclick="showKpiCaseList('criticos')" title="Ver listado de casos en alerta máxima">
+        <div class="kpi-card crit clickable" data-kpi-id="criticos" onclick="showKpiCaseList('criticos')" title="Ver listado de casos en alerta máxima">
+          <button type="button" class="kpi-pin-btn" data-kpi-id="criticos" title="Fijar este KPI arriba" onclick="event.stopPropagation();toggleKpiPin('criticos')">📌</button>
           <div class="kpi-top">
             <span class="kpi-label">Alerta máxima</span>
             <span class="kpi-icon">🔥</span>
@@ -2436,7 +2596,8 @@ select:focus,textarea:focus{
           <div class="kpi-value mono" id="kpi-criticos">0</div>
           <div class="kpi-sub"><span class="pulse-wrap"><span class="pulse"></span>Prioridad crítica + caso activo</span></div>
         </div>
-        <div class="kpi-card avg">
+        <div class="kpi-card avg" data-kpi-id="promedio">
+          <button type="button" class="kpi-pin-btn" data-kpi-id="promedio" title="Fijar este KPI arriba" onclick="event.stopPropagation();toggleKpiPin('promedio')">📌</button>
           <div class="kpi-top">
             <span class="kpi-label">Promedio de días abiertos</span>
             <span class="kpi-icon">⏱</span>
@@ -2444,7 +2605,8 @@ select:focus,textarea:focus{
           <div class="kpi-value mono" id="kpi-promedio">0</div>
           <div class="kpi-sub">Días promedio en casos con estado activo</div>
         </div>
-        <div class="kpi-card cost clickable" onclick="showKpiCaseList('costo')" title="Ver listado de casos con costo asignado">
+        <div class="kpi-card cost clickable" data-kpi-id="costo" onclick="showKpiCaseList('costo')" title="Ver listado de casos con costo asignado">
+          <button type="button" class="kpi-pin-btn" data-kpi-id="costo" title="Fijar este KPI arriba" onclick="event.stopPropagation();toggleKpiPin('costo')">📌</button>
           <div class="kpi-top">
             <span class="kpi-label">Costo acumulado</span>
             <span class="kpi-icon">💲</span>
@@ -2617,6 +2779,8 @@ select:focus,textarea:focus{
           <span title="Busca en Fecha, Tema, Tipo, Área, Solicitante, Departamento, Macroproceso, Sucursal y Responsable" style="cursor:help;color:var(--text-mute);font-size:12px;align-self:center;">ⓘ</span>
           <button class="clear-btn" id="clear-filters">Limpiar filtros</button>
         </div>
+        <div class="filter-chips" id="bitacora-filter-chips"></div>
+        <div class="bulk-bar" id="bitacora-bulk-bar"></div>
         <div class="table-scroll">
           <table class="configurable-table" id="bitacora-table">
             <colgroup id="bitacora-colgroup"></colgroup>
@@ -2626,6 +2790,7 @@ select:focus,textarea:focus{
             <tbody id="table-body"></tbody>
           </table>
         </div>
+        <div class="pg-bar" id="bitacora-pg-bar"></div>
       </div>
     </div>
   </div>
@@ -2740,6 +2905,8 @@ select:focus,textarea:focus{
         <select id="emp-filter-estatus"><option value="">Estatus: todos</option></select>
         <button class="clear-btn" id="emp-clear-filters">Limpiar filtros</button>
       </div>
+      <div class="filter-chips" id="personal-filter-chips"></div>
+      <div class="bulk-bar" id="personal-bulk-bar"></div>
       <div class="table-scroll">
         <table class="configurable-table" id="personal-table">
           <colgroup id="personal-colgroup"></colgroup>
@@ -2749,6 +2916,7 @@ select:focus,textarea:focus{
           <tbody id="emp-table-body"></tbody>
         </table>
       </div>
+      <div class="pg-bar" id="personal-pg-bar"></div>
     </div>
 
     <div class="page-head" style="margin-top:26px;">
@@ -2841,28 +3009,25 @@ select:focus,textarea:focus{
       <div class="table-head">
         <h3>Bitácora de Reclutamiento y Selección</h3>
         <span class="count" id="cand-table-count">0 registros</span>
+        <button class="btn btn-ghost btn-sm btn-col-config" id="btn-col-config-candidatos" type="button" style="margin-left:auto;">🧩 Columnas</button>
       </div>
       <div class="filters-row">
         <select id="cand-filter-sucursal"><option value="">Sucursal: todas</option></select>
         <select id="cand-filter-estatus"><option value="">Estatus: todos</option></select>
         <button class="clear-btn" id="cand-clear-filters">Limpiar filtros</button>
       </div>
+      <div class="filter-chips" id="cand-filter-chips"></div>
+      <div class="bulk-bar" id="cand-bulk-bar"></div>
       <div class="table-scroll">
-        <table>
+        <table class="configurable-table" id="candidatos-table">
+          <colgroup id="candidatos-colgroup"></colgroup>
           <thead>
-            <tr>
-              <th>Candidato</th>
-              <th>Vacante / Puesto</th>
-              <th>Departamento</th>
-              <th>Sucursal</th>
-              <th>Estatus</th>
-              <th>Contacto</th>
-              <th>Acciones</th>
-            </tr>
+            <tr id="candidatos-thead-row"></tr>
           </thead>
           <tbody id="cand-table-body"></tbody>
         </table>
       </div>
+      <div class="pg-bar" id="cand-pg-bar"></div>
     </div>
   </div>
 
@@ -3603,6 +3768,17 @@ select:focus,textarea:focus{
   </div>
 </div>
 
+<div class="gsearch-backdrop" id="gsearch-modal">
+  <div class="gsearch-box">
+    <div class="gsearch-input-row">
+      <span>🔍</span>
+      <input type="text" id="gsearch-input" placeholder="Buscar vistas, colaboradores, candidatos o casos de la bitácora...">
+      <span class="gsearch-esc">Esc</span>
+    </div>
+    <div class="gsearch-results" id="gsearch-results"></div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="colcfg-modal">
   <div class="modal-box" style="max-width:420px;">
     <div class="modal-head">
@@ -3819,23 +3995,36 @@ const ESTATUS_COLAB = ["Activo","Baja"];
 const ESTADOS_CONTRATO = ["Indeterminado","Determinado a prueba","Por Proyecto"];
 const CONTRATOS_TEMPORALES = ["Determinado a prueba","Por Proyecto"];
 
-const COLOR_ESTADO = {
-  "No Iniciado":"#8B90A3","En Proceso":"#4F46E5","En Revisión":"#F59E0B",
-  "Detenido":"#EF4444","Cerrado":"#10B981","Cancelado":"#4A5068"
+/* Los valores de esta paleta se leen directamente de las variables CSS
+   (:root) en vez de repetir los códigos hex en cada objeto, para que
+   exista una sola fuente de verdad. Chart.js/Canvas no entienden
+   "var(--x)" como color, así que se resuelve una vez aquí con
+   getComputedStyle y se reutiliza el valor ya calculado. */
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+const THEME = {
+  red: cssVar("--red"), amber: cssVar("--amber"), teal: cssVar("--teal"), blue: cssVar("--blue"),
+  purple: cssVar("--purple"), cyan: cssVar("--cyan"), brown: cssVar("--brown"),
+  textSoft: cssVar("--text-soft"), textMute: cssVar("--text-mute")
 };
-const COLOR_PRIORIDAD = {"Crítica":"#EF4444","Alta":"#F59E0B","Media":"#4F46E5","Baja":"#10B981"};
-const COLOR_NIVEL = {"Bajo":"#10B981","Medio":"#4F46E5","Alto":"#F59E0B","Crítico":"#EF4444"};
+const COLOR_ESTADO = {
+  "No Iniciado":THEME.textMute,"En Proceso":THEME.blue,"En Revisión":THEME.amber,
+  "Detenido":THEME.red,"Cerrado":THEME.teal,"Cancelado":THEME.textSoft
+};
+const COLOR_PRIORIDAD = {"Crítica":THEME.red,"Alta":THEME.amber,"Media":THEME.blue,"Baja":THEME.teal};
+const COLOR_NIVEL = {"Bajo":THEME.teal,"Medio":THEME.blue,"Alto":THEME.amber,"Crítico":THEME.red};
 const COLOR_RIESGO = {
-  "Sin Riesgo":"#B9BDCC","Riesgo Operativo":"#4F46E5","Riesgo Legal":"#7A4FB5",
-  "Riesgo Financiero":"#F59E0B","Riesgo Reputacional":"#EF4444",
-  "Riesgo de Cumplimiento (NOM/IMSS/INFONAVIT/SAT)":"#10B981"
+  "Sin Riesgo":"#B9BDCC","Riesgo Operativo":THEME.blue,"Riesgo Legal":THEME.purple,
+  "Riesgo Financiero":THEME.amber,"Riesgo Reputacional":THEME.red,
+  "Riesgo de Cumplimiento (NOM/IMSS/INFONAVIT/SAT)":THEME.teal
 };
 const COLOR_COSTO_CAT = {
-  "No aplica":"#B9BDCC","Nómina y Compensaciones":"#4F46E5","Capacitación y Desarrollo":"#10B981",
-  "Reclutamiento y Selección":"#7A4FB5","Multas o Sanciones":"#EF4444","Honorarios y Consultoría":"#F59E0B",
-  "Materiales y Equipo":"#4A5068","Tecnología y Sistemas":"#2E93A8","Servicios Generales":"#B96A17","Otro":"#8B90A3"
+  "No aplica":"#B9BDCC","Nómina y Compensaciones":THEME.blue,"Capacitación y Desarrollo":THEME.teal,
+  "Reclutamiento y Selección":THEME.purple,"Multas o Sanciones":THEME.red,"Honorarios y Consultoría":THEME.amber,
+  "Materiales y Equipo":THEME.textSoft,"Tecnología y Sistemas":THEME.cyan,"Servicios Generales":THEME.brown,"Otro":THEME.textMute
 };
-const COLOR_ESTATUS_COLAB = {"Activo":"#10B981","Baja":"#EF4444"};
+const COLOR_ESTATUS_COLAB = {"Activo":THEME.teal,"Baja":THEME.red};
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const DIAS_SEMANA = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 
@@ -5454,9 +5643,104 @@ function resetForm(){
   document.getElementById("btn-submit").textContent = "Guardar captura";
   document.getElementById("btn-cancel-edit").style.display = "none";
   refreshAutoFields();
+  clearFormDraft();
 }
 document.getElementById("btn-reset").addEventListener("click", resetForm);
 document.getElementById("btn-cancel-edit").addEventListener("click", resetForm);
+
+/* ============================================================
+   AUTOGUARDADO DE BORRADOR (vista Captura)
+   ------------------------------------------------------------
+   Solo aplica cuando se está creando un caso nuevo (no mientras
+   se edita uno existente), para no arriesgar mezclar el borrador
+   con datos que ya viven en Supabase. Los archivos de evidencia
+   NO se incluyen en el borrador (no caben de forma práctica en
+   localStorage); solo los campos de texto/selects y los avances
+   agregados en memoria.
+   ============================================================ */
+const DRAFT_KEY = "captura-draft-v1";
+let draftAutosaveTimer = null;
+function collectFormDraft(){
+  const data = {};
+  form.querySelectorAll("input,select,textarea").forEach(el=>{
+    if(el.id && el.id !== "f-id") data[el.id] = el.value;
+  });
+  data.__avances = pendingAvances;
+  return data;
+}
+function formDraftHasContent(data){
+  return Object.entries(data).some(([key,val])=>{
+    if(key === "__avances") return Array.isArray(val) && val.length > 0;
+    if(key === "f-fecha") return false; // siempre trae la fecha de hoy por default
+    return val && val.toString().trim() !== "";
+  });
+}
+function saveFormDraftNow(){
+  if(editingId) return; // no se autoguarda mientras se edita un caso existente
+  const data = collectFormDraft();
+  if(!formDraftHasContent(data)){
+    clearFormDraft();
+    return;
+  }
+  try{
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({data, savedAt:Date.now()}));
+    const ind = document.getElementById("draft-indicator");
+    if(ind) ind.textContent = "💾 Borrador guardado automáticamente";
+  }catch(e){ /* almacenamiento no disponible: se ignora silenciosamente */ }
+}
+function scheduleDraftAutosave(){
+  clearTimeout(draftAutosaveTimer);
+  draftAutosaveTimer = setTimeout(saveFormDraftNow, 900);
+}
+function clearFormDraft(){
+  try{ localStorage.removeItem(DRAFT_KEY); }catch(e){}
+  const ind = document.getElementById("draft-indicator");
+  if(ind) ind.textContent = "";
+  document.getElementById("draft-banner").style.display = "none";
+}
+function applyFormDraft(data){
+  Object.entries(data).forEach(([id,val])=>{
+    if(id === "__avances") return;
+    const el = document.getElementById(id);
+    if(el) el.value = val;
+  });
+  fillMacroSelect(document.getElementById("f-area").value, data["f-macro"] || "");
+  if(Array.isArray(data.__avances)){
+    pendingAvances = data.__avances;
+    renderAvancesTimeline();
+  }
+  refreshAutoFields();
+}
+function timeAgoEs(ts){
+  const diffMin = Math.round((Date.now() - ts) / 60000);
+  if(diffMin < 1) return "hace un momento";
+  if(diffMin === 1) return "hace 1 minuto";
+  if(diffMin < 60) return `hace ${diffMin} minutos`;
+  const diffH = Math.round(diffMin / 60);
+  if(diffH === 1) return "hace 1 hora";
+  return `hace ${diffH} horas`;
+}
+function checkForFormDraft(){
+  if(editingId) return;
+  let saved = null;
+  try{ saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); }catch(e){}
+  if(!saved || !saved.data || !formDraftHasContent(saved.data)) return;
+  document.getElementById("draft-banner-time").textContent = timeAgoEs(saved.savedAt);
+  document.getElementById("draft-banner").style.display = "flex";
+}
+document.getElementById("draft-restore-btn").addEventListener("click", ()=>{
+  let saved = null;
+  try{ saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); }catch(e){}
+  if(saved && saved.data) applyFormDraft(saved.data);
+  document.getElementById("draft-banner").style.display = "none";
+  showToast("Borrador restaurado");
+});
+document.getElementById("draft-discard-btn").addEventListener("click", ()=>{
+  clearFormDraft();
+});
+form.addEventListener("input", scheduleDraftAutosave);
+form.addEventListener("change", scheduleDraftAutosave);
+
 
 form.addEventListener("submit", async (e)=>{
   e.preventDefault();
@@ -5769,6 +6053,135 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
     if(btn.dataset.view === "kanban") renderKanban();
     if(btn.dataset.view === "configuracion") renderConfigView();
   });
+});
+
+/* ============================================================
+   BÚSQUEDA GLOBAL (Ctrl+K / Cmd+K)
+   ============================================================ */
+const GSEARCH_VIEWS = [
+  {view:"captura",       label:"Captura",              icon:"✏️"},
+  {view:"dashboard",     label:"Dashboard",            icon:"📊"},
+  {view:"personal",      label:"Personal",             icon:"👥"},
+  {view:"candidatos",    label:"Candidatos",           icon:"🧑‍💼"},
+  {view:"kpis",          label:"KPIs",                 icon:"📈"},
+  {view:"kanban",        label:"Kanban",               icon:"🗂️"},
+  {view:"calendario",    label:"Calendario",           icon:"📅"},
+  {view:"minutas",       label:"Juntas y Minutas",     icon:"🗒️"},
+  {view:"configuracion", label:"Configuración",        icon:"⚙️"}
+];
+let gsearchActiveIndex = -1;
+function openGlobalSearch(){
+  const modal = document.getElementById("gsearch-modal");
+  const input = document.getElementById("gsearch-input");
+  modal.classList.add("show");
+  input.value = "";
+  renderGlobalSearchResults("");
+  setTimeout(()=>input.focus(), 30);
+}
+function closeGlobalSearch(){
+  document.getElementById("gsearch-modal").classList.remove("show");
+}
+function goToView(viewName){
+  const btn = document.querySelector(`.tab-btn[data-view="${viewName}"]`);
+  if(btn) btn.click();
+}
+function renderGlobalSearchResults(qRaw){
+  const q = qRaw.trim().toLowerCase();
+  const results = document.getElementById("gsearch-results");
+  gsearchActiveIndex = -1;
+
+  const vistas = GSEARCH_VIEWS.filter(v=> !q || v.label.toLowerCase().includes(q));
+
+  let personal = [], candidatos = [], casos = [];
+  if(q.length >= 2){
+    personal = EMPLEADOS.filter(e=> (e.nombre||"").toLowerCase().includes(q)).slice(0,6);
+    candidatos = CANDIDATOS.filter(c=> (c.nombre||"").toLowerCase().includes(q)).slice(0,6);
+    casos = RECORDS.filter(r=>
+      (r.tema||"").toLowerCase().includes(q) ||
+      (r.responsable||"").toLowerCase().includes(q) ||
+      (r.departamento||"").toLowerCase().includes(q)
+    ).slice(0,6);
+  }
+
+  const blocks = [];
+  if(vistas.length){
+    blocks.push(`<div class="gsearch-group-label">Vistas</div>` + vistas.map(v=>
+      `<div class="gsearch-item" data-action="view" data-target="${v.view}"><span class="gs-ico">${v.icon}</span>${v.label}</div>`
+    ).join(""));
+  }
+  if(personal.length){
+    blocks.push(`<div class="gsearch-group-label">Personal</div>` + personal.map(e=>
+      `<div class="gsearch-item" data-action="empleado" data-target="${e.id}"><span class="gs-ico">👤</span>${escapeHtml(e.nombre)}<span class="gs-sub">${escapeHtml(e.departamento||"")}</span></div>`
+    ).join(""));
+  }
+  if(candidatos.length){
+    blocks.push(`<div class="gsearch-group-label">Candidatos</div>` + candidatos.map(c=>
+      `<div class="gsearch-item" data-action="candidato" data-target="${c.id}"><span class="gs-ico">🧑‍💼</span>${escapeHtml(c.nombre)}<span class="gs-sub">${escapeHtml(c.puesto||"")}</span></div>`
+    ).join(""));
+  }
+  if(casos.length){
+    blocks.push(`<div class="gsearch-group-label">Bitácora</div>` + casos.map(r=>
+      `<div class="gsearch-item" data-action="caso" data-target="${r.id}"><span class="gs-ico">🗂️</span>${escapeHtml(r.tema)}<span class="gs-sub">${escapeHtml(r.responsable||"")}</span></div>`
+    ).join(""));
+  }
+
+  if(!blocks.length){
+    results.innerHTML = `<div class="gsearch-empty">Sin resultados para "${escapeHtml(qRaw)}"</div>`;
+    return;
+  }
+  results.innerHTML = blocks.join("");
+
+  results.querySelectorAll(".gsearch-item").forEach(item=>{
+    item.addEventListener("click", ()=> runGlobalSearchAction(item.dataset.action, item.dataset.target));
+  });
+}
+function runGlobalSearchAction(action, target){
+  closeGlobalSearch();
+  if(action === "view") goToView(target);
+  else if(action === "empleado"){ goToView("personal"); setTimeout(()=>editEmpleado(target), 80); }
+  else if(action === "candidato"){ goToView("candidatos"); setTimeout(()=>editCandidato(target), 80); }
+  else if(action === "caso"){ goToView("captura"); setTimeout(()=>openDetail(target), 80); }
+}
+document.getElementById("btn-global-search").addEventListener("click", openGlobalSearch);
+document.getElementById("gsearch-input").addEventListener("input", (e)=> renderGlobalSearchResults(e.target.value));
+document.getElementById("gsearch-modal").addEventListener("click", (e)=>{
+  if(e.target.id === "gsearch-modal") closeGlobalSearch();
+});
+document.getElementById("gsearch-input").addEventListener("keydown", (e)=>{
+  const items = Array.from(document.querySelectorAll("#gsearch-results .gsearch-item"));
+  if(e.key === "ArrowDown"){
+    e.preventDefault();
+    if(items.length){
+      gsearchActiveIndex = Math.min(gsearchActiveIndex + 1, items.length - 1);
+      items.forEach(i=>i.classList.remove("active"));
+      items[gsearchActiveIndex].classList.add("active");
+      items[gsearchActiveIndex].scrollIntoView({block:"nearest"});
+    }
+  } else if(e.key === "ArrowUp"){
+    e.preventDefault();
+    if(items.length){
+      gsearchActiveIndex = Math.max(gsearchActiveIndex - 1, 0);
+      items.forEach(i=>i.classList.remove("active"));
+      items[gsearchActiveIndex].classList.add("active");
+      items[gsearchActiveIndex].scrollIntoView({block:"nearest"});
+    }
+  } else if(e.key === "Enter"){
+    e.preventDefault();
+    const target = gsearchActiveIndex >= 0 ? items[gsearchActiveIndex] : items[0];
+    if(target) runGlobalSearchAction(target.dataset.action, target.dataset.target);
+  } else if(e.key === "Escape"){
+    closeGlobalSearch();
+  }
+});
+document.addEventListener("keydown", (e)=>{
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){
+    e.preventDefault();
+    const modal = document.getElementById("gsearch-modal");
+    if(modal.classList.contains("show")) closeGlobalSearch();
+    else openGlobalSearch();
+  } else if(e.key === "Escape" && document.getElementById("gsearch-modal").classList.contains("show")){
+    closeGlobalSearch();
+  }
 });
 
 document.getElementById("kpi-subnav").addEventListener("click", (e)=>{
@@ -6223,7 +6636,7 @@ function pillVencimiento(dias){
   return `<span class="pill pill-ok">${dias}d</span>`;
 }
 function pillEstatusColab(estatus){
-  const c = COLOR_ESTATUS_COLAB[estatus] || "#8B90A3";
+  const c = COLOR_ESTATUS_COLAB[estatus] || THEME.textMute;
   return `<span class="pill" style="background:${c}22;color:${c}">${estatus}</span>`;
 }
 /* ============================================================
@@ -6266,6 +6679,15 @@ const COLUMN_DEFS = {
     {key:"venc2",        label:"Venc. 2",           width:100},
     {key:"dias2",        label:"Días venc. 2",      width:100},
     {key:"acciones",     label:"Acciones",          width:110}
+  ],
+  candidatos: [
+    {key:"nombre",       label:"Candidato",         width:180},
+    {key:"puesto",       label:"Vacante / Puesto",  width:150},
+    {key:"departamento", label:"Departamento",      width:140},
+    {key:"sucursal",     label:"Sucursal",          width:120},
+    {key:"estatus",      label:"Estatus",           width:120},
+    {key:"contacto",     label:"Contacto",          width:150},
+    {key:"acciones",     label:"Acciones",          width:110}
   ]
 };
 function loadColumnState(tableKey){
@@ -6291,7 +6713,8 @@ function saveColumnState(tableKey, state){
 }
 const COLUMN_STATE = {
   bitacora: loadColumnState("bitacora"),
-  personal: loadColumnState("personal")
+  personal: loadColumnState("personal"),
+  candidatos: loadColumnState("candidatos")
 };
 function getVisibleOrderedColumns(tableKey){
   const defs = COLUMN_DEFS[tableKey];
@@ -6302,18 +6725,24 @@ function getVisibleOrderedColumns(tableKey){
     .filter(k=> !state.hidden.includes(k) && byKey[k])
     .map(k=> ({...byKey[k], width: state.widths[k] || byKey[k].width}));
 }
-function renderTableHeader(tableKey, theadRowId, colgroupId){
+function renderTableHeader(tableKey, theadRowId, colgroupId, rerenderFn){
   const cols = getVisibleOrderedColumns(tableKey);
   const row = document.getElementById(theadRowId);
   const colgroup = document.getElementById(colgroupId);
   if(!row || !colgroup) return;
-  colgroup.innerHTML = cols.map(c=>`<col style="width:${c.width}px;">`).join("");
-  row.innerHTML = cols.map(c=>
-    `<th data-col-key="${c.key}">${escapeHtml(c.label)}<span class="col-resize-handle" data-col-key="${c.key}" title="Arrastra para cambiar el ancho"></span></th>`
-  ).join("");
+  colgroup.innerHTML = `<col style="width:38px;">` + cols.map(c=>`<col style="width:${c.width}px;">`).join("");
+  const selAllChecked = TABLE_UX_STATE[tableKey] && TABLE_UX_STATE[tableKey].selected.size > 0 ? "" : "";
+  row.innerHTML = `<th class="sel-col"><input type="checkbox" id="${theadRowId}-selall" title="Seleccionar todo lo visible en esta página"></th>` + cols.map(c=>{
+    const arrow = sortArrowFor(tableKey, c.key);
+    return `<th data-col-key="${c.key}"><span class="th-label" data-sort-key="${c.key}">${escapeHtml(c.label)}${arrow}</span><span class="col-resize-handle" data-col-key="${c.key}" title="Arrastra para cambiar el ancho"></span></th>`;
+  }).join("");
+  row.querySelectorAll(".th-label").forEach(label=>{
+    label.addEventListener("click", ()=> toggleSort(tableKey, label.dataset.sortKey, rerenderFn));
+  });
   row.querySelectorAll(".col-resize-handle").forEach(handle=>{
     handle.addEventListener("mousedown", (ev)=>{
       ev.preventDefault();
+      ev.stopPropagation();
       const key = handle.dataset.colKey;
       const th = handle.closest("th");
       const startX = ev.clientX;
@@ -6323,7 +6752,7 @@ function renderTableHeader(tableKey, theadRowId, colgroupId){
       function onMove(e){
         const newWidth = Math.max(50, startWidth + (e.clientX - startX));
         COLUMN_STATE[tableKey].widths[key] = newWidth;
-        const colEl = colgroup.children[idx];
+        const colEl = colgroup.children[idx + 1]; // +1: la primera <col> es la de selección
         if(colEl) colEl.style.width = newWidth + "px";
       }
       function onUp(){
@@ -6335,6 +6764,17 @@ function renderTableHeader(tableKey, theadRowId, colgroupId){
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup", onUp);
     });
+  });
+}
+function wireSelectAllCheckbox(tableKey, theadRowId, pageIds, rerenderFn){
+  const chk = document.getElementById(`${theadRowId}-selall`);
+  if(!chk) return;
+  const state = TABLE_UX_STATE[tableKey];
+  chk.checked = pageIds.length > 0 && pageIds.every(id=>state.selected.has(id));
+  chk.addEventListener("change", ()=>{
+    if(chk.checked){ pageIds.forEach(id=>state.selected.add(id)); }
+    else { pageIds.forEach(id=>state.selected.delete(id)); }
+    rerenderFn();
   });
 }
 let colcfgCurrentTable = null;
@@ -6407,11 +6847,14 @@ function closeColumnConfig(){
   if(!colcfgCurrentTable) return;
   saveColumnState(colcfgCurrentTable, COLUMN_STATE[colcfgCurrentTable]);
   if(colcfgCurrentTable === "bitacora"){
-    renderTableHeader("bitacora", "bitacora-thead-row", "bitacora-colgroup");
+    renderTableHeader("bitacora", "bitacora-thead-row", "bitacora-colgroup", renderTable);
     renderTable();
   } else if(colcfgCurrentTable === "personal"){
-    renderTableHeader("personal", "personal-thead-row", "personal-colgroup");
+    renderTableHeader("personal", "personal-thead-row", "personal-colgroup", renderEmpleadosTable);
     renderEmpleadosTable();
+  } else if(colcfgCurrentTable === "candidatos"){
+    renderTableHeader("candidatos", "candidatos-thead-row", "candidatos-colgroup", renderCandidatosTable);
+    renderCandidatosTable();
   }
   colcfgCurrentTable = null;
 }
@@ -6425,6 +6868,147 @@ document.getElementById("colcfg-reset").addEventListener("click", ()=>{
 });
 document.getElementById("btn-col-config-bitacora").addEventListener("click", ()=> openColumnConfig("bitacora", "Columnas de la Bitácora general"));
 document.getElementById("btn-col-config-personal").addEventListener("click", ()=> openColumnConfig("personal", "Columnas de Personal"));
+document.getElementById("btn-col-config-candidatos").addEventListener("click", ()=> openColumnConfig("candidatos", "Columnas de Candidatos"));
+
+/* ============================================================
+   ORDENAMIENTO, PAGINACIÓN Y SELECCIÓN MÚLTIPLE DE TABLAS
+   ============================================================ */
+const TABLE_UX_STATE = {
+  bitacora:   { sortKey:null, sortDir:"asc", page:1, pageSize:25, selected:new Set() },
+  personal:   { sortKey:null, sortDir:"asc", page:1, pageSize:25, selected:new Set() },
+  candidatos: { sortKey:null, sortDir:"asc", page:1, pageSize:25, selected:new Set() }
+};
+const SORT_ACCESSORS = {
+  bitacora: {
+    fecha:r=>r.fecha||"", tema:r=>r.tema||"", tipo:r=>r.tipo||"", area:r=>r.area||"",
+    macro:r=>r.macro||"", responsable:r=>r.responsable||"", solicitante:r=>r.solicitante||"",
+    departamento:r=>r.departamento||"", sucursal:r=>r.sucursal||"", estado:r=>r.estado||"",
+    prioridad:r=>r.prioridad||"", riesgo:r=>r.riesgo||"", nivel:r=>r.nivelRiesgo||"",
+    dias:r=>{ const d=calcDias(r); return typeof d === "number" ? d : -Infinity; },
+    costo:r=>(r.costoFinal!=null && r.costoFinal!=="")?Number(r.costoFinal):-Infinity,
+    evidencia:r=>r.evidenciaCount||0
+  },
+  personal: {
+    nombre:r=>r.nombre||"", puesto:r=>r.puesto||"", departamento:r=>r.departamento||"",
+    sueldo:r=>Number(r.sueldoDiario)||0, genero:r=>r.genero||"", ingreso:r=>r.fechaIngreso||"",
+    estatus:r=>r.estatus||"", contrato:r=>r.estadoContrato||"",
+    venc1:r=>r.fechaVencimiento1||"", dias1:r=>{const d=daysUntil(r.fechaVencimiento1); return d==null?Infinity:d;},
+    venc2:r=>r.fechaVencimiento2||"", dias2:r=>{const d=daysUntil(r.fechaVencimiento2); return d==null?Infinity:d;}
+  },
+  candidatos: {
+    nombre:r=>r.nombre||"", puesto:r=>r.puesto||"", departamento:r=>r.departamento||"",
+    sucursal:r=>r.sucursal||"", estatus:r=>r.estatus||"", contacto:r=>(r.telefono||r.email||"")
+  }
+};
+function sortRows(tableKey, rows){
+  const state = TABLE_UX_STATE[tableKey];
+  if(!state.sortKey) return rows;
+  const accessor = (SORT_ACCESSORS[tableKey]||{})[state.sortKey];
+  if(!accessor) return rows;
+  const dir = state.sortDir === "desc" ? -1 : 1;
+  return rows.slice().sort((a,b)=>{
+    const va = accessor(a), vb = accessor(b);
+    if(va < vb) return -1*dir;
+    if(va > vb) return 1*dir;
+    return 0;
+  });
+}
+function paginateRows(tableKey, rows){
+  const state = TABLE_UX_STATE[tableKey];
+  const total = rows.length;
+  const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+  if(state.page > totalPages) state.page = totalPages;
+  if(state.page < 1) state.page = 1;
+  const start = (state.page - 1) * state.pageSize;
+  return { pageRows: rows.slice(start, start + state.pageSize), total, totalPages, start };
+}
+function toggleSort(tableKey, key, rerenderFn){
+  const state = TABLE_UX_STATE[tableKey];
+  if(state.sortKey === key){
+    state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+  } else {
+    state.sortKey = key;
+    state.sortDir = "asc";
+  }
+  state.page = 1;
+  rerenderFn();
+}
+function sortArrowFor(tableKey, key){
+  const state = TABLE_UX_STATE[tableKey];
+  if(state.sortKey !== key) return "";
+  return state.sortDir === "asc" ? " ▲" : " ▼";
+}
+function renderPaginationBar(tableKey, containerId, meta, rerenderFn){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const state = TABLE_UX_STATE[tableKey];
+  if(meta.total === 0){ el.innerHTML = ""; return; }
+  const from = meta.start + 1;
+  const to = Math.min(meta.start + state.pageSize, meta.total);
+  el.innerHTML = `
+    <span class="pg-info">Mostrando ${from}–${to} de ${meta.total}</span>
+    <div class="pg-controls">
+      <select class="pg-size-select" id="${containerId}-size">
+        <option value="10">10 / pág.</option>
+        <option value="25">25 / pág.</option>
+        <option value="50">50 / pág.</option>
+        <option value="100">100 / pág.</option>
+      </select>
+      <button type="button" class="pg-btn" id="${containerId}-prev" ${state.page<=1?"disabled":""}>‹ Anterior</button>
+      <span class="pg-page">Página ${state.page} de ${meta.totalPages}</span>
+      <button type="button" class="pg-btn" id="${containerId}-next" ${state.page>=meta.totalPages?"disabled":""}>Siguiente ›</button>
+    </div>`;
+  document.getElementById(containerId+"-size").value = String(state.pageSize);
+  document.getElementById(containerId+"-size").addEventListener("change", (e)=>{
+    state.pageSize = parseInt(e.target.value,10) || 25;
+    state.page = 1;
+    rerenderFn();
+  });
+  document.getElementById(containerId+"-prev").addEventListener("click", ()=>{ state.page--; rerenderFn(); });
+  document.getElementById(containerId+"-next").addEventListener("click", ()=>{ state.page++; rerenderFn(); });
+}
+function renderBulkBar(tableKey, containerId, opts){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const state = TABLE_UX_STATE[tableKey];
+  if(state.selected.size === 0){ el.style.display = "none"; el.innerHTML=""; return; }
+  el.style.display = "flex";
+  el.innerHTML = `
+    <span class="bulk-count">${state.selected.size} seleccionado${state.selected.size===1?"":"s"}</span>
+    <button type="button" class="btn btn-ghost btn-sm" id="${containerId}-export">⬇ Exportar CSV</button>
+    <button type="button" class="btn btn-ghost btn-sm danger-text" id="${containerId}-delete">🗑 Eliminar seleccionados</button>
+    <button type="button" class="btn btn-ghost btn-sm" id="${containerId}-clear">Cancelar selección</button>`;
+  document.getElementById(containerId+"-clear").addEventListener("click", ()=>{
+    state.selected.clear();
+    opts.rerender();
+  });
+  document.getElementById(containerId+"-export").addEventListener("click", ()=> opts.onExport(Array.from(state.selected)));
+  document.getElementById(containerId+"-delete").addEventListener("click", ()=>{
+    showConfirm(`¿Eliminar ${state.selected.size} registro(s) seleccionado(s)? Esta acción no se puede deshacer.`, ()=>{
+      opts.onDelete(Array.from(state.selected));
+      state.selected.clear();
+      opts.rerender();
+    });
+  });
+}
+function renderFilterChips(containerId, chips, onClear){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const active = chips.filter(c=>c.value);
+  if(active.length === 0){ el.innerHTML = ""; el.style.display="none"; return; }
+  el.style.display = "flex";
+  el.innerHTML = active.map(c=>
+    `<span class="filter-chip">${escapeHtml(c.label)}: ${escapeHtml(c.value)}<button type="button" data-key="${c.key}">✕</button></span>`
+  ).join("");
+  el.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click", ()=> onClear(btn.dataset.key));
+  });
+}
+function exportRowsToCsv(filename, headers, rows, rowMapper){
+  const csvRows = rows.map(rowMapper);
+  downloadCsv(buildCsv(headers, csvRows), filename);
+}
+
 
 function renderEmpleadosTable(){
   const empty = document.getElementById("emp-empty");
@@ -6438,17 +7022,38 @@ function renderEmpleadosTable(){
   empty.style.display = "none";
   content.style.display = "block";
 
-  renderTableHeader("personal", "personal-thead-row", "personal-colgroup");
-  const filtered = getFilteredEmpleados();
-  document.getElementById("emp-table-count").textContent = `${filtered.length} de ${EMPLEADOS.length} registros`;
+  renderTableHeader("personal", "personal-thead-row", "personal-colgroup", renderEmpleadosTable);
+  renderFilterChips("personal-filter-chips", [
+    {key:"emp-filter-depto",    label:"Departamento", value: document.getElementById("emp-filter-depto").value},
+    {key:"emp-filter-estatus",  label:"Estatus",      value: document.getElementById("emp-filter-estatus").value}
+  ], (key)=>{
+    document.getElementById(key).value = "";
+    renderEmpleadosTable();
+  });
+
+  const filteredAll = sortRows("personal", getFilteredEmpleados());
+  document.getElementById("emp-table-count").textContent = `${filteredAll.length} de ${EMPLEADOS.length} registros`;
   const body = document.getElementById("emp-table-body");
   const cols = getVisibleOrderedColumns("personal");
-  const colCount = cols.length || 1;
-  if(filtered.length === 0){
+  const colCount = cols.length + 1;
+  const state = TABLE_UX_STATE.personal;
+
+  const bulkOpts = {
+    rerender: renderEmpleadosTable,
+    onExport: (ids)=> exportSelectedEmpleados(ids),
+    onDelete: (ids)=> bulkDeleteEmpleados(ids)
+  };
+
+  if(filteredAll.length === 0){
     body.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;color:var(--text-mute);padding:30px;">No hay colaboradores que coincidan con los filtros.</td></tr>`;
+    document.getElementById("personal-pg-bar").innerHTML = "";
+    renderBulkBar("personal", "personal-bulk-bar", bulkOpts);
     return;
   }
-  body.innerHTML = filtered.map(e=>{
+
+  const { pageRows, ...meta } = paginateRows("personal", filteredAll);
+
+  body.innerHTML = pageRows.map(e=>{
     const dias1 = daysUntil(e.fechaVencimiento1);
     const dias2 = daysUntil(e.fechaVencimiento2);
     const cellByKey = {
@@ -6472,8 +7077,41 @@ function renderEmpleadosTable(){
         </div>
       </td>`
     };
-    return `<tr>${cols.map(c=>cellByKey[c.key] || "<td>—</td>").join("")}</tr>`;
+    const checked = state.selected.has(e.id) ? "checked" : "";
+    const selTd = `<td class="sel-col"><input type="checkbox" class="row-sel-chk" data-id="${e.id}" ${checked}></td>`;
+    return `<tr>${selTd}${cols.map(c=>cellByKey[c.key] || "<td>—</td>").join("")}</tr>`;
   }).join("");
+
+  body.querySelectorAll(".row-sel-chk").forEach(chk=>{
+    chk.addEventListener("change", ()=>{
+      if(chk.checked) state.selected.add(chk.dataset.id);
+      else state.selected.delete(chk.dataset.id);
+      renderBulkBar("personal", "personal-bulk-bar", bulkOpts);
+      const selAll = document.getElementById("personal-thead-row-selall");
+      if(selAll) selAll.checked = pageRows.every(e=>state.selected.has(e.id));
+    });
+  });
+  wireSelectAllCheckbox("personal", "personal-thead-row", pageRows.map(e=>e.id), renderEmpleadosTable);
+  renderPaginationBar("personal", "personal-pg-bar", meta, renderEmpleadosTable);
+  renderBulkBar("personal", "personal-bulk-bar", bulkOpts);
+}
+async function bulkDeleteEmpleados(ids){
+  EMPLEADOS = EMPLEADOS.filter(e=>!ids.includes(e.id));
+  await saveEmpleados();
+  showToast(`${ids.length} colaborador(es) eliminado(s)`);
+  renderAll();
+}
+function exportSelectedEmpleados(ids){
+  const rows = EMPLEADOS.filter(e=>ids.includes(e.id));
+  if(rows.length === 0) return;
+  const headers = ["Nombre","Puesto","Departamento","Sueldo diario","Género","Fecha ingreso","Estatus","Contrato","Venc. 1","Venc. 2"];
+  exportRowsToCsv(`personal-seleccion-${todayISO()}.csv`, headers, rows, e=>({
+    "Nombre": e.nombre, "Puesto": e.puesto || "", "Departamento": e.departamento,
+    "Sueldo diario": e.sueldoDiario, "Género": e.genero, "Fecha ingreso": e.fechaIngreso,
+    "Estatus": e.estatus, "Contrato": e.estadoContrato,
+    "Venc. 1": e.fechaVencimiento1 || "", "Venc. 2": e.fechaVencimiento2 || ""
+  }));
+  showToast(`${rows.length} colaborador(es) exportado(s) a CSV`);
 }
 document.getElementById("emp-filter-depto").addEventListener("change", renderEmpleadosTable);
 document.getElementById("emp-filter-estatus").addEventListener("change", renderEmpleadosTable);
@@ -6553,8 +7191,8 @@ function openEmployeeList(list, title, sub){
    ============================================================ */
 const ESTADOS_CANDIDATO = ["Postulado","Filtro Inicial","Entrevista RH","Evaluación Técnica","Oferta Económica","Contratado","Descartado"];
 const COLOR_ESTADO_CANDIDATO = {
-  "Postulado":"#8B90A3","Filtro Inicial":"#4F46E5","Entrevista RH":"#2E93A8",
-  "Evaluación Técnica":"#2E93A8","Oferta Económica":"#F59E0B","Contratado":"#10B981","Descartado":"#EF4444"
+  "Postulado":THEME.textMute,"Filtro Inicial":THEME.blue,"Entrevista RH":THEME.cyan,
+  "Evaluación Técnica":THEME.cyan,"Oferta Económica":THEME.amber,"Contratado":THEME.teal,"Descartado":THEME.red
 };
 
 let CANDIDATOS = [];
@@ -6715,7 +7353,7 @@ function transferirCandidatoAEmpleado(id){
 }
 
 function pillEstadoCandidato(estatus){
-  const c = COLOR_ESTADO_CANDIDATO[estatus] || "#8B90A3";
+  const c = COLOR_ESTADO_CANDIDATO[estatus] || THEME.textMute;
   return `<span class="pill" style="background:${c}22;color:${c}">${estatus}</span>`;
 }
 function getFilteredCandidatos(){
@@ -6739,34 +7377,92 @@ function renderCandidatosTable(){
   empty.style.display = "none";
   content.style.display = "block";
 
-  const filtered = getFilteredCandidatos();
-  document.getElementById("cand-table-count").textContent = `${filtered.length} de ${CANDIDATOS.length} registros`;
+  renderTableHeader("candidatos", "candidatos-thead-row", "candidatos-colgroup", renderCandidatosTable);
+  renderFilterChips("cand-filter-chips", [
+    {key:"cand-filter-sucursal", label:"Sucursal", value: document.getElementById("cand-filter-sucursal").value},
+    {key:"cand-filter-estatus",  label:"Estatus",  value: document.getElementById("cand-filter-estatus").value}
+  ], (key)=>{
+    document.getElementById(key).value = "";
+    renderCandidatosTable();
+  });
+
+  const filteredAll = sortRows("candidatos", getFilteredCandidatos());
+  document.getElementById("cand-table-count").textContent = `${filteredAll.length} de ${CANDIDATOS.length} registros`;
   const body = document.getElementById("cand-table-body");
-  if(filtered.length === 0){
-    body.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-mute);padding:30px;">No hay candidatos que coincidan con los filtros.</td></tr>`;
+  const cols = getVisibleOrderedColumns("candidatos");
+  const colCount = cols.length + 1;
+  const state = TABLE_UX_STATE.candidatos;
+
+  const bulkOpts = {
+    rerender: renderCandidatosTable,
+    onExport: (ids)=> exportSelectedCandidatos(ids),
+    onDelete: (ids)=> bulkDeleteCandidatos(ids)
+  };
+
+  if(filteredAll.length === 0){
+    body.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;color:var(--text-mute);padding:30px;">No hay candidatos que coincidan con los filtros.</td></tr>`;
+    document.getElementById("cand-pg-bar").innerHTML = "";
+    renderBulkBar("candidatos", "cand-bulk-bar", bulkOpts);
     return;
   }
-  body.innerHTML = filtered.map(c=>{
+
+  const { pageRows, ...meta } = paginateRows("candidatos", filteredAll);
+
+  body.innerHTML = pageRows.map(c=>{
     const contacto = c.telefono || c.email || "Sin datos";
     const transferBtn = c.estatus === "Contratado"
       ? `<button class="icon-btn" title="Transferir a Personal" onclick="transferirCandidatoAEmpleado('${c.id}')">👥</button>`
       : "";
-    return `<tr>
-      <td class="wrap"><b>${escapeHtml(c.nombre)}</b></td>
-      <td>${escapeHtml(c.puesto)}</td>
-      <td>${escapeHtml(c.departamento)}</td>
-      <td>${escapeHtml(c.sucursal)}</td>
-      <td>${pillEstadoCandidato(c.estatus)}</td>
-      <td>${escapeHtml(contacto)}</td>
-      <td>
+    const cellByKey = {
+      nombre: `<td class="wrap"><b>${escapeHtml(c.nombre)}</b></td>`,
+      puesto: `<td>${escapeHtml(c.puesto)}</td>`,
+      departamento: `<td>${escapeHtml(c.departamento)}</td>`,
+      sucursal: `<td>${escapeHtml(c.sucursal)}</td>`,
+      estatus: `<td>${pillEstadoCandidato(c.estatus)}</td>`,
+      contacto: `<td>${escapeHtml(contacto)}</td>`,
+      acciones: `<td>
         <div class="tbl-actions">
           ${transferBtn}
           <button class="icon-btn" title="Editar" onclick="editCandidato('${c.id}')">✎</button>
           <button class="icon-btn danger" title="Eliminar" onclick="deleteCandidato('${c.id}')">✕</button>
         </div>
-      </td>
-    </tr>`;
+      </td>`
+    };
+    const checked = state.selected.has(c.id) ? "checked" : "";
+    const selTd = `<td class="sel-col"><input type="checkbox" class="row-sel-chk" data-id="${c.id}" ${checked}></td>`;
+    return `<tr>${selTd}${cols.map(k=>cellByKey[k.key] || "<td>—</td>").join("")}</tr>`;
   }).join("");
+
+  body.querySelectorAll(".row-sel-chk").forEach(chk=>{
+    chk.addEventListener("change", ()=>{
+      if(chk.checked) state.selected.add(chk.dataset.id);
+      else state.selected.delete(chk.dataset.id);
+      renderBulkBar("candidatos", "cand-bulk-bar", bulkOpts);
+      const selAll = document.getElementById("candidatos-thead-row-selall");
+      if(selAll) selAll.checked = pageRows.every(c=>state.selected.has(c.id));
+    });
+  });
+  wireSelectAllCheckbox("candidatos", "candidatos-thead-row", pageRows.map(c=>c.id), renderCandidatosTable);
+  renderPaginationBar("candidatos", "cand-pg-bar", meta, renderCandidatosTable);
+  renderBulkBar("candidatos", "cand-bulk-bar", bulkOpts);
+}
+async function bulkDeleteCandidatos(ids){
+  CANDIDATOS = CANDIDATOS.filter(c=>!ids.includes(c.id));
+  await saveCandidatos();
+  showToast(`${ids.length} candidato(s) eliminado(s)`);
+  renderCandidatosTable();
+  safeRender("renderCandidatosDashboard", renderCandidatosDashboard);
+  updateStorageUsage();
+}
+function exportSelectedCandidatos(ids){
+  const rows = CANDIDATOS.filter(c=>ids.includes(c.id));
+  if(rows.length === 0) return;
+  const headers = ["Nombre","Puesto","Departamento","Sucursal","Estatus","Teléfono","Email"];
+  exportRowsToCsv(`candidatos-seleccion-${todayISO()}.csv`, headers, rows, c=>({
+    "Nombre": c.nombre, "Puesto": c.puesto, "Departamento": c.departamento, "Sucursal": c.sucursal,
+    "Estatus": c.estatus, "Teléfono": c.telefono || "", "Email": c.email || ""
+  }));
+  showToast(`${rows.length} candidato(s) exportado(s) a CSV`);
 }
 document.getElementById("cand-filter-sucursal").addEventListener("change", renderCandidatosTable);
 document.getElementById("cand-filter-estatus").addEventListener("change", renderCandidatosTable);
@@ -7511,7 +8207,7 @@ function renderKanbanKpis(records){
 }
 function kanbanCardHtml(r){
   const overdue = isOverdue(r);
-  const prioColor = COLOR_PRIORIDAD[r.prioridad] || "#8B90A3";
+  const prioColor = COLOR_PRIORIDAD[r.prioridad] || THEME.textMute;
   const avance = kbAvanceEstimado(r.estado);
   const pausado = r.estado === "Detenido" ? '<span class="kanban-badge-paused">⏸ Detenido</span>' : "";
   return `<div class="kanban-card${overdue ? " overdue" : ""}" style="border-left-color:${prioColor};" draggable="true"
@@ -7647,7 +8343,7 @@ function renderRecent(){
     return;
   }
   wrap.innerHTML = items.map(r=>{
-    const color = COLOR_PRIORIDAD[r.prioridad] || "#8B90A3";
+    const color = COLOR_PRIORIDAD[r.prioridad] || THEME.textMute;
     return `<div class="recent-item">
       <div class="recent-accent" style="background:${color}"></div>
       <div class="recent-main">
@@ -7701,6 +8397,8 @@ function renderDashboard(){
   safeRender("renderTalentoDashboard", renderTalentoDashboard);
   safeRender("renderCandidatosDashboard", renderCandidatosDashboard);
   safeRender("renderTable", renderTable);
+  safeRender("renderPinnedKpiBar", renderPinnedKpiBar);
+  setTimeout(attachChartExportButtons, 50);
 }
 
 function renderCandidatosDashboard(){
@@ -7720,7 +8418,7 @@ function renderCandidatosDashboard(){
   CANDIDATOS.forEach(c => { counts[c.estatus] = (counts[c.estatus] || 0) + 1; });
   const labels = ESTADOS_CANDIDATO;
   const data = labels.map(l => counts[l]);
-  const colors = labels.map(l => COLOR_ESTADO_CANDIDATO[l] || "#8B90A3");
+  const colors = labels.map(l => COLOR_ESTADO_CANDIDATO[l] || THEME.textMute);
 
   const ctx = document.getElementById("chart-candidatos-funnel");
   if(charts.candidatosFunnel) charts.candidatosFunnel.destroy();
@@ -7752,16 +8450,43 @@ function renderTalentoDashboard(){
   DEPARTAMENTOS.forEach(d=>counts[d]=0);
   activos.forEach(e=>{ counts[e.departamento] = (counts[e.departamento]||0) + 1; });
   const labels = DEPARTAMENTOS.filter(d=>counts[d]>0).sort((a,b)=>counts[b]-counts[a]);
-  renderSimpleHBar("chart-personal-depto", labels, labels.map(l=>counts[l]), "#7A4FB5");
+  renderSimpleHBar("chart-personal-depto", labels, labels.map(l=>counts[l]), THEME.purple);
 }
 
+/* ============================================================
+   RANGO DE FECHAS PERSONALIZABLE (vista Dashboard)
+   ------------------------------------------------------------
+   Filtra por r.fecha los KPIs y las 4 gráficas principales del
+   Dashboard. Si no hay rango seleccionado, se usa todo el histórico
+   (comportamiento original). No afecta a la vista KPIs (Operación/
+   Productividad/Estratégico/Análisis/Talento), que conserva su
+   propia lógica de periodos.
+   ============================================================ */
+const DASH_RANGE_KEY = "dash-date-range-v1";
+function getDashboardDateRange(){
+  try{ return JSON.parse(localStorage.getItem(DASH_RANGE_KEY) || "null") || {from:"", to:""}; }
+  catch(e){ return {from:"", to:""}; }
+}
+function setDashboardDateRange(from, to){
+  try{ localStorage.setItem(DASH_RANGE_KEY, JSON.stringify({from, to})); }catch(e){}
+}
+function getDashboardScopedRecords(){
+  const {from, to} = getDashboardDateRange();
+  if(!from && !to) return RECORDS;
+  return RECORDS.filter(r=>{
+    if(from && r.fecha < from) return false;
+    if(to && r.fecha > to) return false;
+    return true;
+  });
+}
 function renderKpis(){
-  const activos = RECORDS.filter(r=>ESTADOS_ACTIVOS.includes(r.estado));
+  const scoped = getDashboardScopedRecords();
+  const activos = scoped.filter(r=>ESTADOS_ACTIVOS.includes(r.estado));
   const criticos = activos.filter(r=>r.prioridad === "Crítica");
   const totalDias = activos.reduce((sum,r)=>sum + calcDias(r), 0);
   const promedio = activos.length ? Math.round(totalDias/activos.length) : 0;
 
-  const cerrados = RECORDS.filter(r=>r.estado === "Cerrado");
+  const cerrados = scoped.filter(r=>r.estado === "Cerrado");
   const costoAcumulado = cerrados.reduce((sum,r)=> sum + (Number(r.costoFinal) || 0), 0);
 
   document.getElementById("kpi-activos").textContent = activos.length;
@@ -7790,9 +8515,10 @@ function renderKpis(){
 }
 
 function renderChartEstado(){
+  const scoped = getDashboardScopedRecords();
   const counts = {};
   ESTADOS.forEach(e=>counts[e]=0);
-  RECORDS.forEach(r=>counts[r.estado] = (counts[r.estado]||0)+1);
+  scoped.forEach(r=>counts[r.estado] = (counts[r.estado]||0)+1);
   const labels = ESTADOS.filter(e=>counts[e]>0);
   const data = labels.map(l=>counts[l]);
   const colors = labels.map(l=>COLOR_ESTADO[l]);
@@ -7805,7 +8531,7 @@ function renderChartEstado(){
     options:{
       responsive:true, maintainAspectRatio:false, cutout:"66%",
       plugins:{ legend:{display:false}, tooltip:{ callbacks:{
-        label:(c)=> ` ${c.label}: ${c.raw} (${Math.round(c.raw/RECORDS.length*100)}%)`
+        label:(c)=> ` ${c.label}: ${c.raw} (${Math.round(c.raw/scoped.length*100)}%)`
       }}}
     }
   });
@@ -7816,11 +8542,12 @@ function renderChartEstado(){
 }
 
 function renderChartVolumen(){
+  const scoped = getDashboardScopedRecords();
   let labels, data, colors;
   if(chart2Mode === "tipo"){
     const counts = {};
     TIPOS_ACTIVIDAD.forEach(t=>counts[t]=0);
-    RECORDS.forEach(r=>counts[r.tipo]=(counts[r.tipo]||0)+1);
+    scoped.forEach(r=>counts[r.tipo]=(counts[r.tipo]||0)+1);
     labels = TIPOS_ACTIVIDAD.filter(t=>counts[t]>0).sort((a,b)=>counts[b]-counts[a]);
     data = labels.map(l=>counts[l]);
     colors = labels.map(()=>"#4F46E5");
@@ -7828,7 +8555,7 @@ function renderChartVolumen(){
   } else {
     const counts = {};
     AREAS.forEach(a=>counts[a]=0);
-    RECORDS.forEach(r=>counts[r.area]=(counts[r.area]||0)+1);
+    scoped.forEach(r=>counts[r.area]=(counts[r.area]||0)+1);
     labels = AREAS.filter(a=>counts[a]>0).sort((a,b)=>counts[b]-counts[a]);
     data = labels.map(l=>counts[l]);
     colors = labels.map(()=>"#F59E0B");
@@ -7861,12 +8588,13 @@ document.getElementById("seg-chart2").addEventListener("click",(e)=>{
 });
 
 function renderChartRiesgo(){
+  const scoped = getDashboardScopedRecords();
   const bySucursal = {};
   SUCURSALES.forEach(s=>{
     bySucursal[s] = {};
     RIESGOS.forEach(r=>bySucursal[s][r]=0);
   });
-  RECORDS.forEach(r=>{
+  scoped.forEach(r=>{
     if(!bySucursal[r.sucursal]) bySucursal[r.sucursal] = {};
     RIESGOS.forEach(k=>{ if(bySucursal[r.sucursal][k]==null) bySucursal[r.sucursal][k]=0; });
     bySucursal[r.sucursal][r.riesgo] = (bySucursal[r.sucursal][r.riesgo]||0) + 1;
@@ -7901,10 +8629,11 @@ function renderChartRiesgo(){
 }
 
 function renderChartCosto(){
+  const scoped = getDashboardScopedRecords();
   const totals = {};
   COSTO_CATEGORIAS.forEach(c=>totals[c]=0);
   let granTotal = 0;
-  RECORDS.forEach(r=>{
+  scoped.forEach(r=>{
     if(r.estado === "Cerrado" && r.costoFinal){
       const cat = r.costoCategoria || "Otro";
       totals[cat] = (totals[cat]||0) + Number(r.costoFinal);
@@ -7913,7 +8642,7 @@ function renderChartCosto(){
   });
   const labels = COSTO_CATEGORIAS.filter(c=>totals[c] > 0).sort((a,b)=>totals[b]-totals[a]);
   const data = labels.map(l=>totals[l]);
-  const colors = labels.map(l=>COLOR_COSTO_CAT[l] || "#8B90A3");
+  const colors = labels.map(l=>COLOR_COSTO_CAT[l] || THEME.textMute);
 
   document.getElementById("chart-cost-total").textContent = "Total: " + money(granTotal);
 
@@ -7948,6 +8677,137 @@ function renderChartCosto(){
   });
 }
 
+/* ---- UI del selector de rango de fechas del Dashboard ---- */
+function applyDashRangePreset(preset){
+  const fromEl = document.getElementById("dash-range-from");
+  const toEl = document.getElementById("dash-range-to");
+  const showCustom = preset === "custom";
+  fromEl.style.display = showCustom ? "inline-block" : "none";
+  toEl.style.display = showCustom ? "inline-block" : "none";
+  document.getElementById("dash-range-sep").style.display = showCustom ? "inline" : "none";
+  document.getElementById("dash-range-clear").style.display = preset === "all" ? "none" : "inline-block";
+
+  if(preset === "all"){
+    setDashboardDateRange("", "");
+  } else if(preset === "custom"){
+    const {from, to} = getDashboardDateRange();
+    fromEl.value = from || "";
+    toEl.value = to || "";
+    return; // se espera a que el usuario capture las fechas
+  } else if(preset === "ytd"){
+    setDashboardDateRange(todayISO().slice(0,4) + "-01-01", todayISO());
+  } else {
+    const days = parseInt(preset, 10);
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    setDashboardDateRange(d.toISOString().slice(0,10), todayISO());
+  }
+  renderDashboard();
+}
+document.getElementById("dash-range-preset").addEventListener("change", (e)=> applyDashRangePreset(e.target.value));
+document.getElementById("dash-range-from").addEventListener("change", ()=>{
+  setDashboardDateRange(document.getElementById("dash-range-from").value, document.getElementById("dash-range-to").value);
+  renderDashboard();
+});
+document.getElementById("dash-range-to").addEventListener("change", ()=>{
+  setDashboardDateRange(document.getElementById("dash-range-from").value, document.getElementById("dash-range-to").value);
+  renderDashboard();
+});
+document.getElementById("dash-range-clear").addEventListener("click", ()=>{
+  document.getElementById("dash-range-preset").value = "all";
+  applyDashRangePreset("all");
+});
+function initDashRangeUI(){
+  const {from, to} = getDashboardDateRange();
+  if(!from && !to){
+    document.getElementById("dash-range-preset").value = "all";
+  } else {
+    document.getElementById("dash-range-preset").value = "custom";
+    document.getElementById("dash-range-from").value = from || "";
+    document.getElementById("dash-range-to").value = to || "";
+    document.getElementById("dash-range-from").style.display = "inline-block";
+    document.getElementById("dash-range-to").style.display = "inline-block";
+    document.getElementById("dash-range-sep").style.display = "inline";
+    document.getElementById("dash-range-clear").style.display = "inline-block";
+  }
+}
+initDashRangeUI();
+
+/* ---- KPIs fijados (favoritos) ---- */
+const PINNED_KPI_KEY = "pinned-kpis-v1";
+const KPI_DEFS_PIN = {
+  activos:   {label:"Casos activos",       getEl:()=>document.getElementById("kpi-activos")},
+  cerrados:  {label:"Casos cerrados",       getEl:()=>document.getElementById("kpi-cerrados")},
+  criticos:  {label:"Alerta máxima",        getEl:()=>document.getElementById("kpi-criticos")},
+  promedio:  {label:"Prom. días abiertos",  getEl:()=>document.getElementById("kpi-promedio")},
+  costo:     {label:"Costo acumulado",      getEl:()=>document.getElementById("kpi-costo")}
+};
+function getPinnedKpis(){
+  try{ return JSON.parse(localStorage.getItem(PINNED_KPI_KEY) || "[]"); }catch(e){ return []; }
+}
+function setPinnedKpis(arr){
+  try{ localStorage.setItem(PINNED_KPI_KEY, JSON.stringify(arr)); }catch(e){}
+}
+function toggleKpiPin(kpiId){
+  let pinned = getPinnedKpis();
+  if(pinned.includes(kpiId)){
+    pinned = pinned.filter(k=>k!==kpiId);
+  } else {
+    if(pinned.length >= 4){
+      showToast("Máximo 4 KPIs fijados. Quita alguno para fijar otro.");
+      return;
+    }
+    pinned.push(kpiId);
+  }
+  setPinnedKpis(pinned);
+  renderPinnedKpiBar();
+}
+function renderPinnedKpiBar(){
+  const pinned = getPinnedKpis();
+  const bar = document.getElementById("pinned-kpi-bar");
+  if(!bar) return;
+  document.querySelectorAll(".kpi-pin-btn").forEach(btn=>{
+    btn.classList.toggle("pinned", pinned.includes(btn.dataset.kpiId));
+  });
+  if(pinned.length === 0){ bar.style.display = "none"; bar.innerHTML = ""; return; }
+  bar.style.display = "flex";
+  bar.innerHTML = pinned.map(id=>{
+    const def = KPI_DEFS_PIN[id];
+    if(!def) return "";
+    const el = def.getEl();
+    const value = el ? el.textContent : "—";
+    return `<div class="pinned-kpi-chip"><span class="pk-label">📌 ${escapeHtml(def.label)}</span><span class="pk-value">${escapeHtml(value)}</span></div>`;
+  }).join("");
+}
+
+/* ---- Exportar cada gráfica individual como imagen (PNG) ---- */
+function attachChartExportButtons(){
+  document.querySelectorAll(".chart-canvas-box").forEach(box=>{
+    const canvas = box.querySelector("canvas");
+    if(!canvas || box.querySelector(".chart-export-btn")) return;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "chart-export-btn";
+    btn.title = "Descargar esta gráfica como imagen";
+    btn.textContent = "⬇";
+    btn.addEventListener("click", (ev)=>{
+      ev.stopPropagation();
+      try{
+        const url = canvas.toDataURL("image/png", 1.0);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `grafica-${canvas.id || "export"}-${todayISO()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }catch(e){
+        showToast("No se pudo exportar esta gráfica");
+      }
+    });
+    box.appendChild(btn);
+  });
+}
+
 /* ============================================================
    RENDER: TABLA
    ============================================================ */
@@ -7973,31 +8833,53 @@ function getFilteredRecords(){
 }
 
 function pillEstado(estado){
-  const c = COLOR_ESTADO[estado] || "#8B90A3";
+  const c = COLOR_ESTADO[estado] || THEME.textMute;
   return `<span class="pill" style="background:${c}22;color:${c}">${estado}</span>`;
 }
 function pillPrioridad(p){
-  const c = COLOR_PRIORIDAD[p] || "#8B90A3";
+  const c = COLOR_PRIORIDAD[p] || THEME.textMute;
   const pulse = p === "Crítica" ? '<span class="pulse" style="width:6px;height:6px;"></span>' : "";
   return `<span class="pill" style="background:${c}22;color:${c}">${pulse}${p}</span>`;
 }
 function pillNivel(n){
-  const c = COLOR_NIVEL[n] || "#8B90A3";
+  const c = COLOR_NIVEL[n] || THEME.textMute;
   return `<span class="pill" style="background:${c}22;color:${c}">${n}</span>`;
 }
 
 function renderTable(){
-  renderTableHeader("bitacora", "bitacora-thead-row", "bitacora-colgroup");
-  const filtered = getFilteredRecords();
-  document.getElementById("table-count").textContent = `${filtered.length} de ${RECORDS.length} registros`;
+  renderTableHeader("bitacora", "bitacora-thead-row", "bitacora-colgroup", renderTable);
+
+  renderFilterChips("bitacora-filter-chips", [
+    {key:"filter-sucursal", label:"Sucursal", value: document.getElementById("filter-sucursal").value},
+    {key:"filter-estado",   label:"Estado",   value: document.getElementById("filter-estado").value},
+    {key:"filter-tipo",     label:"Tipo",     value: document.getElementById("filter-tipo").value},
+    {key:"f-search",        label:"Búsqueda", value: document.getElementById("f-search").value.trim()}
+  ], (key)=>{
+    document.getElementById(key).value = "";
+    renderTable();
+  });
+
+  const filteredAll = sortRows("bitacora", getFilteredRecords());
+  document.getElementById("table-count").textContent = `${filteredAll.length} de ${RECORDS.length} registros`;
   const body = document.getElementById("table-body");
   const cols = getVisibleOrderedColumns("bitacora");
-  const colCount = cols.length || 1;
-  if(filtered.length === 0){
+  const colCount = cols.length + 1;
+  const state = TABLE_UX_STATE.bitacora;
+
+  if(filteredAll.length === 0){
     body.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;color:var(--text-mute);padding:30px;">No hay registros que coincidan con los filtros.</td></tr>`;
+    document.getElementById("bitacora-pg-bar").innerHTML = "";
+    renderBulkBar("bitacora", "bitacora-bulk-bar", {
+      rerender: renderTable,
+      onExport: (ids)=> exportSelectedRecords(ids),
+      onDelete: (ids)=> bulkDeleteRecords(ids)
+    });
     return;
   }
-  body.innerHTML = filtered.map(r=>{
+
+  const { pageRows, ...meta } = paginateRows("bitacora", filteredAll);
+
+  body.innerHTML = pageRows.map(r=>{
     const dias = calcDias(r);
     const costoTxt = (r.costoFinal != null && r.costoFinal !== "") ? money(r.costoFinal) : "—";
     const evTxt = r.evidenciaCount ? `📎 ${r.evidenciaCount}` : "—";
@@ -8045,8 +8927,49 @@ function renderTable(){
       </td>`
     };
 
-    return `<tr class="${rowClass}">${cols.map(c=>cellByKey[c.key] || "<td>—</td>").join("")}</tr>`;
+    const checked = state.selected.has(r.id) ? "checked" : "";
+    const selTd = `<td class="sel-col"><input type="checkbox" class="row-sel-chk" data-id="${r.id}" ${checked}></td>`;
+    return `<tr class="${rowClass}">${selTd}${cols.map(c=>cellByKey[c.key] || "<td>—</td>").join("")}</tr>`;
   }).join("");
+
+  body.querySelectorAll(".row-sel-chk").forEach(chk=>{
+    chk.addEventListener("change", ()=>{
+      if(chk.checked) state.selected.add(chk.dataset.id);
+      else state.selected.delete(chk.dataset.id);
+      renderBulkBar("bitacora", "bitacora-bulk-bar", {
+        rerender: renderTable,
+        onExport: (ids)=> exportSelectedRecords(ids),
+        onDelete: (ids)=> bulkDeleteRecords(ids)
+      });
+      const selAll = document.getElementById("bitacora-thead-row-selall");
+      if(selAll) selAll.checked = pageRows.every(r=>state.selected.has(r.id));
+    });
+  });
+  wireSelectAllCheckbox("bitacora", "bitacora-thead-row", pageRows.map(r=>r.id), renderTable);
+  renderPaginationBar("bitacora", "bitacora-pg-bar", meta, renderTable);
+  renderBulkBar("bitacora", "bitacora-bulk-bar", {
+    rerender: renderTable,
+    onExport: (ids)=> exportSelectedRecords(ids),
+    onDelete: (ids)=> bulkDeleteRecords(ids)
+  });
+}
+async function bulkDeleteRecords(ids){
+  RECORDS = RECORDS.filter(r=>!ids.includes(r.id));
+  await saveRecords();
+  showToast(`${ids.length} registro(s) eliminado(s)`);
+  renderAll();
+}
+function exportSelectedRecords(ids){
+  const rows = RECORDS.filter(r=>ids.includes(r.id));
+  if(rows.length === 0) return;
+  const headers = ["Fecha","Tema","Tipo","Área","Macroproceso","Responsable","Solicitante","Departamento","Sucursal","Estado","Prioridad","Riesgo","Nivel","Costo final"];
+  exportRowsToCsv(`bitacora-seleccion-${todayISO()}.csv`, headers, rows, r=>({
+    "Fecha": r.fecha, "Tema": r.tema, "Tipo": r.tipo, "Área": r.area, "Macroproceso": r.macro,
+    "Responsable": r.responsable, "Solicitante": r.solicitante, "Departamento": r.departamento,
+    "Sucursal": r.sucursal, "Estado": r.estado, "Prioridad": r.prioridad, "Riesgo": r.riesgo,
+    "Nivel": r.nivelRiesgo, "Costo final": r.costoFinal || ""
+  }));
+  showToast(`${rows.length} registro(s) exportado(s) a CSV`);
 }
 
 /* ============================================================
@@ -8458,7 +9381,7 @@ let _listModalBaseRecords = []; // arreglo original sin filtrar/ordenar, preserv
 let _listModalOriginalSub = "";
 
 function caseListItemHtml(r){
-  const color = COLOR_ESTADO[r.estado] || "#8B90A3";
+  const color = COLOR_ESTADO[r.estado] || THEME.textMute;
   const costoTxt = (r.costoFinal != null && r.costoFinal !== "") ? " · " + money(r.costoFinal) : "";
   return `<div class="recent-item" style="cursor:pointer;" onclick="openDetail('${r.id}')">
         <div class="recent-accent" style="background:${color}"></div>
@@ -8705,7 +9628,7 @@ async function exportToExcel(){
     row++;
     const count = RECORDS.filter(r=>r.estado===estado).length;
     const pct = RECORDS.length ? count / RECORDS.length : 0;
-    const color = COLOR_ESTADO[estado] || "#8B90A3";
+    const color = COLOR_ESTADO[estado] || THEME.textMute;
     rs.getCell(`B${row}`).value = estado;
     rs.getCell(`B${row}`).fill = badgeStyle(color).fill;
     rs.getCell(`B${row}`).font = badgeStyle(color).font;
@@ -8747,7 +9670,7 @@ async function exportToExcel(){
     row++;
     const count = RECORDS.filter(r=>r.prioridad===prio).length;
     const pct = RECORDS.length ? count / RECORDS.length : 0;
-    const color = COLOR_PRIORIDAD[prio] || "#8B90A3";
+    const color = COLOR_PRIORIDAD[prio] || THEME.textMute;
     rs.getCell(`B${row}`).value = prio;
     rs.getCell(`B${row}`).fill = badgeStyle(color).fill;
     rs.getCell(`B${row}`).font = badgeStyle(color).font;
@@ -8896,7 +9819,7 @@ async function exportToExcel(){
           : { vertical:"middle", horizontal:"left", wrapText:false };
 
       if(badgeKeys[c.key]){
-        const color = badgeKeys[c.key][rowValues[c.key]] || "#8B90A3";
+        const color = badgeKeys[c.key][rowValues[c.key]] || THEME.textMute;
         const style = badgeStyle(color);
         cell.fill = style.fill;
         cell.font = style.font;
@@ -9063,7 +9986,7 @@ const PDF_VARIANT_LABELS = {
 };
 function buildFichaHtml(r, variant){
   const dias = calcDias(r);
-  const estadoColor = COLOR_ESTADO[r.estado] || "#8B90A3";
+  const estadoColor = COLOR_ESTADO[r.estado] || THEME.textMute;
   const hasCost = r.costoFinal != null && r.costoFinal !== "" && Number(r.costoFinal) > 0 && r.costoCategoria !== "No aplica";
   const costoTxt = (r.costoFinal != null && r.costoFinal !== "") ? money(r.costoFinal) : "No aplica";
 
@@ -9831,6 +10754,7 @@ function renderKpiSection(name){
   else if(name === "estrategicos") safeRender("renderKpiEstrategicos", renderKpiEstrategicos);
   else if(name === "analiticos") safeRender("renderKpiAnaliticos", renderKpiAnaliticos);
   else if(name === "talento") safeRender("renderKpiTalento", renderKpiTalento);
+  setTimeout(attachChartExportButtons, 50);
 }
 
 /* ---- I. OPERATIVOS ---- */
@@ -9919,13 +10843,13 @@ function renderKpiEstrategicos(){
   const macroCounts = {};
   RECORDS.forEach(r=>{ macroCounts[r.macro] = (macroCounts[r.macro]||0)+1; });
   const macroLabels = Object.keys(macroCounts).sort((a,b)=>macroCounts[b]-macroCounts[a]).slice(0,10);
-  renderSimpleHBar("est-chart-macro", macroLabels, macroLabels.map(l=>macroCounts[l]), "#F59E0B");
+  renderSimpleHBar("est-chart-macro", macroLabels, macroLabels.map(l=>macroCounts[l]), THEME.amber);
 
   const areaCounts = {};
   AREAS.forEach(a=>areaCounts[a]=0);
   RECORDS.forEach(r=>{ areaCounts[r.area]=(areaCounts[r.area]||0)+1; });
   const areaLabels = AREAS.filter(a=>areaCounts[a]>0).sort((a,b)=>areaCounts[b]-areaCounts[a]);
-  renderSimpleHBar("est-chart-area", areaLabels, areaLabels.map(l=>areaCounts[l]), "#7A4FB5");
+  renderSimpleHBar("est-chart-area", areaLabels, areaLabels.map(l=>areaCounts[l]), THEME.purple);
 
   const deptoCounts = {};
   DEPARTAMENTOS.forEach(d=>deptoCounts[d]=0);
@@ -10090,7 +11014,7 @@ function renderHeatmap(){
       const v = matrix[r][e];
       const intensity = v / maxVal;
       const bg = intensity === 0 ? "#EDEEF3" : `rgba(59,91,169,${(0.15 + intensity*0.75).toFixed(2)})`;
-      const textColor = intensity > 0.55 ? "#fff" : "#4A5068";
+      const textColor = intensity > 0.55 ? "#fff" : THEME.textSoft;
       html += `<td><div class="heat-cell" style="background:${bg};color:${textColor};">${v || ""}</div></td>`;
     });
     html += "</tr>";
@@ -10163,7 +11087,7 @@ function renderCostoDistDonut(){
   });
   const labels = COSTO_CATEGORIAS.filter(c=>totals[c]>0);
   const data = labels.map(l=>totals[l]);
-  const colors = labels.map(l=>COLOR_COSTO_CAT[l] || "#8B90A3");
+  const colors = labels.map(l=>COLOR_COSTO_CAT[l] || THEME.textMute);
   const ctx = document.getElementById("an-chart-costo-dist");
   if(charts.costoDist) charts.costoDist.destroy();
   if(labels.length === 0){
@@ -10332,7 +11256,7 @@ function renderMonthCalendar(){
     const visible = dayEvents.slice(0,3);
     visible.forEach(ev=>{
       const chip = document.createElement("div");
-      const color = COLOR_ESTADO[ev.estado] || "#8B90A3";
+      const color = COLOR_ESTADO[ev.estado] || THEME.textMute;
       chip.className = "cal-chip";
       chip.style.background = color + "22";
       chip.style.color = color;
@@ -10387,9 +11311,9 @@ function renderMonthCalendar(){
       if(anios < 1) return;
       const chip = document.createElement("div");
       chip.className = "cal-chip";
-      chip.style.background = "#EDE4FB";
-      chip.style.color = "#6D28D9";
-      chip.style.borderLeftColor = "#6D28D9";
+      chip.style.background = "var(--purple-soft)";
+      chip.style.color = "var(--purple)";
+      chip.style.borderLeftColor = "var(--purple)";
       chip.textContent = `🎉 ${e.nombre} (${anios} año${anios === 1 ? "" : "s"})`;
       chip.title = `Aniversario laboral: ${e.nombre} · ${anios} año${anios === 1 ? "" : "s"} · ${e.departamento || ""}`;
       chip.addEventListener("click", ()=>editEmpleado(e.id));
@@ -10422,7 +11346,7 @@ function renderMonthCalendar(){
     `<span class="legend-item"><span class="legend-dot" style="background:${COLOR_ESTADO[e]}"></span>${e}</span>`
   ).join("") + `<span class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span>⏰ Vencimiento de contrato</span>`
     + `<span class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>🎂 Cumpleaños</span>`
-    + `<span class="legend-item"><span class="legend-dot" style="background:#6D28D9"></span>🎉 Aniversario laboral</span>`
+    + `<span class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span>🎉 Aniversario laboral</span>`
     + `<span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>🔁 Actividad recurrente</span>`;
 }
 document.getElementById("cal-prev").addEventListener("click", ()=>{
@@ -10495,7 +11419,7 @@ function renderGantt(){
 
     const leftPct = ((barStart - monthStart) / 86400000 / daysInMonth) * 100;
     const widthPct = Math.max((((barEnd - barStart) / 86400000) + 1) / daysInMonth * 100, 2.2);
-    const color = COLOR_ESTADO[r.estado] || "#8B90A3";
+    const color = COLOR_ESTADO[r.estado] || THEME.textMute;
     const label = isOngoing ? `${r.fecha} → en curso` : `${r.fecha} → ${r.fechaCierre || r.fecha}`;
 
     let commitMarker = "";
@@ -10566,7 +11490,7 @@ function renderGanttPersonal(){
     const leftPct = ((barStart - monthStart) / 86400000 / daysInMonth) * 100;
     const widthPct = Math.max((((barEnd - barStart) / 86400000) + 1) / daysInMonth * 100, 2.2);
     const dias = daysUntil(efectivo);
-    const color = e.estatus === "Baja" ? "#8B90A3" : (dias < 15 ? "#EF4444" : (dias < 30 ? "#F59E0B" : "#10B981"));
+    const color = e.estatus === "Baja" ? THEME.textMute : (dias < 15 ? THEME.red : (dias < 30 ? THEME.amber : THEME.teal));
     const label = `${e.fechaIngreso} → vence ${efectivo}`;
 
     return `<div class="gantt-row">
@@ -10662,6 +11586,7 @@ async function startApp(){
   renderAll();
   renderConfigView();
   setupRealtimeSync();
+  checkForFormDraft();
 }
 
 /* ============================================================
