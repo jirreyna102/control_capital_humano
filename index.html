@@ -615,6 +615,16 @@ th.sel-col,td.sel-col{width:38px;padding-left:14px !important;}
   font-weight:800;
 }
 
+/* ---- Banner de suscripción (Fase 3 SaaS) ---- */
+.subscription-banner{
+  display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:10px 20px;font-size:13px;font-weight:600;
+}
+.subscription-banner.trial{background:#EFF6FF;color:#1D4ED8;border-bottom:1px solid #BFDBFE;}
+.subscription-banner.expired{background:#FEF2F2;color:#991B1B;border-bottom:1px solid #FECACA;}
+[data-theme="dark"] .subscription-banner.trial{background:rgba(59,130,246,.12);color:#93C5FD;border-bottom-color:rgba(59,130,246,.3);}
+[data-theme="dark"] .subscription-banner.expired{background:rgba(239,68,68,.12);color:#FCA5A5;border-bottom-color:rgba(239,68,68,.3);}
+
 /* ============================================================
    ROLES Y PERMISOS (lectura / captura / admin)
    ------------------------------------------------------------
@@ -2506,6 +2516,7 @@ select:focus,textarea:focus{
   </aside>
 
   <div class="main-content">
+    <div class="subscription-banner" id="subscription-banner" style="display:none;"></div>
     <div class="content-header">
       <div class="topbar-actions">
         <div class="notif-wrap" id="notif-wrap">
@@ -4244,6 +4255,50 @@ async function loadCurrentEmpresaNombre(){
   const el = document.getElementById("sidebar-empresa-nombre");
   if(el) el.textContent = currentEmpresaNombre ? ("🏢 " + currentEmpresaNombre) : "";
 }
+
+/* ============================================================
+   FASE 3 SAAS: ESTADO DE SUSCRIPCIÓN
+   ============================================================ */
+let currentPlanStatus = null;
+let currentPlanDiasRestantes = null;
+let currentPlanTieneAcceso = true;
+
+async function loadSubscriptionStatus(){
+  try{
+    const { data, error } = await supabaseClient.rpc("mi_estado_suscripcion");
+    if(error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    if(!row) return;
+    currentPlanStatus = row.plan_status;
+    currentPlanDiasRestantes = row.dias_restantes;
+    currentPlanTieneAcceso = row.tiene_acceso;
+  }catch(e){
+    console.error("No se pudo leer el estado de la suscripción", e);
+  }
+  renderSubscriptionBanner();
+}
+function renderSubscriptionBanner(){
+  const el = document.getElementById("subscription-banner");
+  if(!el) return;
+  if(currentPlanStatus === "activo" || currentPlanStatus === null){
+    el.style.display = "none";
+    return;
+  }
+  el.style.display = "flex";
+  if(currentPlanStatus === "trial" && currentPlanTieneAcceso){
+    el.className = "subscription-banner trial";
+    el.innerHTML = `<span>🎁 Prueba gratuita: te quedan <b>${currentPlanDiasRestantes}</b> día(s).</span><button type="button" class="btn btn-primary btn-sm" id="btn-subscribe-now">Suscribirse</button>`;
+  } else {
+    el.className = "subscription-banner expired";
+    el.innerHTML = `<span>🔒 Tu prueba gratuita terminó. Puedes seguir viendo tu información, pero para crear o editar necesitas suscribirte.</span><button type="button" class="btn btn-primary btn-sm" id="btn-subscribe-now">Suscribirse</button>`;
+  }
+  const btn = document.getElementById("btn-subscribe-now");
+  if(btn){
+    btn.addEventListener("click", ()=>{
+      alert("El cobro automático todavía no está conectado. Contacta al administrador del sistema para activar tu cuenta mientras tanto.");
+    });
+  }
+}
 function applyRolePermissions(role){
   document.body.classList.remove("role-lectura","role-captura","role-admin");
   document.body.classList.add("role-" + role);
@@ -4286,6 +4341,7 @@ async function initAuthAndApp(){
     } else {
       currentUserRole = role;
       await loadCurrentEmpresaNombre();
+      await loadSubscriptionStatus();
       applyRolePermissions(role);
       showApp();
       startApp();
@@ -4302,6 +4358,7 @@ async function initAuthAndApp(){
       } else {
         currentUserRole = role;
         await loadCurrentEmpresaNombre();
+      await loadSubscriptionStatus();
         applyRolePermissions(role);
         showApp();
         startApp();
