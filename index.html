@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Centro de Control · Capital Humano</title>
+<title>Pulso · Control de Capital Humano</title>
 <script>
   // Aplica el modo oscuro guardado ANTES de pintar la página, para
   // evitar un parpadeo claro→oscuro al recargar con el tema activo.
@@ -2428,6 +2428,7 @@ select:focus,textarea:focus{
 [data-theme="dark"] .theme-toggle-btn .sun{display:none;}
 [data-theme="dark"] .theme-toggle-btn .moon{display:inline;}
 [data-theme="dark"] .sidebar,[data-theme="dark"] .mobile-topbar{background:#0F172A;}
+[data-theme="dark"] .logo-preview-box{background:linear-gradient(135deg,#0F172A,#1E293B);}
 .theme-toggle-btn .moon{display:none;}
 </style>
 </head>
@@ -2436,10 +2437,17 @@ select:focus,textarea:focus{
 <div class="auth-screen" id="auth-screen">
   <div class="auth-box">
     <div class="auth-brand">
-      <div class="brand-mark">CH</div>
+      <div class="brand-mark">
+        <svg viewBox="0 0 52 52" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="26" cy="26" r="22" fill="none" stroke="white" stroke-width="2.2" opacity=".38"/>
+          <circle cx="26" cy="26" r="14" fill="none" stroke="white" stroke-width="2.4" opacity=".72"/>
+          <circle cx="26" cy="26" r="6" fill="white"/>
+          <circle cx="26" cy="26" r="2.6" fill="#10B981"/>
+        </svg>
+      </div>
       <div>
-        <div class="auth-title">Centro de Control · Capital Humano</div>
-        <div class="auth-sub">Inicia sesión para continuar</div>
+        <div class="auth-title">Pulso</div>
+        <div class="auth-sub">Control de Capital Humano en tiempo real</div>
       </div>
     </div>
 
@@ -2470,19 +2478,19 @@ select:focus,textarea:focus{
   <div class="mobile-topbar">
     <button type="button" class="mobile-menu-btn" id="btn-mobile-menu" aria-label="Abrir menú">☰</button>
     <div class="brand">
-      <div class="brand-mark">CH</div>
+      <div class="brand-mark" id="brand-mark-mobile">P</div>
       <div class="brand-text">
-        <div class="t1">Centro de Control</div>
-        <div class="t2">Capital Humano</div>
+        <div class="t1" id="brand-title-mobile">Pulso</div>
+        <div class="t2" id="brand-subtitle-mobile">Control de Capital Humano</div>
       </div>
     </div>
   </div>
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark" id="brand-mark">CH</div>
+      <div class="brand-mark" id="brand-mark">P</div>
       <div class="brand-text">
-        <div class="t1" id="brand-title">Centro de Control · Capital Humano</div>
-        <div class="t2" id="brand-subtitle">Seguimiento de operaciones RH</div>
+        <div class="t1" id="brand-title">Pulso</div>
+        <div class="t2" id="brand-subtitle">Control de Capital Humano en tiempo real</div>
       </div>
     </div>
     <button type="button" class="sidebar-search-btn" id="btn-global-search">
@@ -3791,7 +3799,7 @@ select:focus,textarea:focus{
         <div class="identity-grid">
           <div class="field" style="margin-bottom:0;">
             <label>Logotipo</label>
-            <div class="logo-preview-box" id="cfg-logo-preview">CH</div>
+            <div class="logo-preview-box" id="cfg-logo-preview">P</div>
             <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
               <button class="btn btn-ghost btn-sm" type="button" id="cfg-logo-upload-btn">Subir imagen</button>
               <button class="btn btn-ghost btn-sm" type="button" id="cfg-logo-remove-btn">Quitar</button>
@@ -3802,7 +3810,7 @@ select:focus,textarea:focus{
           <div>
             <div class="field">
               <label for="cfg-brand-titulo">Título del sistema</label>
-              <input type="text" id="cfg-brand-titulo" placeholder="Ej. Centro de Control · Capital Humano" maxlength="60">
+              <input type="text" id="cfg-brand-titulo" placeholder="Ej. Grupo Industrial Ejemplo" maxlength="60">
             </div>
             <div class="field">
               <label for="cfg-brand-subtitulo">Subtítulo</label>
@@ -4506,8 +4514,8 @@ const STORAGE_QUOTA_MB = 5;
 const DEFAULT_SETTINGS = {
   branding:{
     logoDataUrl: null,
-    titulo: "Centro de Control · Capital Humano",
-    subtitulo: "Seguimiento de operaciones RH"
+    titulo: "Pulso",
+    subtitulo: "Control de Capital Humano en tiempo real"
   },
   catalogs:{
     departamentos: DEFAULT_DEPARTAMENTOS,
@@ -4827,25 +4835,37 @@ function normalizeSettings(raw){
     notificaciones:{...base.notificaciones, ...(raw.notificaciones || {})}
   };
 }
+const PULSO_MARK_SVG = `<svg viewBox="0 0 52 52" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="26" cy="26" r="22" fill="none" stroke="white" stroke-width="2.2" opacity=".38"/>
+  <circle cx="26" cy="26" r="14" fill="none" stroke="white" stroke-width="2.4" opacity=".72"/>
+  <circle cx="26" cy="26" r="6" fill="white"/>
+  <circle cx="26" cy="26" r="2.6" fill="#10B981"/>
+</svg>`;
 function applyBrandingToDom(){
   const b = APP_SETTINGS.branding || DEFAULT_SETTINGS.branding;
   const mark = document.getElementById("brand-mark");
+  const markMobile = document.getElementById("brand-mark-mobile");
   const titleEl = document.getElementById("brand-title");
   const subEl = document.getElementById("brand-subtitle");
+  const titleMobileEl = document.getElementById("brand-title-mobile");
+  const subMobileEl = document.getElementById("brand-subtitle-mobile");
   const titulo = b.titulo || DEFAULT_SETTINGS.branding.titulo;
   const subtitulo = b.subtitulo || DEFAULT_SETTINGS.branding.subtitulo;
   if(titleEl) titleEl.textContent = titulo;
   if(subEl) subEl.textContent = subtitulo;
-  document.title = titulo;
-  if(mark){
+  if(titleMobileEl) titleMobileEl.textContent = titulo;
+  if(subMobileEl) subMobileEl.textContent = subtitulo;
+  document.title = titulo + " · Control de Capital Humano";
+  [mark, markMobile].forEach(el=>{
+    if(!el) return;
     if(b.logoDataUrl){
-      mark.innerHTML = `<img src="${b.logoDataUrl}" alt="Logotipo">`;
-      mark.style.background = "#fff";
+      el.innerHTML = `<img src="${b.logoDataUrl}" alt="Logotipo">`;
+      el.style.background = "#fff";
     } else {
-      mark.textContent = "CH";
-      mark.style.background = "";
+      el.innerHTML = PULSO_MARK_SVG;
+      el.style.background = "";
     }
-  }
+  });
 }
 function applySettingsToRuntime(){
   DEPARTAMENTOS = [...APP_SETTINGS.catalogs.departamentos];
@@ -5738,7 +5758,7 @@ function renderBrandingConfig(){
   if(b.logoDataUrl){
     preview.innerHTML = `<img src="${b.logoDataUrl}" alt="Logotipo">`;
   } else {
-    preview.textContent = "CH";
+    preview.innerHTML = PULSO_MARK_SVG;
   }
 }
 document.getElementById("cfg-logo-upload-btn").addEventListener("click", ()=>{
@@ -9560,7 +9580,7 @@ async function exportExecutiveReportPDF(){
     let y = margin;
 
     const branding = (APP_SETTINGS && APP_SETTINGS.branding) || {};
-    const titulo = branding.titulo || "Centro de Control · Capital Humano";
+    const titulo = branding.titulo || "Pulso";
     const subtitulo = branding.subtitulo || "Seguimiento de operaciones RH";
 
     // ---- Encabezado ----
@@ -10476,7 +10496,7 @@ async function exportToExcel(){
   }
 
   const wb = new ExcelJS.Workbook();
-  wb.creator = "Centro de Control · Capital Humano";
+  wb.creator = "Pulso";
   wb.created = new Date();
 
   const NAVY = "FF161B2E", AMBER = "FFD98C2B", LINE = "FFE2E5EE", TEXT_SOFT = "FF4A5068";
@@ -10491,7 +10511,7 @@ async function exportToExcel(){
   rs.columns = [{width:3},{width:26},{width:16},{width:16},{width:16},{width:16},{width:3}];
 
   rs.mergeCells("B2:F2");
-  rs.getCell("B2").value = "Centro de Control · Capital Humano";
+  rs.getCell("B2").value = "Pulso · Control de Capital Humano";
   rs.getCell("B2").font = { name:"Calibri", bold:true, size:18, color:{argb:NAVY} };
 
   rs.mergeCells("B3:F3");
@@ -10670,7 +10690,7 @@ async function exportToExcel(){
 
   // Bloque de título de la hoja (filas 1-3), encabezados de columna en la fila 4
   ws.mergeCells(1,1,1,columnsDef.length);
-  ws.getCell(1,1).value = "Centro de Control · Capital Humano — Bitácora de Casos";
+  ws.getCell(1,1).value = "Pulso — Bitácora de Casos";
   ws.getCell(1,1).font = { name:"Sora", bold:true, size:14, color:{argb:"FFFFFFFF"} };
   ws.getCell(1,1).fill = { type:"pattern", pattern:"solid", fgColor:{argb:NAVY} };
   ws.getCell(1,1).alignment = { vertical:"middle", horizontal:"left", indent:1 };
@@ -10962,7 +10982,7 @@ function buildFichaHtml(r, variant){
         ${showAreaMacro ? `<div style="font-size:12px;color:#4A5068;margin-top:3px;">${escapeHtml(r.area)} · ${escapeHtml(r.macro)}</div>` : ""}
       </div>
       <div style="text-align:right;flex-shrink:0;">
-        <div style="font-size:9.5px;color:#8B90A3;">Centro de Control · Capital Humano</div>
+        <div style="font-size:9.5px;color:#8B90A3;">Pulso · Control de Capital Humano</div>
         <div style="font-size:9.5px;color:#8B90A3;">Generado: ${new Date().toLocaleString("es-MX")}</div>
         <span style="display:inline-block;margin-top:7px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;background:${estadoColor}22;color:${estadoColor};">${r.estado}</span>
       </div>
@@ -10990,7 +11010,7 @@ function buildFichaHtml(r, variant){
     </div>
 
     <div style="margin-top:22px;padding-top:10px;border-top:1px solid #E2E5EE;font-size:9px;color:#8B90A3;text-align:center;">
-      Documento generado automáticamente por el Centro de Control de Capital Humano.
+      Documento generado automáticamente por Pulso.
     </div>
   </div>`;
 }
@@ -11075,7 +11095,7 @@ function exportToCalendar(id){
   const r = RECORDS.find(x=>x.id===id);
   if(!r) return;
   const ics = [
-    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Centro de Control Capital Humano//ES","CALSCALE:GREGORIAN",
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Pulso//ES","CALSCALE:GREGORIAN",
     buildIcsEvent(r),
     "END:VCALENDAR"
   ].join("\r\n");
@@ -11087,7 +11107,7 @@ function exportAllToCalendar(){
   if(RECORDS.length === 0){ alert("No hay registros para exportar."); return; }
   const events = RECORDS.map(buildIcsEvent).join("\r\n");
   const ics = [
-    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Centro de Control Capital Humano//ES","CALSCALE:GREGORIAN",
+    "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Pulso//ES","CALSCALE:GREGORIAN",
     events,
     "END:VCALENDAR"
   ].join("\r\n");
@@ -11478,7 +11498,7 @@ async function exportarVersionConsulta(){
   L.push('</style>');
   L.push('</head>');
   L.push('<body>');
-  L.push('<header><h1>Centro de Control - Capital Humano</h1><p>Bitacora de casos y Minutas de junta</p><span class="watermark">SOLO LECTURA</span></header>');
+  L.push('<header><h1>Pulso</h1><p>Bitacora de casos y Minutas de junta</p><span class="watermark">SOLO LECTURA</span></header>');
   L.push('<div class="tabs">');
   L.push('<button class="tabbtn active" data-tab="casos" onclick="showTab(\'casos\')">Bitacora de casos</button>');
   L.push('<button class="tabbtn" data-tab="minutas" onclick="showTab(\'minutas\')">Juntas y Minutas</button>');
