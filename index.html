@@ -2494,6 +2494,7 @@ select:focus,textarea:focus{
     </nav>
     <div class="sidebar-footer">
       <div class="sidebar-user" id="sidebar-user-email"></div>
+      <div class="sidebar-empresa" id="sidebar-empresa-nombre" style="font-size:11px;color:rgba(255,255,255,.5);margin-top:-2px;"></div>
       <span class="role-badge" id="sidebar-role-badge" style="display:none;"></span>
       <button class="sidebar-backup-btn" id="btn-save-backup-top" type="button" title="Descargar toda la información actual">
         <span>🗄</span> Descargar respaldo
@@ -3713,6 +3714,18 @@ select:focus,textarea:focus{
         </div>
       </div>
 
+      <div class="card config-card full" id="cfg-empresa-nombre-card" style="display:none;">
+        <h3>🏢 Tu empresa</h3>
+        <p class="hint" style="margin:-4px 0 14px;">Este es el nombre de tu espacio de trabajo dentro del sistema (tus datos están completamente aislados de los de cualquier otra empresa que use la misma plataforma).</p>
+        <div class="field" style="max-width:420px;">
+          <label for="cfg-empresa-nombre">Nombre de la empresa</label>
+          <input type="text" id="cfg-empresa-nombre" placeholder="Ej. Grupo Industrial Ejemplo" maxlength="80">
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-sm" type="button" id="cfg-empresa-nombre-guardar">Guardar nombre</button>
+        </div>
+      </div>
+
       <div class="card config-card full">
         <h3>Identidad del sistema</h3>
         <div class="identity-grid">
@@ -4079,6 +4092,8 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 let supabaseClient = null;
 let currentUser = null;
 let currentUserRole = null; // "lectura" | "captura" | "admin" | null (pendiente/sin rol)
+let currentEmpresaId = null;
+let currentEmpresaNombre = null;
 
 function initSupabaseClient(){
   if(typeof window.supabase === "undefined"){
@@ -4140,7 +4155,7 @@ document.getElementById("auth-form-login").addEventListener("submit", async (e)=
       if(error) throw error;
       errorBox.style.background = "#DCFCE7";
       errorBox.style.color = "#166534";
-      errorBox.textContent = "Cuenta creada. Un administrador debe asignarte un rol antes de que puedas usar el sistema.";
+      errorBox.textContent = "Cuenta creada. Se generó tu propio espacio de trabajo y ya eres administrador de él. Inicia sesión para continuar (si tu proyecto pide confirmación por correo, revisa tu bandeja antes).";
       errorBox.style.display = "block";
     }
   }catch(err){
@@ -4171,15 +4186,34 @@ async function loadCurrentUserRole(){
   try{
     const { data, error } = await supabaseClient
       .from("user_roles")
-      .select("role")
+      .select("role, empresa_id")
       .eq("user_id", currentUser.id)
       .maybeSingle();
     if(error) throw error;
-    return (data && data.role && data.role !== "pendiente") ? data.role : null;
+    if(!data || !data.role || data.role === "pendiente") return null;
+    currentEmpresaId = data.empresa_id || null;
+    return data.role;
   }catch(e){
     console.error("No se pudo leer el rol del usuario", e);
     return null;
   }
+}
+async function loadCurrentEmpresaNombre(){
+  if(!currentEmpresaId){ currentEmpresaNombre = null; return; }
+  try{
+    const { data, error } = await supabaseClient
+      .from("empresas")
+      .select("nombre")
+      .eq("id", currentEmpresaId)
+      .maybeSingle();
+    if(error) throw error;
+    currentEmpresaNombre = data ? data.nombre : null;
+  }catch(e){
+    console.error("No se pudo leer el nombre de la empresa", e);
+    currentEmpresaNombre = null;
+  }
+  const el = document.getElementById("sidebar-empresa-nombre");
+  if(el) el.textContent = currentEmpresaNombre ? ("🏢 " + currentEmpresaNombre) : "";
 }
 function applyRolePermissions(role){
   document.body.classList.remove("role-lectura","role-captura","role-admin");
@@ -4202,6 +4236,8 @@ function applyRolePermissions(role){
   }
   const usersPanelNav = document.getElementById("cfg-users-nav-item");
   if(usersPanelNav) usersPanelNav.style.display = role === "admin" ? "" : "none";
+  const empresaCard = document.getElementById("cfg-empresa-nombre-card");
+  if(empresaCard) empresaCard.style.display = role === "admin" ? "" : "none";
 }
 
 /* Se llama una sola vez al cargar la página. Muestra login o la app
@@ -4220,6 +4256,7 @@ async function initAuthAndApp(){
       showPendingScreen();
     } else {
       currentUserRole = role;
+      await loadCurrentEmpresaNombre();
       applyRolePermissions(role);
       showApp();
       startApp();
@@ -4235,6 +4272,7 @@ async function initAuthAndApp(){
         showPendingScreen();
       } else {
         currentUserRole = role;
+        await loadCurrentEmpresaNombre();
         applyRolePermissions(role);
         showApp();
         startApp();
@@ -4242,6 +4280,8 @@ async function initAuthAndApp(){
     } else if(event === "SIGNED_OUT"){
       currentUser = null;
       currentUserRole = null;
+      currentEmpresaId = null;
+      currentEmpresaNombre = null;
       showAuthScreen();
       location.reload(); // limpia el estado en memoria para el siguiente inicio de sesión
     }
@@ -4639,6 +4679,7 @@ async function storageGetValue(key){
       .from("app_data")
       .select("value")
       .eq("key", key)
+      .eq("empresa_id", currentEmpresaId)
       .maybeSingle();
     if(error) throw error;
     return data ? JSON.stringify(data.value) : null;
@@ -4652,15 +4693,16 @@ async function storageSetValue(key, value){
     .from("app_data")
     .upsert({
       key,
+      empresa_id: currentEmpresaId,
       value: JSON.parse(value),
       updated_at: new Date().toISOString(),
       updated_by: currentUser ? currentUser.id : null
-    }, { onConflict: "key" });
+    }, { onConflict: "empresa_id,key" });
   if(error) throw error;
   lastLocalSaveAt[key] = Date.now();
 }
 async function storageRemoveValue(key){
-  const { error } = await supabaseClient.from("app_data").delete().eq("key", key);
+  const { error } = await supabaseClient.from("app_data").delete().eq("key", key).eq("empresa_id", currentEmpresaId);
   if(error) console.error("Error borrando de Supabase:", key, error);
 }
 function cloneDefaults(){
@@ -5652,7 +5694,11 @@ function renderConfigView(){
   document.getElementById("cfg-meta-resolucion").value = APP_SETTINGS.kpis.metaResolucionDias;
   document.getElementById("cfg-presupuesto").value = APP_SETTINGS.kpis.presupuestoMensual || "";
   updateStorageUsage();
-  if(currentUserRole === "admin") renderUsersAdminPanel();
+  if(currentUserRole === "admin"){
+    renderUsersAdminPanel();
+    const nombreInput = document.getElementById("cfg-empresa-nombre");
+    if(nombreInput) nombreInput.value = currentEmpresaNombre || "";
+  }
 }
 const ROLE_OPTIONS = [
   {value:"pendiente", label:"Pendiente (sin acceso)"},
@@ -5708,6 +5754,24 @@ async function renderUsersAdminPanel(){
   }
 }
 document.getElementById("cfg-users-refresh").addEventListener("click", renderUsersAdminPanel);
+document.getElementById("cfg-empresa-nombre-guardar").addEventListener("click", async ()=>{
+  const input = document.getElementById("cfg-empresa-nombre");
+  const nuevoNombre = input.value.trim();
+  if(!nuevoNombre){ alert("El nombre de la empresa no puede quedar vacío."); return; }
+  try{
+    const { error } = await supabaseClient
+      .from("empresas")
+      .update({ nombre: nuevoNombre })
+      .eq("id", currentEmpresaId);
+    if(error) throw error;
+    currentEmpresaNombre = nuevoNombre;
+    const sideEl = document.getElementById("sidebar-empresa-nombre");
+    if(sideEl) sideEl.textContent = "🏢 " + nuevoNombre;
+    showToast("Nombre de la empresa actualizado");
+  }catch(e){
+    alert("No se pudo actualizar el nombre: " + (e.message || "error desconocido"));
+  }
+});
 async function addCatalogItem(key){
   const input = document.getElementById(`cfg-${key}-input`);
   const value = (input.value || "").trim();
