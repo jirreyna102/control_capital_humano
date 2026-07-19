@@ -3712,6 +3712,35 @@ select:focus,textarea:focus{
         <div class="form-actions">
           <button class="btn btn-ghost btn-sm" type="button" id="cfg-users-refresh">↻ Actualizar lista</button>
         </div>
+
+        <h3 style="margin-top:22px;">➕ Invitar a un compañero</h3>
+        <p class="hint" style="margin:-4px 0 14px;">
+          Escribe su correo y el rol que le quieres dar. Si ya tiene cuenta en el sistema (de cualquier empresa), se mueve de inmediato a la tuya. Si no tiene cuenta, la invitación queda guardada y se aplicará sola en cuanto se registre con ese mismo correo.
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+          <div class="field" style="flex:1;min-width:220px;margin:0;">
+            <label for="cfg-invite-email">Correo del compañero</label>
+            <input type="email" id="cfg-invite-email" placeholder="compañero@empresa.com">
+          </div>
+          <div class="field" style="min-width:160px;margin:0;">
+            <label for="cfg-invite-role">Rol</label>
+            <select id="cfg-invite-role">
+              <option value="lectura">Solo lectura</option>
+              <option value="captura" selected>Captura</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" type="button" id="cfg-invite-btn">Invitar</button>
+        </div>
+        <div id="cfg-invite-msg" style="display:none;margin-top:10px;font-size:12.5px;"></div>
+
+        <h3 style="margin-top:22px;">Invitaciones pendientes</h3>
+        <div style="overflow-x:auto;">
+          <table class="users-admin-table" id="cfg-invites-table">
+            <thead><tr><th>Correo</th><th>Rol</th><th>Enviada</th><th>Vence</th><th></th></tr></thead>
+            <tbody id="cfg-invites-tbody"><tr><td colspan="5" style="color:var(--text-mute);padding:16px;">Cargando…</td></tr></tbody>
+          </table>
+        </div>
       </div>
 
       <div class="card config-card full" id="cfg-empresa-nombre-card" style="display:none;">
@@ -5696,6 +5725,7 @@ function renderConfigView(){
   updateStorageUsage();
   if(currentUserRole === "admin"){
     renderUsersAdminPanel();
+    renderPendingInvitesPanel();
     const nombreInput = document.getElementById("cfg-empresa-nombre");
     if(nombreInput) nombreInput.value = currentEmpresaNombre || "";
   }
@@ -5772,6 +5802,97 @@ document.getElementById("cfg-empresa-nombre-guardar").addEventListener("click", 
     alert("No se pudo actualizar el nombre: " + (e.message || "error desconocido"));
   }
 });
+
+/* ============================================================
+   FASE 2 SAAS: INVITACIONES
+   ============================================================ */
+document.getElementById("cfg-invite-btn").addEventListener("click", async ()=>{
+  const emailInput = document.getElementById("cfg-invite-email");
+  const roleSelect = document.getElementById("cfg-invite-role");
+  const msgBox = document.getElementById("cfg-invite-msg");
+  const email = emailInput.value.trim();
+  const role = roleSelect.value;
+  msgBox.style.display = "none";
+  if(!email || !email.includes("@")){
+    alert("Escribe un correo válido.");
+    return;
+  }
+  const btn = document.getElementById("cfg-invite-btn");
+  btn.disabled = true;
+  btn.textContent = "Invitando…";
+  try{
+    const { data, error } = await supabaseClient.rpc("invite_teammate", {
+      target_email: email,
+      target_role: role
+    });
+    if(error) throw error;
+    msgBox.style.display = "block";
+    if(data === "existente"){
+      msgBox.style.background = "#DCFCE7";
+      msgBox.style.color = "#166534";
+      msgBox.style.padding = "10px 12px";
+      msgBox.style.borderRadius = "8px";
+      msgBox.textContent = `✓ ${email} ya tenía cuenta y se movió de inmediato a tu empresa con rol "${role}".`;
+      renderUsersAdminPanel();
+    } else {
+      msgBox.style.background = "#FEF3C7";
+      msgBox.style.color = "#92400E";
+      msgBox.style.padding = "10px 12px";
+      msgBox.style.borderRadius = "8px";
+      msgBox.textContent = `✓ Invitación guardada. Pide a ${email} que se registre en este sistema usando exactamente ese correo — al hacerlo, se unirá automáticamente a tu empresa con rol "${role}".`;
+      renderPendingInvitesPanel();
+    }
+    emailInput.value = "";
+  }catch(e){
+    msgBox.style.display = "block";
+    msgBox.style.background = "#FEE2E2";
+    msgBox.style.color = "#991B1B";
+    msgBox.style.padding = "10px 12px";
+    msgBox.style.borderRadius = "8px";
+    msgBox.textContent = "No se pudo invitar: " + (e.message || "error desconocido");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "Invitar";
+  }
+});
+async function renderPendingInvitesPanel(){
+  const tbody = document.getElementById("cfg-invites-tbody");
+  if(!tbody) return;
+  try{
+    const { data, error } = await supabaseClient.rpc("list_pending_invites");
+    if(error) throw error;
+    const pendientes = (data || []).filter(i => !i.used);
+    if(pendientes.length === 0){
+      tbody.innerHTML = `<tr><td colspan="5" style="color:var(--text-mute);padding:16px;">No hay invitaciones pendientes.</td></tr>`;
+      return;
+    }
+    const roleLabels = {lectura:"Solo lectura", captura:"Captura", admin:"Administrador"};
+    tbody.innerHTML = pendientes.map(i=>{
+      const vencida = new Date(i.expires_at) < new Date();
+      return `<tr>
+        <td>${escapeHtml(i.email)}</td>
+        <td>${roleLabels[i.role] || i.role}</td>
+        <td>${new Date(i.created_at).toLocaleDateString("es-MX")}</td>
+        <td>${vencida ? '<span style="color:var(--red);">Vencida</span>' : new Date(i.expires_at).toLocaleDateString("es-MX")}</td>
+        <td><button type="button" class="icon-btn danger" title="Revocar invitación" data-token="${i.token}">✕</button></td>
+      </tr>`;
+    }).join("");
+    tbody.querySelectorAll("button[data-token]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        try{
+          const { error } = await supabaseClient.rpc("revoke_invite", { target_token: btn.dataset.token });
+          if(error) throw error;
+          showToast("Invitación revocada");
+          renderPendingInvitesPanel();
+        }catch(e){
+          alert("No se pudo revocar: " + (e.message || "error desconocido"));
+        }
+      });
+    });
+  }catch(e){
+    tbody.innerHTML = `<tr><td colspan="5" style="color:var(--red);padding:16px;">No se pudo cargar: ${escapeHtml(e.message||"error")}</td></tr>`;
+  }
+}
 async function addCatalogItem(key){
   const input = document.getElementById(`cfg-${key}-input`);
   const value = (input.value || "").trim();
