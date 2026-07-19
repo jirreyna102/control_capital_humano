@@ -2488,9 +2488,6 @@ select:focus,textarea:focus{
     <button type="button" class="sidebar-search-btn" id="btn-global-search">
       <span>🔍</span> Buscar<span class="kbd-hint">Ctrl K</span>
     </button>
-    <button type="button" class="sidebar-search-btn theme-toggle-btn" id="btn-theme-toggle">
-      <span class="sun">☀️</span><span class="moon">🌙</span> <span id="theme-toggle-label">Modo oscuro</span>
-    </button>
     <nav class="tabs">
       <button class="tab-btn active" data-view="captura"><span class="tab-ico">✏️</span>Captura</button>
       <button class="tab-btn" data-view="dashboard"><span class="tab-ico">📊</span>Dashboard</button>
@@ -2506,9 +2503,6 @@ select:focus,textarea:focus{
       <div class="sidebar-user" id="sidebar-user-email"></div>
       <div class="sidebar-empresa" id="sidebar-empresa-nombre" style="font-size:11px;color:rgba(255,255,255,.5);margin-top:-2px;"></div>
       <span class="role-badge" id="sidebar-role-badge" style="display:none;"></span>
-      <button class="sidebar-backup-btn" id="btn-save-backup-top" type="button" title="Descargar toda la información actual">
-        <span>🗄</span> Descargar respaldo
-      </button>
       <button class="sidebar-backup-btn" id="btn-cerrar-sesion" type="button">
         <span>🚪</span> Cerrar sesión
       </button>
@@ -2532,7 +2526,6 @@ select:focus,textarea:focus{
             </div>
           </div>
         </div>
-        <button class="btn-top" id="btn-load-backup-top" type="button" title="Cargar un respaldo .json previamente descargado">Cargar respaldo</button>
       </div>
     </div>
 
@@ -2978,27 +2971,32 @@ select:focus,textarea:focus{
           <div class="table-toolbar">
             <span class="count" id="table-count">0 registros</span>
             <span class="count" id="storage-usage" title="Espacio usado de los 5MB disponibles en esta llave de almacenamiento"></span>
-            <button class="btn btn-ghost btn-sm" id="btn-export-excel" type="button">⬇ Exportar a Excel</button>
-            <button class="btn btn-ghost btn-sm" id="btn-export-ics-all" type="button">📅 Exportar a calendario</button>
-            <div class="pdf-dropdown" id="platform-export-dropdown">
-              <button class="btn btn-ghost btn-sm" id="platform-export-btn" type="button">🔗 Exportar a otra plataforma ▾</button>
-              <div class="pdf-menu" id="platform-export-menu">
-                <button type="button" data-platform="monday">
+            <div class="pdf-dropdown" id="unified-export-dropdown">
+              <button class="btn btn-ghost btn-sm" id="unified-export-btn" type="button">⬇ Exportar ▾</button>
+              <div class="pdf-menu" id="unified-export-menu">
+                <button type="button" data-export="excel">
+                  <span class="pm-title">📊 Exportar a Excel</span>
+                  <span class="pm-sub">Archivo .xlsx con toda la bitácora</span>
+                </button>
+                <button type="button" data-export="calendar">
+                  <span class="pm-title">📅 Exportar a calendario</span>
+                  <span class="pm-sub">Archivo .ics con los compromisos activos</span>
+                </button>
+                <button type="button" data-export="monday">
                   <span class="pm-title">📋 Monday.com (CSV)</span>
                   <span class="pm-sub">Usa "Import from Excel/CSV" dentro de Monday</span>
                 </button>
-                <button type="button" data-platform="clickup">
+                <button type="button" data-export="clickup">
                   <span class="pm-title">✅ ClickUp (CSV)</span>
                   <span class="pm-sub">Usa "Import from CSV" dentro de ClickUp</span>
+                </button>
+                <button type="button" data-export="consulta">
+                  <span class="pm-title">📄 Versión de consulta</span>
+                  <span class="pm-sub">HTML de solo lectura, sin edición ni gráficas</span>
                 </button>
               </div>
             </div>
             <button class="btn btn-ghost btn-sm btn-col-config" id="btn-col-config-bitacora" type="button">🧩 Columnas</button>
-            <button class="btn btn-ghost btn-sm" id="btn-export-backup" type="button">🗄 Descargar respaldo</button>
-            <button class="btn btn-ghost btn-sm" id="btn-export-consulta" type="button" title="Genera un archivo HTML de solo lectura con la bitácora y las minutas, sin edición ni gráficas">📄 Exportar versión de consulta</button>
-            <button class="btn btn-ghost btn-sm" id="btn-change-backup-location" type="button" style="display:none;" title="Elegir una nueva carpeta para los próximos respaldos">📂 Cambiar ubicación</button>
-            <button class="btn btn-ghost btn-sm" id="btn-import-backup" type="button">⤴ Restaurar respaldo</button>
-            <input type="file" id="backup-input" accept="application/json" style="display:none;">
           </div>
         </div>
         <div class="filters-row">
@@ -3707,6 +3705,28 @@ select:focus,textarea:focus{
     </div>
 
     <div class="config-grid">
+      <div class="card config-card full">
+        <h3>🎨 Apariencia y respaldo</h3>
+        <p class="hint" style="margin:-4px 0 14px;">Preferencias de este navegador y respaldo manual de toda tu información.</p>
+        <div style="display:flex;gap:22px;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--text-soft);margin-bottom:8px;">Tema</div>
+            <button type="button" class="btn btn-ghost btn-sm theme-toggle-btn" id="btn-theme-toggle-cfg">
+              <span class="sun">☀️</span><span class="moon">🌙</span> <span id="theme-toggle-label-cfg">Modo oscuro</span>
+            </button>
+          </div>
+          <div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--text-soft);margin-bottom:8px;">Respaldo manual</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-ghost btn-sm" id="btn-save-backup-cfg" type="button" title="Descargar toda la información actual">🗄 Descargar respaldo</button>
+              <button class="btn btn-ghost btn-sm" id="btn-load-backup-cfg" type="button" title="Cargar un respaldo .json previamente descargado">⤴ Restaurar respaldo</button>
+              <button class="btn btn-ghost btn-sm" id="btn-change-backup-location-cfg" type="button" style="display:none;" title="Elegir una nueva carpeta para los próximos respaldos">📂 Cambiar ubicación</button>
+              <input type="file" id="backup-input" accept="application/json" style="display:none;">
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="card config-card full" id="cfg-users-nav-item" style="display:none;">
         <h3>👥 Gestión de usuarios y roles</h3>
         <p class="hint" style="margin:-4px 0 14px;">
@@ -6796,15 +6816,15 @@ function setTheme(theme){
   if(theme === "dark") document.documentElement.setAttribute("data-theme","dark");
   else document.documentElement.removeAttribute("data-theme");
   try{ localStorage.setItem("theme-pref", theme); }catch(e){}
-  const label = document.getElementById("theme-toggle-label");
+  const label = document.getElementById("theme-toggle-label-cfg");
   if(label) label.textContent = theme === "dark" ? "Modo claro" : "Modo oscuro";
   rerenderVisibleCharts();
 }
-document.getElementById("btn-theme-toggle").addEventListener("click", ()=>{
+document.getElementById("btn-theme-toggle-cfg").addEventListener("click", ()=>{
   setTheme(isDarkTheme() ? "light" : "dark");
 });
 (function initThemeToggleLabel(){
-  const label = document.getElementById("theme-toggle-label");
+  const label = document.getElementById("theme-toggle-label-cfg");
   if(label) label.textContent = isDarkTheme() ? "Modo claro" : "Modo oscuro";
   applyChartJsThemeDefaults();
 })();
@@ -7568,7 +7588,7 @@ const SORT_ACCESSORS = {
     nombre:r=>r.nombre||"", puesto:r=>r.puesto||"", departamento:r=>r.departamento||"",
     sueldo:r=>Number(r.sueldoDiario)||0, genero:r=>r.genero||"", ingreso:r=>r.fechaIngreso||"",
     estatus:r=>r.estatus||"", contrato:r=>r.estadoContrato||"",
-    venc1:r=>r.fechaVencimiento1||"", dias1:r=>{const d=daysUntil(r.fechaVencimiento1); return d==null?Infinity:d;},
+    venc1:r=>r.fechaVencimiento1||"", dias1:r=>{const d=r.fechaVencimiento2?null:daysUntil(r.fechaVencimiento1); return d==null?Infinity:d;},
     venc2:r=>r.fechaVencimiento2||"", dias2:r=>{const d=daysUntil(r.fechaVencimiento2); return d==null?Infinity:d;}
   },
   candidatos: {
@@ -7735,7 +7755,10 @@ function renderEmpleadosTable(){
   const { pageRows, ...meta } = paginateRows("personal", filteredAll);
 
   body.innerHTML = pageRows.map(e=>{
-    const dias1 = daysUntil(e.fechaVencimiento1);
+    // Si ya existe un segundo contrato, el primero quedó superado:
+    // ya no tiene sentido mostrar sus días de vencimiento (serían
+    // datos viejos/confusos de un contrato que ya no aplica).
+    const dias1 = e.fechaVencimiento2 ? null : daysUntil(e.fechaVencimiento1);
     const dias2 = daysUntil(e.fechaVencimiento2);
     const cellByKey = {
       nombre: `<td class="wrap"><b>${escapeHtml(e.nombre)}</b></td>`,
@@ -7747,7 +7770,7 @@ function renderEmpleadosTable(){
       estatus: `<td>${pillEstatusColab(e.estatus)}</td>`,
       contrato: `<td>${escapeHtml(e.estadoContrato)}</td>`,
       venc1: `<td>${e.fechaVencimiento1 || "—"}</td>`,
-      dias1: `<td>${pillVencimiento(dias1)}</td>`,
+      dias1: `<td>${e.fechaVencimiento2 ? '<span class="hint" title="Ya hay un contrato posterior vigente">Superado</span>' : pillVencimiento(dias1)}</td>`,
       venc2: `<td>${e.fechaVencimiento2 || "—"}</td>`,
       dias2: `<td>${pillVencimiento(dias2)}</td>`,
       acciones: `<td>
@@ -10759,7 +10782,6 @@ async function exportToExcel(){
     alert("Ocurrió un error al generar el archivo de Excel.");
   }
 }
-document.getElementById("btn-export-excel").addEventListener("click", exportToExcel);
 
 /* ============================================================
    EXPORTAR CASO INDIVIDUAL (ZIP)
@@ -11075,7 +11097,6 @@ function exportAllToCalendar(){
 document.getElementById("dm-export-ics").addEventListener("click", ()=>{
   if(currentDetailId) exportToCalendar(currentDetailId);
 });
-document.getElementById("btn-export-ics-all").addEventListener("click", exportAllToCalendar);
 
 /* ============================================================
    EXPORTAR BITÁCORA A OTRAS PLATAFORMAS (Monday.com / ClickUp)
@@ -11144,19 +11165,23 @@ function exportToClickUpCsv(){
   showToast("✓ CSV para ClickUp generado");
 }
 
-document.getElementById("platform-export-btn").addEventListener("click", (e)=>{
+document.getElementById("unified-export-btn").addEventListener("click", (e)=>{
   e.stopPropagation();
-  document.getElementById("platform-export-menu").classList.toggle("show");
+  document.getElementById("unified-export-menu").classList.toggle("show");
 });
-document.getElementById("platform-export-menu").addEventListener("click", (e)=>{
+document.getElementById("unified-export-menu").addEventListener("click", (e)=>{
   const btn = e.target.closest("button");
   if(!btn) return;
-  document.getElementById("platform-export-menu").classList.remove("show");
-  if(btn.dataset.platform === "monday") exportToMondayCsv();
-  else if(btn.dataset.platform === "clickup") exportToClickUpCsv();
+  document.getElementById("unified-export-menu").classList.remove("show");
+  const opt = btn.dataset.export;
+  if(opt === "excel") exportToExcel();
+  else if(opt === "calendar") exportAllToCalendar();
+  else if(opt === "monday") exportToMondayCsv();
+  else if(opt === "clickup") exportToClickUpCsv();
+  else if(opt === "consulta") exportarVersionConsulta();
 });
 document.addEventListener("click", ()=>{
-  document.getElementById("platform-export-menu").classList.remove("show");
+  document.getElementById("unified-export-menu").classList.remove("show");
 });
 
 /* ============================================================
@@ -11357,8 +11382,6 @@ async function importBackupFile(file){
     }
   });
 }
-document.getElementById("btn-export-backup").addEventListener("click", exportBackupJSON);
-document.getElementById("btn-export-consulta").addEventListener("click", exportarVersionConsulta);
 
 /* ============================================================
    EXPORTAR VERSIÓN DE SOLO CONSULTA (HTML estático, sin edición)
@@ -11574,21 +11597,18 @@ async function exportarVersionConsulta(){
   downloadBlob(blob, `bitacora_consulta_${todayISO()}.html`);
   showToast("✓ Versión de consulta exportada");
 }
-document.getElementById("btn-change-backup-location").addEventListener("click", resetBackupSaveLocation);
+document.getElementById("btn-change-backup-location-cfg").addEventListener("click", resetBackupSaveLocation);
 if(window.showSaveFilePicker){
-  document.getElementById("btn-change-backup-location").style.display = "inline-block";
+  document.getElementById("btn-change-backup-location-cfg").style.display = "inline-block";
 }
 document.getElementById("banner-backup-btn").addEventListener("click", exportBackupJSON);
-document.getElementById("btn-import-backup").addEventListener("click", ()=>{
-  document.getElementById("backup-input").click();
-});
 document.getElementById("backup-input").addEventListener("change", (e)=>{
   const file = e.target.files[0];
   if(file) importBackupFile(file);
   e.target.value = "";
 });
-document.getElementById("btn-save-backup-top").addEventListener("click", exportBackupJSON);
-document.getElementById("btn-load-backup-top").addEventListener("click", ()=>{
+document.getElementById("btn-save-backup-cfg").addEventListener("click", exportBackupJSON);
+document.getElementById("btn-load-backup-cfg").addEventListener("click", ()=>{
   document.getElementById("backup-input").click();
 });
 
