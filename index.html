@@ -3794,6 +3794,52 @@ select:focus,textarea:focus{
         </div>
       </div>
 
+      <div class="card config-card">
+        <h3>Áreas estratégicas</h3>
+        <p class="hint" style="margin:-4px 0 10px;">Estas son las opciones que aparecen en "Área estratégica" al capturar un caso. Personalízalas según el área de tu organización (RH, Finanzas, Marketing, Operaciones, etc.).</p>
+        <div class="config-add-row">
+          <div class="field" style="margin-bottom:0;">
+            <label for="cfg-areas-input">Nueva área</label>
+            <input type="text" id="cfg-areas-input" placeholder="Ej. Finanzas y Contabilidad">
+          </div>
+          <button class="btn btn-primary btn-sm" type="button" data-catalog-add="areas">Agregar</button>
+        </div>
+        <div class="config-list" id="cfg-areas-list"></div>
+      </div>
+
+      <div class="card config-card full">
+        <h3>Macroprocesos por área</h3>
+        <p class="hint" style="margin:-4px 0 14px;">Los macroprocesos son las subcategorías dentro de cada área estratégica (por ejemplo, dentro de "Finanzas" podrías tener "Cuentas por pagar", "Tesorería", etc.). Elige un área para editar su lista.</p>
+        <div class="field" style="max-width:420px;">
+          <label for="cfg-macro-area-select">Área estratégica</label>
+          <select id="cfg-macro-area-select"></select>
+        </div>
+        <div class="config-add-row">
+          <div class="field" style="margin-bottom:0;">
+            <label for="cfg-macro-input">Nuevo macroproceso</label>
+            <input type="text" id="cfg-macro-input" placeholder="Ej. Cuentas por pagar">
+          </div>
+          <button class="btn btn-primary btn-sm" type="button" id="cfg-macro-add">Agregar</button>
+        </div>
+        <div class="config-list" id="cfg-macro-list"></div>
+      </div>
+
+      <div class="card config-card full">
+        <h3>Módulos activos</h3>
+        <p class="hint" style="margin:-4px 0 14px;">
+          Esta base puede usarse para dar seguimiento a casos de cualquier área (no solo RH). Si tu operación no necesita el control de personal o de candidatos, desactívalos aquí para simplificar la navegación — tus datos no se borran, solo se ocultan.
+        </p>
+        <label class="chk" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <input type="checkbox" id="cfg-modulo-personal" checked> Control de Personal (altas, bajas, vencimientos de contrato)
+        </label>
+        <label class="chk" style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="cfg-modulo-candidatos" checked> Reclutamiento y Candidatos
+        </label>
+        <div class="form-actions">
+          <button class="btn btn-primary btn-sm" type="button" id="cfg-modulos-guardar">Guardar módulos</button>
+        </div>
+      </div>
+
       <div class="card config-card full">
         <h3>Identidad del sistema</h3>
         <div class="identity-grid">
@@ -4408,7 +4454,7 @@ async function initAuthAndApp(){
 const DEFAULT_TIPOS_ACTIVIDAD = ["Operativa","Estratégica","Administrativa","Auditoría","Proyecto","Cumplimiento Legal","Mejora Continua","Atención a Solicitud"];
 let TIPOS_ACTIVIDAD = [...DEFAULT_TIPOS_ACTIVIDAD];
 
-const AREAS = [
+const DEFAULT_AREAS = [
   "Dirección Estratégica de Capital Humano",
   "Atracción de Talento",
   "Administración de Personal",
@@ -4420,8 +4466,9 @@ const AREAS = [
   "Servicios Generales y Facilities",
   "Proyectos y Mejora Continua"
 ];
+let AREAS = [...DEFAULT_AREAS];
 
-const MACRO_BY_AREA = {
+const DEFAULT_MACRO_BY_AREA = {
   "Dirección Estratégica de Capital Humano": ["Planeación Estratégica de Capital Humano","Planeación de Workforce","Diseño Organizacional","Arquitectura Organizacional","Diseño de Puestos","Valuación de Puestos","Gestión de Competencias Organizacionales","Gobierno Corporativo de RH","Planeación Presupuestal de Personal","Gestión de Indicadores Estratégicos","Gestión de Riesgos de Capital Humano","Gestión de Políticas","Gestión de Procedimientos","Gestión Documental Normativa"],
   "Atracción de Talento": ["Planeación de Reclutamiento","Requisiciones de Personal","Reclutamiento Interno","Reclutamiento Externo","Employer Branding","Marketing de Reclutamiento","Sourcing","Hunting Ejecutivo","Selección","Entrevistas por Competencias","Evaluaciones Psicométricas","Evaluaciones Técnicas","Investigación Laboral","Contratación","Onboarding"],
   "Administración de Personal": ["Administración de Expedientes","Control Documental","Administración del HRIS","Movimientos de Personal","Cambios Organizacionales","Altas","Bajas","Reingresos","Control de Incidencias","Control de Asistencia","Gestión de Vacaciones","Gestión de Permisos","Gestión de Incapacidades","Administración de Credenciales","Firma Electrónica y Documentos"],
@@ -4433,6 +4480,7 @@ const MACRO_BY_AREA = {
   "Servicios Generales y Facilities": ["Gestión de Instalaciones","Mantenimiento de Oficinas","Administración de Flotilla","Viajes y Viáticos","Servicios Generales"],
   "Proyectos y Mejora Continua": ["PMO de Recursos Humanos"]
 };
+let MACRO_BY_AREA = JSON.parse(JSON.stringify(DEFAULT_MACRO_BY_AREA));
 
 const DEFAULT_DEPARTAMENTOS = ["ADMINISTRACIÓN","COMERCIAL","DIRECCIÓN GENERAL","GERENCIA DE PROYECTOS","GESTIONES","INGENIERÍA","MERCADOTECNIA","MESA DE CONTROL","RECURSOS HUMANOS","SERVICIOS GENERALES"];
 const DEFAULT_SUCURSALES = ["Matriz Apodaca","Querétaro","Todas las sucursales"];
@@ -4521,7 +4569,13 @@ const DEFAULT_SETTINGS = {
     departamentos: DEFAULT_DEPARTAMENTOS,
     sucursales: DEFAULT_SUCURSALES,
     tiposActividad: DEFAULT_TIPOS_ACTIVIDAD,
-    costoCategorias: DEFAULT_COSTO_CATEGORIAS
+    costoCategorias: DEFAULT_COSTO_CATEGORIAS,
+    areas: DEFAULT_AREAS,
+    macroPorArea: DEFAULT_MACRO_BY_AREA
+  },
+  modulos:{
+    personal: true,
+    candidatos: true
   },
   rules:{
     contratoAmarilloDias: 30,
@@ -4664,6 +4718,7 @@ function proximaOcurrenciaAnual(fechaISO){
   return candidata;
 }
 function checkCumpleanosYAniversarios(){
+  if(APP_SETTINGS.modulos.personal === false) return;
   const hoyAnio = new Date(todayISO() + "T00:00:00").getFullYear();
   EMPLEADOS.filter(e => e.estatus === "Activo").forEach(e=>{
     if(e.fechaNacimiento){
@@ -4830,6 +4885,7 @@ function normalizeSettings(raw){
     ...raw,
     branding:{...base.branding, ...(raw.branding || {})},
     catalogs:{...base.catalogs, ...(raw.catalogs || {})},
+    modulos:{...base.modulos, ...(raw.modulos || {})},
     rules:{...base.rules, ...(raw.rules || {})},
     kpis:{...base.kpis, ...(raw.kpis || {})},
     notificaciones:{...base.notificaciones, ...(raw.notificaciones || {})}
@@ -4872,7 +4928,10 @@ function applySettingsToRuntime(){
   SUCURSALES = [...APP_SETTINGS.catalogs.sucursales];
   TIPOS_ACTIVIDAD = [...APP_SETTINGS.catalogs.tiposActividad];
   COSTO_CATEGORIAS = [...APP_SETTINGS.catalogs.costoCategorias];
+  AREAS = [...APP_SETTINGS.catalogs.areas];
+  MACRO_BY_AREA = JSON.parse(JSON.stringify(APP_SETTINGS.catalogs.macroPorArea));
   applyBrandingToDom();
+  applyModulosToUI();
 }
 async function loadSettings(){
   try{
@@ -5243,7 +5302,7 @@ function confirmarImportacionCSV(){
       tema: obj.tema,
       tipo: obj.tipo || TIPOS_ACTIVIDAD[0],
       area: obj.area || AREAS[0],
-      macro: obj.macro || MACROPROCESOS[AREAS[0]][0],
+      macro: obj.macro || (MACRO_BY_AREA[AREAS[0]] || [])[0],
       descripcion: obj.descripcion || "",
       responsable: obj.responsable || "",
       corresponsable: obj.corresponsable || "",
@@ -5732,7 +5791,8 @@ function catalogLabel(key){
     departamentos:"Departamentos",
     sucursales:"Sucursales",
     tiposActividad:"Tipos de actividad",
-    costoCategorias:"Categorías de costos"
+    costoCategorias:"Categorías de costos",
+    areas:"Áreas estratégicas"
   }[key] || key;
 }
 function renderCatalogList(key){
@@ -5812,13 +5872,16 @@ document.getElementById("cfg-brand-reset").addEventListener("click", ()=>{
 function renderConfigView(){
   renderBrandingConfig();
   renderNotifPrefsConfig();
-  ["departamentos","sucursales","tiposActividad","costoCategorias"].forEach(renderCatalogList);
+  ["departamentos","sucursales","tiposActividad","costoCategorias","areas"].forEach(renderCatalogList);
+  renderMacroAreaSelect();
   renderRecurrentesList();
   document.getElementById("cfg-contrato-amarillo").value = APP_SETTINGS.rules.contratoAmarilloDias;
   document.getElementById("cfg-contrato-rojo").value = APP_SETTINGS.rules.contratoRojoDias;
   document.getElementById("cfg-casos-retraso").value = APP_SETTINGS.rules.casoRetrasoDias;
   document.getElementById("cfg-meta-resolucion").value = APP_SETTINGS.kpis.metaResolucionDias;
   document.getElementById("cfg-presupuesto").value = APP_SETTINGS.kpis.presupuestoMensual || "";
+  document.getElementById("cfg-modulo-personal").checked = APP_SETTINGS.modulos.personal !== false;
+  document.getElementById("cfg-modulo-candidatos").checked = APP_SETTINGS.modulos.candidatos !== false;
   updateStorageUsage();
   if(currentUserRole === "admin"){
     renderUsersAdminPanel();
@@ -6003,10 +6066,14 @@ async function addCatalogItem(key){
     return;
   }
   APP_SETTINGS.catalogs[key] = [...list, value].sort((a,b)=>a.localeCompare(b, "es"));
+  if(key === "areas" && !APP_SETTINGS.catalogs.macroPorArea[value]){
+    APP_SETTINGS.catalogs.macroPorArea[value] = [];
+  }
   input.value = "";
   applySettingsToRuntime();
   await saveSettings();
   repopulateDynamicSelects();
+  if(key === "areas") renderMacroAreaSelect();
   showToast("✓ Catálogo actualizado");
 }
 async function removeCatalogItem(key, value){
@@ -6015,12 +6082,119 @@ async function removeCatalogItem(key, value){
     alert('La categoría "No aplica" es necesaria para los casos sin costo.');
     return;
   }
+  if(key === "areas"){
+    if(list.length <= 1){
+      alert("Debe quedar al menos un área estratégica.");
+      return;
+    }
+    delete APP_SETTINGS.catalogs.macroPorArea[value];
+  }
   APP_SETTINGS.catalogs[key] = list.filter(item=>item !== value);
   applySettingsToRuntime();
   await saveSettings();
   repopulateDynamicSelects();
+  if(key === "areas") renderMacroAreaSelect();
   showToast("✓ Elemento eliminado");
 }
+function renderMacroAreaSelect(){
+  const sel = document.getElementById("cfg-macro-area-select");
+  if(!sel) return;
+  const current = sel.value;
+  sel.innerHTML = AREAS.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
+  sel.value = AREAS.includes(current) ? current : (AREAS[0] || "");
+  renderMacroList();
+}
+function renderMacroList(){
+  const list = document.getElementById("cfg-macro-list");
+  const sel = document.getElementById("cfg-macro-area-select");
+  if(!list || !sel) return;
+  const area = sel.value;
+  const items = APP_SETTINGS.catalogs.macroPorArea[area] || [];
+  if(items.length === 0){
+    list.innerHTML = `<div class="modal-empty">Esta área todavía no tiene macroprocesos configurados.</div>`;
+    return;
+  }
+  list.innerHTML = items.map(item=>`
+    <div class="config-item">
+      <span>${escapeHtml(item)}</span>
+      <button class="icon-btn danger" type="button" title="Eliminar" data-macro-remove="${escapeHtml(item)}">✕</button>
+    </div>
+  `).join("");
+  list.querySelectorAll("[data-macro-remove]").forEach(btn=>{
+    btn.addEventListener("click", ()=> removeMacroItem(btn.dataset.macroRemove));
+  });
+}
+document.getElementById("cfg-macro-area-select").addEventListener("change", renderMacroList);
+document.getElementById("cfg-macro-add").addEventListener("click", async ()=>{
+  const sel = document.getElementById("cfg-macro-area-select");
+  const input = document.getElementById("cfg-macro-input");
+  const area = sel.value;
+  const value = (input.value || "").trim();
+  if(!area){ alert("Primero agrega un área estratégica."); return; }
+  if(!value){ alert("Escribe un nombre de macroproceso."); return; }
+  const list = APP_SETTINGS.catalogs.macroPorArea[area] || [];
+  if(list.some(item=>item.toLowerCase() === value.toLowerCase())){
+    alert("Ese macroproceso ya existe en esta área.");
+    return;
+  }
+  APP_SETTINGS.catalogs.macroPorArea[area] = [...list, value].sort((a,b)=>a.localeCompare(b,"es"));
+  input.value = "";
+  applySettingsToRuntime();
+  await saveSettings();
+  repopulateDynamicSelects();
+  renderMacroList();
+  showToast("✓ Macroproceso agregado");
+});
+async function removeMacroItem(value){
+  const sel = document.getElementById("cfg-macro-area-select");
+  const area = sel.value;
+  const list = APP_SETTINGS.catalogs.macroPorArea[area] || [];
+  APP_SETTINGS.catalogs.macroPorArea[area] = list.filter(item=>item !== value);
+  applySettingsToRuntime();
+  await saveSettings();
+  repopulateDynamicSelects();
+  renderMacroList();
+  showToast("✓ Macroproceso eliminado");
+}
+
+/* ============================================================
+   MÓDULOS ACTIVOS (adaptar la base a otras áreas además de RH)
+   ============================================================ */
+document.getElementById("cfg-modulos-guardar").addEventListener("click", async ()=>{
+  APP_SETTINGS.modulos.personal = document.getElementById("cfg-modulo-personal").checked;
+  APP_SETTINGS.modulos.candidatos = document.getElementById("cfg-modulo-candidatos").checked;
+  await saveSettings();
+  applyModulosToUI();
+  showToast("✓ Módulos actualizados");
+});
+function applyModulosToUI(){
+  const personalOn = APP_SETTINGS.modulos.personal !== false;
+  const candidatosOn = APP_SETTINGS.modulos.candidatos !== false;
+
+  const personalTab = document.querySelector('.tab-btn[data-view="personal"]');
+  const candidatosTab = document.querySelector('.tab-btn[data-view="candidatos"]');
+  if(personalTab) personalTab.style.display = personalOn ? "" : "none";
+  if(candidatosTab) candidatosTab.style.display = candidatosOn ? "" : "none";
+
+  // La subpestaña "V. Gestión de Talento" (dentro de KPIs) vive aparte
+  // de la vista Personal, así que se oculta por su cuenta. La leyenda
+  // del calendario (cumpleaños/aniversario/vencimiento) ya se resuelve
+  // sola al generarse, condicionada al mismo interruptor.
+  const talentoBtn = document.querySelector('#kpi-subnav button[data-kpi="talento"]');
+  if(talentoBtn) talentoBtn.style.display = personalOn ? "" : "none";
+
+  // Si el usuario queda parado en una vista que se acaba de ocultar,
+  // lo mandamos al Dashboard para que no vea una pantalla vacía/rota.
+  const activeView = document.querySelector(".view.active");
+  if(activeView){
+    if((activeView.id === "view-personal" && !personalOn) ||
+       (activeView.id === "view-candidatos" && !candidatosOn)){
+      const dashBtn = document.querySelector('.tab-btn[data-view="dashboard"]');
+      if(dashBtn) dashBtn.click();
+    }
+  }
+}
+
 async function saveBusinessRules(){
   const amarillo = Number(document.getElementById("cfg-contrato-amarillo").value) || 30;
   const rojo = Number(document.getElementById("cfg-contrato-rojo").value) || 15;
@@ -6745,12 +6919,20 @@ function renderGlobalSearchResults(qRaw){
   const results = document.getElementById("gsearch-results");
   gsearchActiveIndex = -1;
 
-  const vistas = GSEARCH_VIEWS.filter(v=> !q || v.label.toLowerCase().includes(q));
+  const vistas = GSEARCH_VIEWS.filter(v=>{
+    if(v.view === "personal" && APP_SETTINGS.modulos.personal === false) return false;
+    if(v.view === "candidatos" && APP_SETTINGS.modulos.candidatos === false) return false;
+    return !q || v.label.toLowerCase().includes(q);
+  });
 
   let personal = [], candidatos = [], casos = [];
   if(q.length >= 2){
-    personal = EMPLEADOS.filter(e=> (e.nombre||"").toLowerCase().includes(q)).slice(0,6);
-    candidatos = CANDIDATOS.filter(c=> (c.nombre||"").toLowerCase().includes(q)).slice(0,6);
+    if(APP_SETTINGS.modulos.personal !== false){
+      personal = EMPLEADOS.filter(e=> (e.nombre||"").toLowerCase().includes(q)).slice(0,6);
+    }
+    if(APP_SETTINGS.modulos.candidatos !== false){
+      candidatos = CANDIDATOS.filter(c=> (c.nombre||"").toLowerCase().includes(q)).slice(0,6);
+    }
     casos = RECORDS.filter(r=>
       (r.tema||"").toLowerCase().includes(q) ||
       (r.responsable||"").toLowerCase().includes(q) ||
@@ -8662,26 +8844,28 @@ function checkVencimientosYGenerar(){
     }
   });
 
-  EMPLEADOS.filter(e => e.estatus === "Activo" && CONTRATOS_TEMPORALES.includes(e.estadoContrato)).forEach(e=>{
-    const efectivo = getVencimientoEfectivo(e);
-    if(!efectivo) return;
-    const dias = daysUntil(efectivo);
-    if(dias < 0){
-      addNotification("documento_personal", {
-        title:`Contrato vencido: ${e.nombre}`,
-        message:`Venció hace ${Math.abs(dias)} día(s) (${efectivo})`,
-        relatedType:"empleado", relatedId:e.id,
-        dedupeKey:`doc_venc_${e.id}_${efectivo}`
-      });
-    } else if([7,3,1].includes(dias)){
-      addNotification("documento_personal", {
-        title:`Contrato por vencer: ${e.nombre}`,
-        message:`Vence en ${dias} día(s) (${efectivo})`,
-        relatedType:"empleado", relatedId:e.id,
-        dedupeKey:`doc_prox_${e.id}_${efectivo}_${dias}`
-      });
-    }
-  });
+  if(APP_SETTINGS.modulos.personal !== false){
+    EMPLEADOS.filter(e => e.estatus === "Activo" && CONTRATOS_TEMPORALES.includes(e.estadoContrato)).forEach(e=>{
+      const efectivo = getVencimientoEfectivo(e);
+      if(!efectivo) return;
+      const dias = daysUntil(efectivo);
+      if(dias < 0){
+        addNotification("documento_personal", {
+          title:`Contrato vencido: ${e.nombre}`,
+          message:`Venció hace ${Math.abs(dias)} día(s) (${efectivo})`,
+          relatedType:"empleado", relatedId:e.id,
+          dedupeKey:`doc_venc_${e.id}_${efectivo}`
+        });
+      } else if([7,3,1].includes(dias)){
+        addNotification("documento_personal", {
+          title:`Contrato por vencer: ${e.nombre}`,
+          message:`Vence en ${dias} día(s) (${efectivo})`,
+          relatedType:"empleado", relatedId:e.id,
+          dedupeKey:`doc_prox_${e.id}_${efectivo}_${dias}`
+        });
+      }
+    });
+  }
   
   checkCumpleanosYAniversarios();
 
@@ -12142,18 +12326,22 @@ function renderMonthCalendar(){
   });
 
   const vencByDay = {};
-  EMPLEADOS.filter(e=> e.estatus === "Activo" && CONTRATOS_TEMPORALES.includes(e.estadoContrato)).forEach(e=>{
-    [e.fechaVencimiento1, e.fechaVencimiento2].forEach(fv=>{
-      if(!fv) return;
-      if(!vencByDay[fv]) vencByDay[fv] = [];
-      vencByDay[fv].push(e);
+  if(APP_SETTINGS.modulos.personal !== false){
+    EMPLEADOS.filter(e=> e.estatus === "Activo" && CONTRATOS_TEMPORALES.includes(e.estadoContrato)).forEach(e=>{
+      [e.fechaVencimiento1, e.fechaVencimiento2].forEach(fv=>{
+        if(!fv) return;
+        if(!vencByDay[fv]) vencByDay[fv] = [];
+        vencByDay[fv].push(e);
+      });
     });
-  });
+  }
 
   // Cumpleaños del personal activo: se agrupan por "MM-DD" (sin año) para
   // que se muestren en la celda correcta sin importar el año en curso.
+  // (vacío si el módulo de Personal está desactivado)
+  const personalModuloActivo = APP_SETTINGS.modulos.personal !== false;
   const cumpleByMonthDay = {};
-  EMPLEADOS.filter(e => e.estatus === "Activo" && e.fechaNacimiento).forEach(e=>{
+  if(personalModuloActivo) EMPLEADOS.filter(e => e.estatus === "Activo" && e.fechaNacimiento).forEach(e=>{
     const partes = e.fechaNacimiento.split("-"); // YYYY-MM-DD
     const clave = partes[1] + "-" + partes[2];
     if(!cumpleByMonthDay[clave]) cumpleByMonthDay[clave] = [];
@@ -12163,7 +12351,7 @@ function renderMonthCalendar(){
   // Aniversarios laborales del personal activo: se agrupan por "MM-DD"
   // (sin año) para que se muestren cada año en la celda correcta.
   const aniversarioByMonthDay = {};
-  EMPLEADOS.filter(e => e.estatus === "Activo" && e.fechaIngreso).forEach(e=>{
+  if(personalModuloActivo) EMPLEADOS.filter(e => e.estatus === "Activo" && e.fechaIngreso).forEach(e=>{
     const partes = e.fechaIngreso.split("-"); // YYYY-MM-DD
     const clave = partes[1] + "-" + partes[2];
     if(!aniversarioByMonthDay[clave]) aniversarioByMonthDay[clave] = [];
@@ -12287,12 +12475,17 @@ function renderMonthCalendar(){
     grid.appendChild(cell);
   }
 
-  document.getElementById("cal-legend").innerHTML = ESTADOS.map(e=>
+  const personalModuloOn = APP_SETTINGS.modulos.personal !== false;
+  let legendHtml = ESTADOS.map(e=>
     `<span class="legend-item"><span class="legend-dot" style="background:${COLOR_ESTADO[e]}"></span>${e}</span>`
-  ).join("") + `<span class="legend-item"><span class="legend-dot" style="background:#F59E0B"></span>⏰ Vencimiento de contrato</span>`
-    + `<span class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>🎂 Cumpleaños</span>`
-    + `<span class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span>🎉 Aniversario laboral</span>`
-    + `<span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>🔁 Actividad recurrente</span>`;
+  ).join("");
+  if(personalModuloOn){
+    legendHtml += `<span class="legend-item" id="legend-vencimiento"><span class="legend-dot" style="background:#F59E0B"></span>⏰ Vencimiento de contrato</span>`
+      + `<span class="legend-item" id="legend-cumple"><span class="legend-dot" style="background:var(--amber)"></span>🎂 Cumpleaños</span>`
+      + `<span class="legend-item" id="legend-aniversario"><span class="legend-dot" style="background:var(--purple)"></span>🎉 Aniversario laboral</span>`;
+  }
+  legendHtml += `<span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>🔁 Actividad recurrente</span>`;
+  document.getElementById("cal-legend").innerHTML = legendHtml;
 }
 document.getElementById("cal-prev").addEventListener("click", ()=>{
   calMonth--; if(calMonth < 0){ calMonth = 11; calYear--; }
