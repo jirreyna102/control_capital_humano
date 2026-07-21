@@ -668,6 +668,23 @@ body.role-lectura .sel-col{display:none !important;}
 .users-admin-table{width:100%;border-collapse:collapse;font-size:12.5px;}
 .users-admin-table th{text-align:left;padding:8px 10px;color:var(--text-mute);font-weight:700;border-bottom:1px solid var(--line);}
 .users-admin-table td{padding:8px 10px;border-bottom:1px solid var(--line);}
+.sistema-chk-group{display:flex;flex-direction:column;gap:4px;}
+.sistema-chk{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-soft);cursor:pointer;white-space:nowrap;}
+
+/* ---- Panel de administración de Sistemas de Negocio ---- */
+.sistema-admin-item{
+  border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff;
+}
+.sistema-admin-item.inactivo{opacity:.55;background:var(--gray-soft);}
+.sistema-admin-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.sistema-admin-nombre{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;}
+.sistema-nombre-input{
+  border:1px solid var(--line);border-radius:7px;padding:5px 9px;font-size:13px;font-family:'Sora',sans-serif;
+  font-weight:700;color:var(--ink);min-width:180px;
+}
+.sistema-admin-modulos{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;}
+.sistema-admin-modulos .chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-soft);cursor:pointer;}
+.sistema-admin-actions{display:flex;gap:8px;}
 .users-admin-table select{border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:12px;}
 
 /* ---- Búsqueda global (Ctrl+K) ---- */
@@ -2191,6 +2208,25 @@ select:focus,textarea:focus{
   border-radius:5px;padding:2px 6px;color:rgba(255,255,255,.55);
 }
 .sidebar-user{font-size:11px;color:rgba(255,255,255,.45);padding:0 2px 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sistema-switcher{margin:2px 0 8px;}
+.sistema-switcher label{
+  display:block;font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;
+  color:rgba(255,255,255,.4);margin-bottom:4px;
+}
+.sistema-switcher select{
+  width:100%;padding:8px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.08);color:#fff;font-family:'Sora',sans-serif;font-weight:700;
+  font-size:12.5px;cursor:pointer;
+}
+.sistema-switcher select option{color:#111827;}
+.sistema-switch-overlay{
+  position:fixed;inset:0;background:rgba(10,13,22,.55);z-index:950;
+  display:flex;align-items:center;justify-content:center;
+}
+.sistema-switch-box{
+  background:#fff;padding:20px 28px;border-radius:12px;font-weight:700;font-size:13px;color:var(--ink);
+  box-shadow:0 20px 50px -12px rgba(0,0,0,.4);
+}
 .sidebar-backup-btn{
   width:100%;
   display:flex;
@@ -2492,6 +2528,10 @@ select:focus,textarea:focus{
         <div class="t1" id="brand-title">Pulso</div>
         <div class="t2" id="brand-subtitle">Control de Capital Humano en tiempo real</div>
       </div>
+    </div>
+    <div class="sistema-switcher" id="sistema-switcher" style="display:none;">
+      <label for="sistema-switcher-select">Sistema activo</label>
+      <select id="sistema-switcher-select"></select>
     </div>
     <button type="button" class="sidebar-search-btn" id="btn-global-search">
       <span>🔍</span> Buscar<span class="kbd-hint">Ctrl K</span>
@@ -3744,7 +3784,7 @@ select:focus,textarea:focus{
         <div id="cfg-users-error" class="auth-error" style="display:none;"></div>
         <div style="overflow-x:auto;">
           <table class="users-admin-table" id="cfg-users-table">
-            <thead><tr><th>Correo</th><th>Alta</th><th>Rol</th></tr></thead>
+            <thead><tr><th>Correo</th><th>Rol</th><th>Sistemas de Negocio</th></tr></thead>
             <tbody id="cfg-users-tbody"><tr><td colspan="3" style="color:var(--text-mute);padding:16px;">Cargando usuarios…</td></tr></tbody>
           </table>
         </div>
@@ -3754,7 +3794,7 @@ select:focus,textarea:focus{
 
         <h3 style="margin-top:22px;">➕ Invitar a un compañero</h3>
         <p class="hint" style="margin:-4px 0 14px;">
-          Escribe su correo y el rol que le quieres dar. Si ya tiene cuenta en el sistema (de cualquier empresa), se mueve de inmediato a la tuya. Si no tiene cuenta, la invitación queda guardada y se aplicará sola en cuanto se registre con ese mismo correo.
+          Escribe su correo, el rol y a qué Sistema de Negocio le vas a dar acceso. Si ya tiene cuenta en el sistema (de cualquier empresa), se mueve de inmediato a la tuya con ese acceso. Si no tiene cuenta, la invitación queda guardada y se aplicará sola en cuanto se registre con ese mismo correo.
         </p>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
           <div class="field" style="flex:1;min-width:220px;margin:0;">
@@ -3768,6 +3808,10 @@ select:focus,textarea:focus{
               <option value="captura" selected>Captura</option>
               <option value="admin">Administrador</option>
             </select>
+          </div>
+          <div class="field" style="min-width:180px;margin:0;">
+            <label for="cfg-invite-sistema">Sistema de Negocio</label>
+            <select id="cfg-invite-sistema"></select>
           </div>
           <button class="btn btn-primary btn-sm" type="button" id="cfg-invite-btn">Invitar</button>
         </div>
@@ -3824,19 +3868,33 @@ select:focus,textarea:focus{
         <div class="config-list" id="cfg-macro-list"></div>
       </div>
 
-      <div class="card config-card full">
-        <h3>Módulos activos</h3>
+      <div class="card config-card full" id="cfg-sistemas-nav-item" style="display:none;">
+        <h3>🗂️ Sistemas de Negocio</h3>
         <p class="hint" style="margin:-4px 0 14px;">
-          Esta base puede usarse para dar seguimiento a casos de cualquier área (no solo RH). Si tu operación no necesita el control de personal o de candidatos, desactívalos aquí para simplificar la navegación — tus datos no se borran, solo se ocultan.
+          Esta plataforma puede dar seguimiento a más de un área a la vez dentro de la misma empresa (RH, Ventas, Marketing, Compras, Ingeniería, Dirección, o uno personalizado). Cada sistema tiene su propia bitácora, catálogos, Dashboard, KPIs y Calendario — completamente separados de los demás.
         </p>
-        <label class="chk" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <input type="checkbox" id="cfg-modulo-personal" checked> Control de Personal (altas, bajas, vencimientos de contrato)
-        </label>
-        <label class="chk" style="display:flex;align-items:center;gap:8px;">
-          <input type="checkbox" id="cfg-modulo-candidatos" checked> Reclutamiento y Candidatos
-        </label>
-        <div class="form-actions">
-          <button class="btn btn-primary btn-sm" type="button" id="cfg-modulos-guardar">Guardar módulos</button>
+        <div id="cfg-sistemas-error" class="auth-error" style="display:none;"></div>
+        <div class="config-list" id="cfg-sistemas-list"></div>
+
+        <h3 style="margin-top:22px;">➕ Crear nuevo sistema</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+          <div class="field" style="flex:1;min-width:200px;margin:0;">
+            <label for="cfg-sistema-nombre">Nombre</label>
+            <input type="text" id="cfg-sistema-nombre" placeholder="Ej. Ventas México">
+          </div>
+          <div class="field" style="min-width:180px;margin:0;">
+            <label for="cfg-sistema-tipo">Tipo</label>
+            <select id="cfg-sistema-tipo">
+              <option value="rrhh">Recursos Humanos</option>
+              <option value="comercial">Comercial / Ventas</option>
+              <option value="marketing">Comunicación / Marketing</option>
+              <option value="compras">Compras / Abastecimiento</option>
+              <option value="ingenieria">Ingeniería / Facilities</option>
+              <option value="direccion">Alta Dirección</option>
+              <option value="personalizado" selected>Personalizado</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" type="button" id="cfg-sistema-crear">Crear sistema</button>
         </div>
       </div>
 
@@ -4208,6 +4266,8 @@ let currentUser = null;
 let currentUserRole = null; // "lectura" | "captura" | "admin" | null (pendiente/sin rol)
 let currentEmpresaId = null;
 let currentEmpresaNombre = null;
+let currentSistemaId = null;
+let misSistemas = []; // [{id, nombre, tipo, modulo_personal, modulo_candidatos, activo}]
 
 function initSupabaseClient(){
   if(typeof window.supabase === "undefined"){
@@ -4331,6 +4391,60 @@ async function loadCurrentEmpresaNombre(){
 }
 
 /* ============================================================
+   SISTEMAS DE NEGOCIO: carga, selector y cambio de sistema activo
+   ============================================================ */
+const SISTEMA_TIPO_ICONO = {
+  rrhh:"👥", comercial:"💼", marketing:"📣", compras:"📦",
+  ingenieria:"🏗️", direccion:"🧭", personalizado:"🗂️"
+};
+async function loadMisSistemas(){
+  try{
+    const { data, error } = await supabaseClient.rpc("list_mis_sistemas");
+    if(error) throw error;
+    misSistemas = (data || []).filter(s=>s.activo !== false);
+  }catch(e){
+    console.error("No se pudieron cargar los sistemas de negocio", e);
+    misSistemas = [];
+  }
+  let saved = null;
+  try{ saved = localStorage.getItem("sistema-activo-id"); }catch(e){}
+  const valido = misSistemas.find(s=>s.id === saved);
+  currentSistemaId = valido ? saved : (misSistemas[0] ? misSistemas[0].id : null);
+  renderSistemaSwitcher();
+}
+function renderSistemaSwitcher(){
+  const wrap = document.getElementById("sistema-switcher");
+  const sel = document.getElementById("sistema-switcher-select");
+  if(!wrap || !sel) return;
+  if(misSistemas.length <= 1){
+    wrap.style.display = "none";
+    return;
+  }
+  wrap.style.display = "block";
+  sel.innerHTML = misSistemas.map(s=>
+    `<option value="${s.id}" ${s.id === currentSistemaId ? "selected":""}>${SISTEMA_TIPO_ICONO[s.tipo]||"🗂️"} ${escapeHtml(s.nombre)}</option>`
+  ).join("");
+}
+async function switchSistema(nuevoId){
+  if(nuevoId === currentSistemaId) return;
+  currentSistemaId = nuevoId;
+  try{ localStorage.setItem("sistema-activo-id", nuevoId); }catch(e){}
+  const overlay = document.createElement("div");
+  overlay.className = "sistema-switch-overlay";
+  overlay.innerHTML = `<div class="sistema-switch-box">Cambiando de sistema…</div>`;
+  document.body.appendChild(overlay);
+  try{
+    await cargarDatosDelSistemaActivo();
+  } finally {
+    overlay.remove();
+  }
+  showToast("✓ Sistema cambiado");
+}
+document.getElementById("sistema-switcher-select").addEventListener("change", (e)=>{
+  switchSistema(e.target.value);
+});
+
+/* ============================================================
    FASE 3 SAAS: ESTADO DE SUSCRIPCIÓN
    ============================================================ */
 let currentPlanStatus = null;
@@ -4396,6 +4510,8 @@ function applyRolePermissions(role){
   if(usersPanelNav) usersPanelNav.style.display = role === "admin" ? "" : "none";
   const empresaCard = document.getElementById("cfg-empresa-nombre-card");
   if(empresaCard) empresaCard.style.display = role === "admin" ? "" : "none";
+  const sistemasCard = document.getElementById("cfg-sistemas-nav-item");
+  if(sistemasCard) sistemasCard.style.display = role === "admin" ? "" : "none";
 }
 
 /* Se llama una sola vez al cargar la página. Muestra login o la app
@@ -4718,7 +4834,7 @@ function proximaOcurrenciaAnual(fechaISO){
   return candidata;
 }
 function checkCumpleanosYAniversarios(){
-  if(APP_SETTINGS.modulos.personal === false) return;
+  if(!moduloPersonalActivo()) return;
   const hoyAnio = new Date(todayISO() + "T00:00:00").getFullYear();
   EMPLEADOS.filter(e => e.estatus === "Activo").forEach(e=>{
     if(e.fechaNacimiento){
@@ -4848,7 +4964,7 @@ async function storageGetValue(key){
       .from("app_data")
       .select("value")
       .eq("key", key)
-      .eq("empresa_id", currentEmpresaId)
+      .eq("sistema_id", currentSistemaId)
       .maybeSingle();
     if(error) throw error;
     return data ? JSON.stringify(data.value) : null;
@@ -4863,15 +4979,16 @@ async function storageSetValue(key, value){
     .upsert({
       key,
       empresa_id: currentEmpresaId,
+      sistema_id: currentSistemaId,
       value: JSON.parse(value),
       updated_at: new Date().toISOString(),
       updated_by: currentUser ? currentUser.id : null
-    }, { onConflict: "empresa_id,key" });
+    }, { onConflict: "sistema_id,key" });
   if(error) throw error;
   lastLocalSaveAt[key] = Date.now();
 }
 async function storageRemoveValue(key){
-  const { error } = await supabaseClient.from("app_data").delete().eq("key", key).eq("empresa_id", currentEmpresaId);
+  const { error } = await supabaseClient.from("app_data").delete().eq("key", key).eq("sistema_id", currentSistemaId);
   if(error) console.error("Error borrando de Supabase:", key, error);
 }
 function cloneDefaults(){
@@ -5880,12 +5997,12 @@ function renderConfigView(){
   document.getElementById("cfg-casos-retraso").value = APP_SETTINGS.rules.casoRetrasoDias;
   document.getElementById("cfg-meta-resolucion").value = APP_SETTINGS.kpis.metaResolucionDias;
   document.getElementById("cfg-presupuesto").value = APP_SETTINGS.kpis.presupuestoMensual || "";
-  document.getElementById("cfg-modulo-personal").checked = APP_SETTINGS.modulos.personal !== false;
-  document.getElementById("cfg-modulo-candidatos").checked = APP_SETTINGS.modulos.candidatos !== false;
   updateStorageUsage();
   if(currentUserRole === "admin"){
     renderUsersAdminPanel();
     renderPendingInvitesPanel();
+    renderSistemasAdminPanel();
+    renderInviteSistemaSelect();
     const nombreInput = document.getElementById("cfg-empresa-nombre");
     if(nombreInput) nombreInput.value = currentEmpresaNombre || "";
   }
@@ -5902,7 +6019,7 @@ async function renderUsersAdminPanel(){
   if(!tbody) return;
   errBox.style.display = "none";
   try{
-    const { data, error } = await supabaseClient.rpc("list_users_with_roles");
+    const { data, error } = await supabaseClient.rpc("list_usuarios_con_sistemas");
     if(error) throw error;
     if(!data || data.length === 0){
       tbody.innerHTML = `<tr><td colspan="3" style="color:var(--text-mute);padding:16px;">No hay usuarios registrados.</td></tr>`;
@@ -5912,12 +6029,19 @@ async function renderUsersAdminPanel(){
       const roleSelect = ROLE_OPTIONS.map(o=>
         `<option value="${o.value}" ${o.value === (u.role||"pendiente") ? "selected":""}>${o.label}</option>`
       ).join("");
-      const alta = u.created_at ? u.created_at.slice(0,10) : "—";
       const isSelf = u.user_id === currentUser.id;
+      const sistemaIds = u.sistema_ids || [];
+      const sistemasChks = misSistemas.map(s=>{
+        const checked = sistemaIds.includes(s.id) ? "checked" : "";
+        return `<label class="sistema-chk">
+          <input type="checkbox" data-user-sistema="${u.user_id}" data-sistema-id="${s.id}" ${checked}>
+          ${SISTEMA_TIPO_ICONO[s.tipo]||"🗂️"} ${escapeHtml(s.nombre)}
+        </label>`;
+      }).join("");
       return `<tr>
         <td>${escapeHtml(u.email || "—")}${isSelf ? ' <span class="hint">(tú)</span>' : ""}</td>
-        <td>${alta}</td>
         <td><select data-user-id="${u.user_id}" ${isSelf ? "disabled title=\"No puedes cambiar tu propio rol desde aquí\"" : ""}>${roleSelect}</select></td>
+        <td><div class="sistema-chk-group">${sistemasChks || '<span class="hint">Sin sistemas creados</span>'}</div></td>
       </tr>`;
     }).join("");
     tbody.querySelectorAll("select[data-user-id]").forEach(sel=>{
@@ -5937,6 +6061,26 @@ async function renderUsersAdminPanel(){
         }
       });
     });
+    tbody.querySelectorAll("input[data-user-sistema]").forEach(chk=>{
+      chk.addEventListener("change", async ()=>{
+        chk.disabled = true;
+        try{
+          const { error } = await supabaseClient.rpc("asignar_usuario_sistema", {
+            p_user_id: chk.dataset.userSistema,
+            p_sistema_id: chk.dataset.sistemaId,
+            p_asignar: chk.checked
+          });
+          if(error) throw error;
+          showToast(chk.checked ? "Acceso otorgado" : "Acceso quitado");
+        }catch(e){
+          chk.checked = !chk.checked;
+          errBox.textContent = "No se pudo actualizar el acceso: " + (e.message || "error desconocido");
+          errBox.style.display = "block";
+        }finally{
+          chk.disabled = false;
+        }
+      });
+    });
   }catch(e){
     errBox.textContent = "No se pudo cargar la lista de usuarios: " + (e.message || "error desconocido");
     errBox.style.display = "block";
@@ -5944,6 +6088,110 @@ async function renderUsersAdminPanel(){
   }
 }
 document.getElementById("cfg-users-refresh").addEventListener("click", renderUsersAdminPanel);
+
+/* ============================================================
+   PANEL: SISTEMAS DE NEGOCIO (crear, editar, activar/desactivar)
+   ============================================================ */
+async function renderSistemasAdminPanel(){
+  const list = document.getElementById("cfg-sistemas-list");
+  const errBox = document.getElementById("cfg-sistemas-error");
+  if(!list) return;
+  errBox.style.display = "none";
+  try{
+    // A diferencia de misSistemas (solo los activos, para el selector),
+    // aquí el admin necesita ver también los desactivados para poder
+    // reactivarlos.
+    const { data, error } = await supabaseClient
+      .from("sistemas_negocio")
+      .select("id,nombre,tipo,modulo_personal,modulo_candidatos,activo")
+      .eq("empresa_id", currentEmpresaId)
+      .order("creado_en");
+    if(error) throw error;
+    if(!data || data.length === 0){
+      list.innerHTML = `<div class="modal-empty">Aún no tienes sistemas de negocio creados.</div>`;
+      return;
+    }
+    list.innerHTML = data.map(s=>`
+      <div class="sistema-admin-item ${s.activo ? "" : "inactivo"}" data-sistema-id="${s.id}">
+        <div class="sistema-admin-head">
+          <span class="sistema-admin-nombre">${SISTEMA_TIPO_ICONO[s.tipo]||"🗂️"} <input type="text" class="sistema-nombre-input" value="${escapeHtml(s.nombre)}"></span>
+          ${s.activo ? "" : '<span class="hint" style="color:var(--red);">Desactivado</span>'}
+        </div>
+        <div class="sistema-admin-modulos">
+          <label class="chk"><input type="checkbox" class="sistema-mod-personal" ${s.modulo_personal ? "checked":""}> Control de Personal</label>
+          <label class="chk"><input type="checkbox" class="sistema-mod-candidatos" ${s.modulo_candidatos ? "checked":""}> Candidatos</label>
+        </div>
+        <div class="sistema-admin-actions">
+          <button type="button" class="btn btn-ghost btn-sm sistema-guardar-btn">Guardar</button>
+          <button type="button" class="btn btn-ghost btn-sm sistema-toggle-btn">${s.activo ? "Desactivar" : "Reactivar"}</button>
+        </div>
+      </div>
+    `).join("");
+
+    list.querySelectorAll(".sistema-admin-item").forEach(item=>{
+      const sistemaId = item.dataset.sistemaId;
+      item.querySelector(".sistema-guardar-btn").addEventListener("click", async ()=>{
+        const nombre = item.querySelector(".sistema-nombre-input").value.trim();
+        const modPersonal = item.querySelector(".sistema-mod-personal").checked;
+        const modCandidatos = item.querySelector(".sistema-mod-candidatos").checked;
+        if(!nombre){ alert("El nombre no puede quedar vacío."); return; }
+        try{
+          const { error } = await supabaseClient.rpc("actualizar_sistema_negocio", {
+            p_sistema_id: sistemaId, p_nombre: nombre,
+            p_modulo_personal: modPersonal, p_modulo_candidatos: modCandidatos
+          });
+          if(error) throw error;
+          showToast("✓ Sistema actualizado");
+          await loadMisSistemas();
+          applyModulosToUI();
+          renderSistemasAdminPanel();
+        }catch(e){
+          errBox.textContent = "No se pudo guardar: " + (e.message || "error desconocido");
+          errBox.style.display = "block";
+        }
+      });
+      item.querySelector(".sistema-toggle-btn").addEventListener("click", async ()=>{
+        const activarlo = item.classList.contains("inactivo");
+        try{
+          const { error } = await supabaseClient.rpc("set_sistema_activo", { p_sistema_id:sistemaId, p_activo:activarlo });
+          if(error) throw error;
+          showToast(activarlo ? "Sistema reactivado" : "Sistema desactivado");
+          await loadMisSistemas();
+          renderSistemasAdminPanel();
+        }catch(e){
+          errBox.textContent = "No se pudo cambiar el estado: " + (e.message || "error desconocido");
+          errBox.style.display = "block";
+        }
+      });
+    });
+  }catch(e){
+    errBox.textContent = "No se pudieron cargar los sistemas: " + (e.message || "error desconocido");
+    errBox.style.display = "block";
+  }
+}
+document.getElementById("cfg-sistema-crear").addEventListener("click", async ()=>{
+  const nombreInput = document.getElementById("cfg-sistema-nombre");
+  const tipoSelect = document.getElementById("cfg-sistema-tipo");
+  const nombre = nombreInput.value.trim();
+  const tipo = tipoSelect.value;
+  if(!nombre){ alert("Escribe un nombre para el nuevo sistema."); return; }
+  const modPersonal = tipo === "rrhh";
+  const modCandidatos = tipo === "rrhh";
+  try{
+    const { error } = await supabaseClient.rpc("crear_sistema_negocio", {
+      p_nombre: nombre, p_tipo: tipo, p_modulo_personal: modPersonal, p_modulo_candidatos: modCandidatos
+    });
+    if(error) throw error;
+    nombreInput.value = "";
+    showToast("✓ Sistema de negocio creado");
+    await loadMisSistemas();
+    renderSistemasAdminPanel();
+  }catch(e){
+    const errBox = document.getElementById("cfg-sistemas-error");
+    errBox.textContent = "No se pudo crear el sistema: " + (e.message || "error desconocido");
+    errBox.style.display = "block";
+  }
+});
 document.getElementById("cfg-empresa-nombre-guardar").addEventListener("click", async ()=>{
   const input = document.getElementById("cfg-empresa-nombre");
   const nuevoNombre = input.value.trim();
@@ -5966,12 +6214,21 @@ document.getElementById("cfg-empresa-nombre-guardar").addEventListener("click", 
 /* ============================================================
    FASE 2 SAAS: INVITACIONES
    ============================================================ */
+function renderInviteSistemaSelect(){
+  const sel = document.getElementById("cfg-invite-sistema");
+  if(!sel) return;
+  sel.innerHTML = misSistemas.map(s=>
+    `<option value="${s.id}">${SISTEMA_TIPO_ICONO[s.tipo]||"🗂️"} ${escapeHtml(s.nombre)}</option>`
+  ).join("");
+}
 document.getElementById("cfg-invite-btn").addEventListener("click", async ()=>{
   const emailInput = document.getElementById("cfg-invite-email");
   const roleSelect = document.getElementById("cfg-invite-role");
+  const sistemaSelect = document.getElementById("cfg-invite-sistema");
   const msgBox = document.getElementById("cfg-invite-msg");
   const email = emailInput.value.trim();
   const role = roleSelect.value;
+  const sistemaId = sistemaSelect.value || null;
   msgBox.style.display = "none";
   if(!email || !email.includes("@")){
     alert("Escribe un correo válido.");
@@ -5983,7 +6240,8 @@ document.getElementById("cfg-invite-btn").addEventListener("click", async ()=>{
   try{
     const { data, error } = await supabaseClient.rpc("invite_teammate", {
       target_email: email,
-      target_role: role
+      target_role: role,
+      target_sistema_id: sistemaId
     });
     if(error) throw error;
     msgBox.style.display = "block";
@@ -6158,18 +6416,24 @@ async function removeMacroItem(value){
 }
 
 /* ============================================================
-   MÓDULOS ACTIVOS (adaptar la base a otras áreas además de RH)
+   MÓDULOS ACTIVOS: ahora dependen del Sistema de Negocio activo
+   (modulo_personal / modulo_candidatos en sistemas_negocio), no de
+   un ajuste único por empresa. Ver panel "Sistemas de Negocio".
    ============================================================ */
-document.getElementById("cfg-modulos-guardar").addEventListener("click", async ()=>{
-  APP_SETTINGS.modulos.personal = document.getElementById("cfg-modulo-personal").checked;
-  APP_SETTINGS.modulos.candidatos = document.getElementById("cfg-modulo-candidatos").checked;
-  await saveSettings();
-  applyModulosToUI();
-  showToast("✓ Módulos actualizados");
-});
+function getSistemaActivo(){
+  return misSistemas.find(s=>s.id === currentSistemaId) || null;
+}
+function moduloPersonalActivo(){
+  const s = getSistemaActivo();
+  return s ? s.modulo_personal !== false : true;
+}
+function moduloCandidatosActivo(){
+  const s = getSistemaActivo();
+  return s ? s.modulo_candidatos !== false : true;
+}
 function applyModulosToUI(){
-  const personalOn = APP_SETTINGS.modulos.personal !== false;
-  const candidatosOn = APP_SETTINGS.modulos.candidatos !== false;
+  const personalOn = moduloPersonalActivo();
+  const candidatosOn = moduloCandidatosActivo();
 
   const personalTab = document.querySelector('.tab-btn[data-view="personal"]');
   const candidatosTab = document.querySelector('.tab-btn[data-view="candidatos"]');
@@ -6920,17 +7184,17 @@ function renderGlobalSearchResults(qRaw){
   gsearchActiveIndex = -1;
 
   const vistas = GSEARCH_VIEWS.filter(v=>{
-    if(v.view === "personal" && APP_SETTINGS.modulos.personal === false) return false;
-    if(v.view === "candidatos" && APP_SETTINGS.modulos.candidatos === false) return false;
+    if(v.view === "personal" && !moduloPersonalActivo()) return false;
+    if(v.view === "candidatos" && !moduloCandidatosActivo()) return false;
     return !q || v.label.toLowerCase().includes(q);
   });
 
   let personal = [], candidatos = [], casos = [];
   if(q.length >= 2){
-    if(APP_SETTINGS.modulos.personal !== false){
+    if(moduloPersonalActivo()){
       personal = EMPLEADOS.filter(e=> (e.nombre||"").toLowerCase().includes(q)).slice(0,6);
     }
-    if(APP_SETTINGS.modulos.candidatos !== false){
+    if(moduloCandidatosActivo()){
       candidatos = CANDIDATOS.filter(c=> (c.nombre||"").toLowerCase().includes(q)).slice(0,6);
     }
     casos = RECORDS.filter(r=>
@@ -8844,7 +9108,7 @@ function checkVencimientosYGenerar(){
     }
   });
 
-  if(APP_SETTINGS.modulos.personal !== false){
+  if(moduloPersonalActivo()){
     EMPLEADOS.filter(e => e.estatus === "Activo" && CONTRATOS_TEMPORALES.includes(e.estadoContrato)).forEach(e=>{
       const efectivo = getVencimientoEfectivo(e);
       if(!efectivo) return;
@@ -12326,7 +12590,7 @@ function renderMonthCalendar(){
   });
 
   const vencByDay = {};
-  if(APP_SETTINGS.modulos.personal !== false){
+  if(moduloPersonalActivo()){
     EMPLEADOS.filter(e=> e.estatus === "Activo" && CONTRATOS_TEMPORALES.includes(e.estadoContrato)).forEach(e=>{
       [e.fechaVencimiento1, e.fechaVencimiento2].forEach(fv=>{
         if(!fv) return;
@@ -12339,7 +12603,7 @@ function renderMonthCalendar(){
   // Cumpleaños del personal activo: se agrupan por "MM-DD" (sin año) para
   // que se muestren en la celda correcta sin importar el año en curso.
   // (vacío si el módulo de Personal está desactivado)
-  const personalModuloActivo = APP_SETTINGS.modulos.personal !== false;
+  const personalModuloActivo = moduloPersonalActivo();
   const cumpleByMonthDay = {};
   if(personalModuloActivo) EMPLEADOS.filter(e => e.estatus === "Activo" && e.fechaNacimiento).forEach(e=>{
     const partes = e.fechaNacimiento.split("-"); // YYYY-MM-DD
@@ -12475,7 +12739,7 @@ function renderMonthCalendar(){
     grid.appendChild(cell);
   }
 
-  const personalModuloOn = APP_SETTINGS.modulos.personal !== false;
+  const personalModuloOn = moduloPersonalActivo();
   let legendHtml = ESTADOS.map(e=>
     `<span class="legend-item"><span class="legend-dot" style="background:${COLOR_ESTADO[e]}"></span>${e}</span>`
   ).join("");
@@ -12702,17 +12966,13 @@ function renderAll(){
 document.getElementById("min-fecha").value = todayISO();
 
 let appStarted = false;
-async function startApp(){
-  if(appStarted) return;
-  appStarted = true;
-  await Promise.all([loadSettings(), window.LIB_LOAD_PROMISE]);
+async function cargarDatosDelSistemaActivo(){
+  await loadSettings();
   initSelects();
   initPersonalSelects();
   initCandidatosSelects();
   initRecurrenteSelects();
   refreshAutoFields();
-  checkStorageHealth();
-  checkChartLibrary();
   await Promise.all([loadRecords(), loadEmpleados(), loadCandidatos(), loadNotificaciones(), loadPlantillas(), loadMinutas(), loadChecklists()]);
   initKanbanFilterSelects();
   await migrarEvidenciaLegado();
@@ -12723,6 +12983,15 @@ async function startApp(){
   await saveNotificaciones();
   renderAll();
   renderConfigView();
+  applyModulosToUI();
+}
+async function startApp(){
+  if(appStarted) return;
+  appStarted = true;
+  await Promise.all([window.LIB_LOAD_PROMISE, loadMisSistemas()]);
+  checkStorageHealth();
+  checkChartLibrary();
+  await cargarDatosDelSistemaActivo();
   setupRealtimeSync();
   checkForFormDraft();
 }
@@ -12750,6 +13019,8 @@ const realtimeDebounceTimers = {};
 function setupRealtimeSync(){
   supabaseClient.channel("app_data_sync")
     .on("postgres_changes", { event:"*", schema:"public", table:"app_data" }, (payload)=>{
+      const sistemaDelCambio = (payload.new && payload.new.sistema_id) || (payload.old && payload.old.sistema_id);
+      if(sistemaDelCambio !== currentSistemaId) return; // es de otro sistema al que también tengo acceso
       const key = (payload.new && payload.new.key) || (payload.old && payload.old.key);
       if(!key) return;
       const recienGuardadoPorMi = Date.now() - (lastLocalSaveAt[key] || 0) < 3000;
