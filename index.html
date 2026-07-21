@@ -4598,6 +4598,129 @@ const DEFAULT_MACRO_BY_AREA = {
 };
 let MACRO_BY_AREA = JSON.parse(JSON.stringify(DEFAULT_MACRO_BY_AREA));
 
+/* ============================================================
+   FASE 3 — PLANTILLAS DE CATÁLOGOS SUGERIDOS POR TIPO DE SISTEMA
+   ------------------------------------------------------------
+   Al crear un Sistema de Negocio nuevo, en vez de arrancar en blanco
+   (o con los catálogos de RRHH sin querer), se siembra con áreas,
+   macroprocesos y tipos de actividad típicos de ese giro. Siguen
+   siendo 100% editables después desde Configuración.
+   ============================================================ */
+const SISTEMA_TEMPLATES = {
+  rrhh: {
+    titulo:"Recursos Humanos", subtitulo:"Control de Capital Humano en tiempo real",
+    areas: DEFAULT_AREAS, macroPorArea: DEFAULT_MACRO_BY_AREA, tiposActividad: DEFAULT_TIPOS_ACTIVIDAD
+  },
+  comercial: {
+    titulo:"Comercial / Ventas", subtitulo:"Seguimiento comercial en tiempo real",
+    areas: [
+      "Prospección y Generación de Leads","Gestión de Cuentas Clave","Ventas Directas",
+      "Ventas por Canal y Distribuidores","Postventa y Servicio al Cliente",
+      "Administración Comercial","Inteligencia Comercial y Pronósticos","Capacitación Comercial"
+    ],
+    macroPorArea: {
+      "Prospección y Generación de Leads": ["Generación de leads","Calificación de prospectos","Prospección en frío","Marketing de referidos"],
+      "Gestión de Cuentas Clave": ["Cuentas estratégicas","Renovaciones","Cross-selling","Up-selling"],
+      "Ventas Directas": ["Cotizaciones","Cierre de ventas","Negociación de contratos","Presentaciones comerciales"],
+      "Ventas por Canal y Distribuidores": ["Gestión de distribuidores","Programas de canal","Soporte a canal"],
+      "Postventa y Servicio al Cliente": ["Atención a quejas","Garantías y devoluciones","Encuestas de satisfacción","Retención de clientes"],
+      "Administración Comercial": ["Comisiones","Presupuesto de ventas","Contratos comerciales","Facturación"],
+      "Inteligencia Comercial y Pronósticos": ["Pronóstico de ventas","Análisis de mercado","Benchmarking competitivo"],
+      "Capacitación Comercial": ["Onboarding de vendedores","Entrenamiento de producto","Certificaciones comerciales"]
+    },
+    tiposActividad: ["Llamada de Ventas","Visita a Cliente","Cotización","Cierre de Venta","Seguimiento Postventa","Capacitación","Reporte","Otro"]
+  },
+  marketing: {
+    titulo:"Comunicación / Marketing", subtitulo:"Gestión de marca y campañas en tiempo real",
+    areas: [
+      "Estrategia de Marca","Marketing Digital","Contenido y Redes Sociales","Publicidad y Medios",
+      "Eventos y Activaciones","Comunicación Interna","Comunicación Externa y RP","Investigación de Mercado"
+    ],
+    macroPorArea: {
+      "Estrategia de Marca": ["Posicionamiento de marca","Identidad visual","Brand guidelines","Arquitectura de marca"],
+      "Marketing Digital": ["SEO/SEM","Email marketing","Marketing automation","Analítica web"],
+      "Contenido y Redes Sociales": ["Calendario de contenido","Community management","Producción audiovisual","Influencer marketing"],
+      "Publicidad y Medios": ["Planeación de medios","Compra de medios","Campañas pagadas","Producción publicitaria"],
+      "Eventos y Activaciones": ["Ferias y exposiciones","Activaciones de marca","Patrocinios","Eventos corporativos"],
+      "Comunicación Interna": ["Boletines internos","Comunicados internos","Campañas de cultura"],
+      "Comunicación Externa y RP": ["Relación con medios","Gestión de crisis","Comunicados de prensa"],
+      "Investigación de Mercado": ["Estudios de mercado","Análisis de competencia","Focus groups"]
+    },
+    tiposActividad: ["Campaña","Publicación","Evento","Producción de Contenido","Análisis / Reporte","Reunión","Otro"]
+  },
+  compras: {
+    titulo:"Compras / Abastecimiento", subtitulo:"Control de abastecimiento en tiempo real",
+    areas: [
+      "Planeación de Compras","Abastecimiento Estratégico","Gestión de Proveedores","Logística y Almacén",
+      "Importaciones y Comercio Exterior","Control de Inventarios","Contratos y Licitaciones","Sustentabilidad y Cumplimiento"
+    ],
+    macroPorArea: {
+      "Planeación de Compras": ["Presupuesto de compras","Forecast de demanda","Requisiciones"],
+      "Abastecimiento Estratégico": ["Sourcing de proveedores","Cotizaciones y RFQs","Negociación de precios"],
+      "Gestión de Proveedores": ["Evaluación de proveedores","Homologación","Auditorías a proveedores"],
+      "Logística y Almacén": ["Recepción de mercancía","Gestión de almacén","Distribución"],
+      "Importaciones y Comercio Exterior": ["Trámites aduanales","Documentación de importación","Aranceles"],
+      "Control de Inventarios": ["Inventarios cíclicos","Kardex","Mermas y ajustes"],
+      "Contratos y Licitaciones": ["Licitaciones","Contratos de suministro","Renovaciones de contrato"],
+      "Sustentabilidad y Cumplimiento": ["Compras responsables","Cumplimiento normativo","Auditorías de cumplimiento"]
+    },
+    tiposActividad: ["Orden de Compra","Cotización","Negociación","Recepción de Mercancía","Auditoría a Proveedor","Otro"]
+  },
+  ingenieria: {
+    titulo:"Ingeniería / Facilities", subtitulo:"Control de instalaciones y proyectos en tiempo real",
+    areas: [
+      "Mantenimiento Preventivo y Correctivo","Proyectos de Infraestructura","Seguridad Industrial",
+      "Gestión de Instalaciones","Servicios Generales","Control de Activos","Sustentabilidad y Energía","Cumplimiento Normativo"
+    ],
+    macroPorArea: {
+      "Mantenimiento Preventivo y Correctivo": ["Órdenes de trabajo","Mantenimiento programado","Reparaciones de emergencia"],
+      "Proyectos de Infraestructura": ["Remodelaciones","Ampliaciones","Nuevas instalaciones"],
+      "Seguridad Industrial": ["Inspecciones de seguridad","Protección civil","Brigadas de emergencia"],
+      "Gestión de Instalaciones": ["Limpieza y housekeeping","Jardinería","Control de plagas"],
+      "Servicios Generales": ["Administración de flotilla","Viajes y viáticos","Correspondencia"],
+      "Control de Activos": ["Inventario de activos fijos","Depreciación","Bajas de activos"],
+      "Sustentabilidad y Energía": ["Eficiencia energética","Gestión de residuos","Certificaciones ambientales"],
+      "Cumplimiento Normativo": ["Protección civil","NOM aplicables","Auditorías de cumplimiento"]
+    },
+    tiposActividad: ["Orden de Trabajo","Inspección","Mantenimiento","Proyecto","Incidente","Otro"]
+  },
+  direccion: {
+    titulo:"Alta Dirección", subtitulo:"Seguimiento estratégico en tiempo real",
+    areas: [
+      "Planeación Estratégica","Gobierno Corporativo","Gestión de Riesgos",
+      "Relación con Inversionistas y Consejo","Fusiones y Adquisiciones",
+      "Sustentabilidad y RSE","Transformación y Cambio Organizacional","Alianzas Estratégicas"
+    ],
+    macroPorArea: {
+      "Planeación Estratégica": ["Plan estratégico anual","OKRs corporativos","Revisión de indicadores"],
+      "Gobierno Corporativo": ["Consejo de administración","Comités directivos","Políticas corporativas"],
+      "Gestión de Riesgos": ["Mapa de riesgos","Auditoría interna","Continuidad de negocio"],
+      "Relación con Inversionistas y Consejo": ["Reportes a consejo","Relación con accionistas","Juntas de consejo"],
+      "Fusiones y Adquisiciones": ["Due diligence","Integración post-fusión","Negociación de adquisiciones"],
+      "Sustentabilidad y RSE": ["Reportes ESG","Programas de responsabilidad social","Certificaciones de sustentabilidad"],
+      "Transformación y Cambio Organizacional": ["Gestión del cambio","Proyectos de transformación digital","Reestructuras"],
+      "Alianzas Estratégicas": ["Joint ventures","Alianzas comerciales","Convenios estratégicos"]
+    },
+    tiposActividad: ["Junta Directiva","Revisión Estratégica","Proyecto Especial","Reporte Ejecutivo","Otro"]
+  },
+  personalizado: {
+    titulo:null, subtitulo:"Seguimiento en tiempo real",
+    areas: ["Área General"],
+    macroPorArea: {"Área General": []},
+    tiposActividad: ["Operativa","Estratégica","Administrativa","Proyecto","Otro"]
+  }
+};
+function construirSettingsIniciales(nombreSistema, tipo){
+  const settings = cloneDefaults();
+  const tpl = SISTEMA_TEMPLATES[tipo] || SISTEMA_TEMPLATES.personalizado;
+  settings.catalogs.areas = [...tpl.areas];
+  settings.catalogs.macroPorArea = JSON.parse(JSON.stringify(tpl.macroPorArea));
+  settings.catalogs.tiposActividad = [...tpl.tiposActividad];
+  settings.branding.titulo = tpl.titulo || nombreSistema;
+  settings.branding.subtitulo = tpl.subtitulo;
+  return settings;
+}
+
 const DEFAULT_DEPARTAMENTOS = ["ADMINISTRACIÓN","COMERCIAL","DIRECCIÓN GENERAL","GERENCIA DE PROYECTOS","GESTIONES","INGENIERÍA","MERCADOTECNIA","MESA DE CONTROL","RECURSOS HUMANOS","SERVICIOS GENERALES"];
 const DEFAULT_SUCURSALES = ["Matriz Apodaca","Querétaro","Todas las sucursales"];
 let DEPARTAMENTOS = [...DEFAULT_DEPARTAMENTOS];
@@ -6177,19 +6300,44 @@ document.getElementById("cfg-sistema-crear").addEventListener("click", async ()=
   if(!nombre){ alert("Escribe un nombre para el nuevo sistema."); return; }
   const modPersonal = tipo === "rrhh";
   const modCandidatos = tipo === "rrhh";
+  const btn = document.getElementById("cfg-sistema-crear");
+  btn.disabled = true;
+  btn.textContent = "Creando…";
   try{
-    const { error } = await supabaseClient.rpc("crear_sistema_negocio", {
+    const { data: nuevoSistemaId, error } = await supabaseClient.rpc("crear_sistema_negocio", {
       p_nombre: nombre, p_tipo: tipo, p_modulo_personal: modPersonal, p_modulo_candidatos: modCandidatos
     });
     if(error) throw error;
+
+    // Siembra el nuevo sistema con catálogos sugeridos según su tipo
+    // (áreas, macroprocesos y tipos de actividad típicos de ese giro),
+    // en vez de arrancar en blanco o heredando los de RH sin querer.
+    try{
+      const settingsIniciales = construirSettingsIniciales(nombre, tipo);
+      await supabaseClient.from("app_data").upsert({
+        key: SETTINGS_STORAGE_KEY,
+        empresa_id: currentEmpresaId,
+        sistema_id: nuevoSistemaId,
+        value: settingsIniciales,
+        updated_at: new Date().toISOString(),
+        updated_by: currentUser ? currentUser.id : null
+      }, { onConflict: "sistema_id,key" });
+    }catch(seedErr){
+      console.error("No se pudieron sembrar los catálogos sugeridos", seedErr);
+      // no es crítico: el sistema queda creado y usable, solo sin plantilla
+    }
+
     nombreInput.value = "";
-    showToast("✓ Sistema de negocio creado");
+    showToast("✓ Sistema de negocio creado con catálogos sugeridos");
     await loadMisSistemas();
     renderSistemasAdminPanel();
   }catch(e){
     const errBox = document.getElementById("cfg-sistemas-error");
     errBox.textContent = "No se pudo crear el sistema: " + (e.message || "error desconocido");
     errBox.style.display = "block";
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "Crear sistema";
   }
 });
 document.getElementById("cfg-empresa-nombre-guardar").addEventListener("click", async ()=>{
