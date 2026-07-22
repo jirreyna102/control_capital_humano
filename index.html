@@ -3926,21 +3926,23 @@ select:focus,textarea:focus{
         </p>
         <div id="cfg-kpis-custom-list" class="config-list"></div>
 
-        <h3 style="margin-top:22px;">➕ Nuevo KPI personalizado</h3>
+        <h3 style="margin-top:22px;" id="kpicustom-form-titulo">➕ Nuevo KPI personalizado</h3>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <div class="field" style="flex:1;min-width:220px;">
             <label for="kpicustom-titulo">Título</label>
             <input type="text" id="kpicustom-titulo" placeholder="Ej. Casos críticos en Marketing">
           </div>
+          <div class="field" style="min-width:180px;">
+            <label for="kpicustom-fuente">Fuente de datos</label>
+            <select id="kpicustom-fuente">
+              <option value="records">Bitácora general</option>
+              <option value="empleados">Personal</option>
+              <option value="candidatos">Candidatos</option>
+            </select>
+          </div>
           <div class="field" style="min-width:220px;">
             <label for="kpicustom-tipo">Qué calcular</label>
-            <select id="kpicustom-tipo">
-              <option value="conteo">Contar registros</option>
-              <option value="suma_costo">Sumar costo / monto</option>
-              <option value="promedio_costo">Promediar costo / monto</option>
-              <option value="promedio_dias">Promediar días transcurridos</option>
-              <option value="porcentaje">% que cumple una condición extra</option>
-            </select>
+            <select id="kpicustom-tipo"></select>
           </div>
           <div class="field" style="min-width:160px;">
             <label for="kpicustom-color">Color</label>
@@ -3967,6 +3969,7 @@ select:focus,textarea:focus{
         </div>
 
         <div class="form-actions">
+          <button class="btn btn-ghost btn-sm" type="button" id="kpicustom-cancelar" style="display:none;">Cancelar edición</button>
           <button class="btn btn-primary btn-sm" type="button" id="kpicustom-guardar">Agregar KPI</button>
         </div>
       </div>
@@ -6280,8 +6283,11 @@ function renderConfigView(){
   document.getElementById("cfg-casos-retraso").value = APP_SETTINGS.rules.casoRetrasoDias;
   document.getElementById("cfg-meta-resolucion").value = APP_SETTINGS.kpis.metaResolucionDias;
   document.getElementById("cfg-presupuesto").value = APP_SETTINGS.kpis.presupuestoMensual || "";
-  renderKpiCustomFiltroGrid("kpicustom-filtro-base");
-  renderKpiCustomFiltroGrid("kpicustom-filtro-extra");
+  if(!editingKpiCustomId){
+    actualizarOpcionesTipoMetrica();
+    renderKpiCustomFiltroGrid("kpicustom-filtro-base");
+    renderKpiCustomFiltroGrid("kpicustom-filtro-extra");
+  }
   renderKpisCustomList();
   updateStorageUsage();
   if(currentUserRole === "admin"){
@@ -6513,29 +6519,101 @@ document.getElementById("cfg-sistema-crear").addEventListener("click", async ()=
    departamento, sucursal o riesgo. Viven en APP_SETTINGS, por lo
    tanto son propios de cada Sistema de Negocio.
    ============================================================ */
-const KPI_CUSTOM_FILTRO_CAMPOS = [
-  {key:"estado", label:"Estado", opciones:()=>ESTADOS},
-  {key:"prioridad", label:"Prioridad", opciones:()=>PRIORIDADES},
-  {key:"tipo", label:"Tipo de actividad", opciones:()=>TIPOS_ACTIVIDAD},
-  {key:"area", label:"Área estratégica", opciones:()=>AREAS},
-  {key:"macro", label:"Macroproceso", opciones:()=>{
-    const todos = new Set();
-    Object.values(MACRO_BY_AREA).forEach(list=>(list||[]).forEach(m=>todos.add(m)));
-    return Array.from(todos);
-  }},
-  {key:"departamento", label:"Departamento", opciones:()=>DEPARTAMENTOS},
-  {key:"sucursal", label:"Sucursal", opciones:()=>SUCURSALES},
-  {key:"riesgo", label:"Riesgo", opciones:()=>RIESGOS}
-];
+const KPI_CUSTOM_FUENTES = {
+  records: {
+    label:"Bitácora general",
+    getData: ()=> RECORDS,
+    filtroCampos: [
+      {key:"estado", label:"Estado", opciones:()=>ESTADOS},
+      {key:"prioridad", label:"Prioridad", opciones:()=>PRIORIDADES},
+      {key:"tipo", label:"Tipo de actividad", opciones:()=>TIPOS_ACTIVIDAD},
+      {key:"area", label:"Área estratégica", opciones:()=>AREAS},
+      {key:"macro", label:"Macroproceso", opciones:()=>{
+        const todos = new Set();
+        Object.values(MACRO_BY_AREA).forEach(list=>(list||[]).forEach(m=>todos.add(m)));
+        return Array.from(todos);
+      }},
+      {key:"departamento", label:"Departamento", opciones:()=>DEPARTAMENTOS},
+      {key:"sucursal", label:"Sucursal", opciones:()=>SUCURSALES},
+      {key:"riesgo", label:"Riesgo", opciones:()=>RIESGOS}
+    ],
+    campoNumerico:{key:"costoFinal", label:"Costo / monto"},
+    soportaDias:true
+  },
+  empleados: {
+    label:"Personal",
+    getData: ()=> EMPLEADOS,
+    filtroCampos: [
+      {key:"departamento", label:"Departamento", opciones:()=>DEPARTAMENTOS},
+      {key:"sucursal", label:"Sucursal", opciones:()=>SUCURSALES},
+      {key:"estatus", label:"Estatus", opciones:()=>ESTATUS_COLAB},
+      {key:"genero", label:"Género", opciones:()=>GENEROS},
+      {key:"estadoContrato", label:"Tipo de contrato", opciones:()=>ESTADOS_CONTRATO}
+    ],
+    campoNumerico:{key:"sueldoDiario", label:"Sueldo diario"},
+    soportaDias:false
+  },
+  candidatos: {
+    label:"Candidatos",
+    getData: ()=> CANDIDATOS,
+    filtroCampos: [
+      {key:"departamento", label:"Departamento", opciones:()=>DEPARTAMENTOS},
+      {key:"sucursal", label:"Sucursal", opciones:()=>SUCURSALES},
+      {key:"estatus", label:"Estatus", opciones:()=>Object.keys(COLOR_ESTADO_CANDIDATO)}
+    ],
+    campoNumerico:null,
+    soportaDias:false
+  }
+};
+const KPI_CUSTOM_TIPO_LABELS = {
+  conteo:"Contar registros",
+  suma:"Sumar",
+  promedio:"Promediar",
+  promedio_dias:"Promediar días transcurridos",
+  porcentaje:"% que cumple una condición extra"
+};
 const KPI_CUSTOM_COLORES = {
   blue:"var(--blue)", teal:"var(--teal)", amber:"var(--amber)", red:"var(--red)",
   purple:"var(--purple)", cyan:"var(--cyan)", brown:"var(--brown)"
 };
+let editingKpiCustomId = null;
+
+function normalizarDefKpi(def){
+  const d = {...def};
+  if(!d.fuente) d.fuente = "records";
+  if(d.tipoMetrica === "suma_costo") d.tipoMetrica = "suma";
+  if(d.tipoMetrica === "promedio_costo") d.tipoMetrica = "promedio";
+  return d;
+}
+function getKpisPersonalizados(){
+  return (APP_SETTINGS.kpisPersonalizados || []).map(normalizarDefKpi);
+}
+function actualizarOpcionesTipoMetrica(){
+  const fuenteSel = document.getElementById("kpicustom-fuente");
+  const tipoSel = document.getElementById("kpicustom-tipo");
+  const valorPrevio = tipoSel.value;
+  const fuente = KPI_CUSTOM_FUENTES[fuenteSel.value] || KPI_CUSTOM_FUENTES.records;
+  const opciones = ["conteo"];
+  if(fuente.campoNumerico){ opciones.push("suma","promedio"); }
+  if(fuente.soportaDias) opciones.push("promedio_dias");
+  opciones.push("porcentaje");
+  tipoSel.innerHTML = opciones.map(op=>{
+    let label = KPI_CUSTOM_TIPO_LABELS[op];
+    if((op === "suma" || op === "promedio") && fuente.campoNumerico){
+      label = (op === "suma" ? "Sumar " : "Promediar ") + fuente.campoNumerico.label.toLowerCase();
+    }
+    return `<option value="${op}">${label}</option>`;
+  }).join("");
+  if(opciones.includes(valorPrevio)) tipoSel.value = valorPrevio;
+  document.getElementById("kpicustom-filtro-extra-wrap").style.display = tipoSel.value === "porcentaje" ? "block" : "none";
+}
 function renderKpiCustomFiltroGrid(containerId, valoresActuales){
   const el = document.getElementById(containerId);
   if(!el) return;
+  const fuenteSel = document.getElementById("kpicustom-fuente");
+  const fuente = KPI_CUSTOM_FUENTES[fuenteSel.value] || KPI_CUSTOM_FUENTES.records;
   const actuales = valoresActuales || {};
-  el.innerHTML = KPI_CUSTOM_FILTRO_CAMPOS.map(c=>{
+  el.innerHTML = fuente.filtroCampos.map(c=>{
     const opciones = c.opciones();
     return `<div class="field">
       <label>${escapeHtml(c.label)}</label>
@@ -6560,28 +6638,36 @@ function registroCumpleFiltroKpi(r, filtro){
   return Object.keys(filtro).every(key=> (r[key] || "") === filtro[key]);
 }
 function describirFiltroKpi(def){
-  const labels = {}; KPI_CUSTOM_FILTRO_CAMPOS.forEach(c=>{ labels[c.key] = c.label; });
-  const partes = Object.keys(def.filtro||{}).map(k=>`${labels[k]}: ${def.filtro[k]}`);
-  let txt = partes.length ? partes.join(" · ") : "Todos los registros";
+  const fuente = KPI_CUSTOM_FUENTES[def.fuente] || KPI_CUSTOM_FUENTES.records;
+  const labels = {}; fuente.filtroCampos.forEach(c=>{ labels[c.key] = c.label; });
+  const partes = Object.keys(def.filtro||{}).map(k=>`${labels[k]||k}: ${def.filtro[k]}`);
+  let txt = (fuente.label + (partes.length ? " · " + partes.join(" · ") : " · todos"));
   if(def.tipoMetrica === "porcentaje" && def.filtroExtra){
-    const extra = Object.keys(def.filtroExtra).map(k=>`${labels[k]}: ${def.filtroExtra[k]}`);
+    const extra = Object.keys(def.filtroExtra).map(k=>`${labels[k]||k}: ${def.filtroExtra[k]}`);
     if(extra.length) txt += " → " + extra.join(" · ");
   }
   return txt;
 }
 function calcularKpiPersonalizado(def){
-  const base = RECORDS.filter(r=>registroCumpleFiltroKpi(r, def.filtro));
+  const fuente = KPI_CUSTOM_FUENTES[def.fuente] || KPI_CUSTOM_FUENTES.records;
+  const datos = fuente.getData();
+  const base = datos.filter(r=>registroCumpleFiltroKpi(r, def.filtro));
   switch(def.tipoMetrica){
-    case "suma_costo": {
-      const suma = base.reduce((s,r)=> s + (Number(r.costoFinal)||0), 0);
+    case "suma": {
+      if(!fuente.campoNumerico) return "—";
+      const campo = fuente.campoNumerico.key;
+      const suma = base.reduce((s,r)=> s + (Number(r[campo])||0), 0);
       return money(suma);
     }
-    case "promedio_costo": {
-      const conCosto = base.filter(r=> r.costoFinal != null && r.costoFinal !== "");
-      const suma = conCosto.reduce((s,r)=> s + (Number(r.costoFinal)||0), 0);
-      return money(conCosto.length ? suma / conCosto.length : 0);
+    case "promedio": {
+      if(!fuente.campoNumerico) return "—";
+      const campo = fuente.campoNumerico.key;
+      const conValor = base.filter(r=> r[campo] != null && r[campo] !== "");
+      const suma = conValor.reduce((s,r)=> s + (Number(r[campo])||0), 0);
+      return money(conValor.length ? suma / conValor.length : 0);
     }
     case "promedio_dias": {
+      if(!fuente.soportaDias) return "—";
       const dias = base.map(r=>calcDias(r)).filter(d=> typeof d === "number");
       const prom = dias.length ? Math.round(dias.reduce((s,d)=>s+d,0)/dias.length) : 0;
       return String(prom);
@@ -6597,7 +6683,7 @@ function calcularKpiPersonalizado(def){
   }
 }
 function renderKpiPersonalizados(){
-  const defs = APP_SETTINGS.kpisPersonalizados || [];
+  const defs = getKpisPersonalizados();
   const grid = document.getElementById("kpi-personalizados-grid");
   const empty = document.getElementById("kpi-personalizados-empty");
   if(!grid) return;
@@ -6620,47 +6706,99 @@ function renderKpiPersonalizados(){
 function renderKpisCustomList(){
   const list = document.getElementById("cfg-kpis-custom-list");
   if(!list) return;
-  const defs = APP_SETTINGS.kpisPersonalizados || [];
+  const defs = getKpisPersonalizados();
   if(defs.length === 0){
     list.innerHTML = `<div class="modal-empty">Aún no has creado ningún KPI personalizado.</div>`;
     return;
   }
-  const tipoLabels = {
-    conteo:"Contar", suma_costo:"Sumar costo", promedio_costo:"Promediar costo",
-    promedio_dias:"Promediar días", porcentaje:"Porcentaje"
-  };
   list.innerHTML = defs.map(def=>`
     <div class="config-item">
-      <span><b>${escapeHtml(def.titulo)}</b> <span class="hint">(${tipoLabels[def.tipoMetrica]||def.tipoMetrica})</span> — <span class="hint">${escapeHtml(describirFiltroKpi(def))}</span></span>
-      <button class="icon-btn danger" type="button" title="Eliminar" data-kpi-custom-remove="${def.id}">✕</button>
+      <span><b>${escapeHtml(def.titulo)}</b> <span class="hint">(${KPI_CUSTOM_TIPO_LABELS[def.tipoMetrica]||def.tipoMetrica})</span> — <span class="hint">${escapeHtml(describirFiltroKpi(def))}</span></span>
+      <span style="display:flex;gap:4px;">
+        <button class="icon-btn" type="button" title="Editar" data-kpi-custom-edit="${def.id}">✎</button>
+        <button class="icon-btn danger" type="button" title="Eliminar" data-kpi-custom-remove="${def.id}">✕</button>
+      </span>
     </div>
   `).join("");
   list.querySelectorAll("[data-kpi-custom-remove]").forEach(btn=>{
     btn.addEventListener("click", async ()=>{
-      APP_SETTINGS.kpisPersonalizados = (APP_SETTINGS.kpisPersonalizados||[]).filter(d=>d.id !== btn.dataset.kpiCustomRemove);
+      APP_SETTINGS.kpisPersonalizados = getKpisPersonalizados().filter(d=>d.id !== btn.dataset.kpiCustomRemove);
       await saveSettings();
+      if(editingKpiCustomId === btn.dataset.kpiCustomRemove) cancelarEdicionKpiCustom();
       renderKpisCustomList();
       showToast("KPI eliminado");
     });
   });
+  list.querySelectorAll("[data-kpi-custom-edit]").forEach(btn=>{
+    btn.addEventListener("click", ()=> cargarKpiCustomParaEditar(btn.dataset.kpiCustomEdit));
+  });
 }
+function cargarKpiCustomParaEditar(id){
+  const def = getKpisPersonalizados().find(d=>d.id === id);
+  if(!def) return;
+  editingKpiCustomId = id;
+  document.getElementById("kpicustom-form-titulo").textContent = "✎ Editando KPI personalizado";
+  document.getElementById("kpicustom-titulo").value = def.titulo;
+  document.getElementById("kpicustom-fuente").value = def.fuente;
+  document.getElementById("kpicustom-color").value = def.color;
+  actualizarOpcionesTipoMetrica();
+  document.getElementById("kpicustom-tipo").value = def.tipoMetrica;
+  document.getElementById("kpicustom-filtro-extra-wrap").style.display = def.tipoMetrica === "porcentaje" ? "block" : "none";
+  renderKpiCustomFiltroGrid("kpicustom-filtro-base", def.filtro);
+  renderKpiCustomFiltroGrid("kpicustom-filtro-extra", def.filtroExtra);
+  document.getElementById("kpicustom-guardar").textContent = "Guardar cambios";
+  document.getElementById("kpicustom-cancelar").style.display = "inline-block";
+  document.getElementById("kpicustom-titulo").scrollIntoView({behavior:"smooth", block:"center"});
+}
+function cancelarEdicionKpiCustom(){
+  editingKpiCustomId = null;
+  document.getElementById("kpicustom-form-titulo").textContent = "➕ Nuevo KPI personalizado";
+  document.getElementById("kpicustom-titulo").value = "";
+  document.getElementById("kpicustom-fuente").value = "records";
+  document.getElementById("kpicustom-color").value = "blue";
+  actualizarOpcionesTipoMetrica();
+  renderKpiCustomFiltroGrid("kpicustom-filtro-base");
+  renderKpiCustomFiltroGrid("kpicustom-filtro-extra");
+  document.getElementById("kpicustom-guardar").textContent = "Agregar KPI";
+  document.getElementById("kpicustom-cancelar").style.display = "none";
+}
+document.getElementById("kpicustom-fuente").addEventListener("change", ()=>{
+  actualizarOpcionesTipoMetrica();
+  renderKpiCustomFiltroGrid("kpicustom-filtro-base");
+  renderKpiCustomFiltroGrid("kpicustom-filtro-extra");
+});
 document.getElementById("kpicustom-tipo").addEventListener("change", (e)=>{
   document.getElementById("kpicustom-filtro-extra-wrap").style.display = e.target.value === "porcentaje" ? "block" : "none";
 });
+document.getElementById("kpicustom-cancelar").addEventListener("click", cancelarEdicionKpiCustom);
 document.getElementById("kpicustom-guardar").addEventListener("click", async ()=>{
   const tituloInput = document.getElementById("kpicustom-titulo");
   const titulo = tituloInput.value.trim();
+  const fuente = document.getElementById("kpicustom-fuente").value;
   const tipoMetrica = document.getElementById("kpicustom-tipo").value;
   const color = document.getElementById("kpicustom-color").value;
   if(!titulo){ alert("Escribe un título para el KPI."); return; }
   const filtro = leerFiltroDeGrid("kpicustom-filtro-base");
   const filtroExtra = tipoMetrica === "porcentaje" ? leerFiltroDeGrid("kpicustom-filtro-extra") : null;
-  const nuevo = { id: uid(), titulo, tipoMetrica, color, filtro, filtroExtra };
-  APP_SETTINGS.kpisPersonalizados = [...(APP_SETTINGS.kpisPersonalizados||[]), nuevo];
-  await saveSettings();
-  tituloInput.value = "";
-  renderKpiCustomFiltroGrid("kpicustom-filtro-base");
-  renderKpiCustomFiltroGrid("kpicustom-filtro-extra");
+  const defs = getKpisPersonalizados();
+  if(editingKpiCustomId){
+    const idx = defs.findIndex(d=>d.id === editingKpiCustomId);
+    if(idx > -1){
+      defs[idx] = { id: editingKpiCustomId, titulo, fuente, tipoMetrica, color, filtro, filtroExtra };
+    }
+    APP_SETTINGS.kpisPersonalizados = defs;
+    await saveSettings();
+    showToast("✓ KPI personalizado actualizado");
+    cancelarEdicionKpiCustom();
+  } else {
+    const nuevo = { id: uid(), titulo, fuente, tipoMetrica, color, filtro, filtroExtra };
+    APP_SETTINGS.kpisPersonalizados = [...defs, nuevo];
+    await saveSettings();
+    tituloInput.value = "";
+    renderKpiCustomFiltroGrid("kpicustom-filtro-base");
+    renderKpiCustomFiltroGrid("kpicustom-filtro-extra");
+    showToast("✓ KPI personalizado creado");
+  }
   renderKpisCustomList();
   showToast("✓ KPI personalizado creado");
 });
