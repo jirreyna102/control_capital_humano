@@ -685,6 +685,12 @@ body.role-lectura .sel-col{display:none !important;}
 .sistema-admin-modulos{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;}
 .sistema-admin-modulos .chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-soft);cursor:pointer;}
 .sistema-admin-actions{display:flex;gap:8px;}
+.kpicustom-filtros-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:8px;
+}
+.kpicustom-filtros-grid .field{margin:0;}
+.kpicustom-filtros-grid label{font-size:11px;}
+.kpicustom-filtros-grid select{width:100%;padding:6px 8px;font-size:12px;}
 .users-admin-table select{border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-size:12px;}
 
 /* ---- Búsqueda global (Ctrl+K) ---- */
@@ -1028,7 +1034,7 @@ tr.row-warning:hover{
 .kpi-subview{display:none;}
 .kpi-subview.active{display:block;animation:fadeIn .2s ease;}
 
-.kpi-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:18px;}
+.kpi-grid-6{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:18px;}
 @media(max-width:1100px){.kpi-grid-6{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:640px){.kpi-grid-6{grid-template-columns:repeat(2,1fr);}}
 .mini-kpi{
@@ -3318,11 +3324,12 @@ select:focus,textarea:focus{
     </div>
 
     <div class="subtabs" id="kpi-subnav">
-      <button class="active" data-kpi="operativos" type="button">I. Operativos</button>
-      <button data-kpi="productividad" type="button">II. Productividad</button>
-      <button data-kpi="estrategicos" type="button">III. Estratégicos</button>
+      <button class="active" data-kpi="operativos" type="button" id="kpi-tab-operativos">I. Operativos</button>
+      <button data-kpi="productividad" type="button" id="kpi-tab-productividad">II. Productividad</button>
+      <button data-kpi="estrategicos" type="button" id="kpi-tab-estrategicos">III. Estratégicos</button>
       <button data-kpi="analiticos" type="button">IV. Analíticos</button>
       <button data-kpi="talento" type="button">V. Gestión de Talento</button>
+      <button data-kpi="personalizados" type="button">VI. Personalizados</button>
     </div>
 
     <div id="kpi-empty" class="empty-state" style="display:none;">
@@ -3360,9 +3367,14 @@ select:focus,textarea:focus{
             <div class="mk-sub">Activas con riesgo asociado</div>
           </div>
           <div class="mini-kpi" style="border-left-color:var(--teal);">
-            <div class="mk-label">Cumplimiento</div>
+            <div class="mk-label" id="op-cumplimiento-label">Cumplimiento</div>
             <div class="mk-value mono" id="op-cumplimiento">0%</div>
-            <div class="mk-sub">Cerrados / Total</div>
+            <div class="mk-sub" id="op-cumplimiento-sub">Cerrados / Total</div>
+          </div>
+          <div class="mini-kpi" style="border-left-color:var(--purple);">
+            <div class="mk-label" id="op-comprometido-label">Valor comprometido en activos</div>
+            <div class="mk-value mono" id="op-comprometido" style="font-size:19px;">$0</div>
+            <div class="mk-sub">Suma de costo/monto en actividades activas (aún no cerradas)</div>
           </div>
         </div>
         <div class="chart-card full">
@@ -3377,22 +3389,22 @@ select:focus,textarea:focus{
       <div class="kpi-subview" id="kpi-productividad">
         <div class="kpi-grid-6" style="grid-template-columns:repeat(4,1fr);">
           <div class="mini-kpi" style="border-left-color:var(--blue);">
-            <div class="mk-label">Tiempo promedio</div>
+            <div class="mk-label" id="prod-tiempo-label">Tiempo promedio</div>
             <div class="mk-value mono" id="prod-tiempo">0</div>
-            <div class="mk-sub">Días de resolución (casos Cerrados)</div>
+            <div class="mk-sub" id="prod-tiempo-sub">Días de resolución (casos Cerrados)</div>
           </div>
           <div class="mini-kpi" style="border-left-color:var(--teal);">
-            <div class="mk-label">Eficiencia</div>
+            <div class="mk-label" id="prod-eficiencia-label">Eficiencia</div>
             <div class="mk-value mono" id="prod-eficiencia">0%</div>
             <div class="mk-sub">Cerrados / (Cerrados + Cancelados)</div>
           </div>
           <div class="mini-kpi" style="border-left-color:var(--amber);">
-            <div class="mk-label">Costo total gestionado</div>
+            <div class="mk-label" id="prod-costo-total-label">Costo total gestionado</div>
             <div class="mk-value mono" id="prod-costo-total" style="font-size:19px;">$0</div>
             <div class="mk-sub">Suma en casos Cerrados</div>
           </div>
           <div class="mini-kpi" style="border-left-color:var(--red);">
-            <div class="mk-label">Costo promedio / caso</div>
+            <div class="mk-label" id="prod-costo-prom-label">Costo promedio / caso</div>
             <div class="mk-value mono" id="prod-costo-prom" style="font-size:19px;">$0</div>
             <div class="mk-sub">Solo casos Cerrados con costo</div>
           </div>
@@ -3535,6 +3547,15 @@ select:focus,textarea:focus{
           </div>
           <div class="chart-canvas-box tall"><canvas id="tal-chart-masa"></canvas></div>
         </div>
+      </div>
+
+      <!-- VI. PERSONALIZADOS -->
+      <div class="kpi-subview" id="kpi-personalizados">
+        <div id="kpi-personalizados-empty" class="empty-state" style="display:none;">
+          <div class="em-icon">🧩</div>
+          <div><b>Aún no tienes KPIs personalizados.</b><br>Créalos desde Configuración → KPIs personalizados, con las métricas propias de tu operación.</div>
+        </div>
+        <div class="kpi-grid-6" id="kpi-personalizados-grid"></div>
       </div>
     </div>
   </div>
@@ -3895,6 +3916,58 @@ select:focus,textarea:focus{
             </select>
           </div>
           <button class="btn btn-primary btn-sm" type="button" id="cfg-sistema-crear">Crear sistema</button>
+        </div>
+      </div>
+
+      <div class="card config-card full">
+        <h3>🧩 KPIs personalizados</h3>
+        <p class="hint" style="margin:-4px 0 14px;">
+          Crea tus propias tarjetas de KPI eligiendo qué contar, sumar o promediar de tu bitácora, con los filtros que necesites. Aparecen en <b>KPIs → VI. Personalizados</b>, y son propios de este Sistema de Negocio (no se comparten con otros).
+        </p>
+        <div id="cfg-kpis-custom-list" class="config-list"></div>
+
+        <h3 style="margin-top:22px;">➕ Nuevo KPI personalizado</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div class="field" style="flex:1;min-width:220px;">
+            <label for="kpicustom-titulo">Título</label>
+            <input type="text" id="kpicustom-titulo" placeholder="Ej. Casos críticos en Marketing">
+          </div>
+          <div class="field" style="min-width:220px;">
+            <label for="kpicustom-tipo">Qué calcular</label>
+            <select id="kpicustom-tipo">
+              <option value="conteo">Contar registros</option>
+              <option value="suma_costo">Sumar costo / monto</option>
+              <option value="promedio_costo">Promediar costo / monto</option>
+              <option value="promedio_dias">Promediar días transcurridos</option>
+              <option value="porcentaje">% que cumple una condición extra</option>
+            </select>
+          </div>
+          <div class="field" style="min-width:160px;">
+            <label for="kpicustom-color">Color</label>
+            <select id="kpicustom-color">
+              <option value="blue">Azul</option>
+              <option value="teal">Verde</option>
+              <option value="amber">Ámbar</option>
+              <option value="red">Rojo</option>
+              <option value="purple">Morado</option>
+              <option value="cyan">Cian</option>
+              <option value="brown">Café</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:6px;">
+          <b style="font-size:12.5px;color:var(--text-soft);">Filtro base <span class="hint">(deja "Cualquiera" en los campos que no quieras usar para filtrar)</span></b>
+          <div class="kpicustom-filtros-grid" id="kpicustom-filtro-base"></div>
+        </div>
+
+        <div id="kpicustom-filtro-extra-wrap" style="display:none;margin-top:14px;">
+          <b style="font-size:12.5px;color:var(--text-soft);">Condición extra <span class="hint">(el numerador del porcentaje, se evalúa dentro del filtro base)</span></b>
+          <div class="kpicustom-filtros-grid" id="kpicustom-filtro-extra"></div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary btn-sm" type="button" id="kpicustom-guardar">Agregar KPI</button>
         </div>
       </div>
 
@@ -4721,6 +4794,91 @@ function construirSettingsIniciales(nombreSistema, tipo){
   return settings;
 }
 
+/* ============================================================
+   CAMINO A — VOCABULARIO DE KPIs POR TIPO DE SISTEMA
+   ------------------------------------------------------------
+   Las 4 pestañas de KPIs (Operativos/Productividad/Estratégicos/
+   Analíticos) se calculan igual para todos los sistemas —usan
+   campos universales de la bitácora—, pero aquí se les cambia el
+   nombre y el marco de referencia para que hablen el idioma de
+   cada área, sin tener que rehacer las fórmulas.
+   ============================================================ */
+const KPI_LABELS = {
+  rrhh: {
+    tabOperativos:"I. Operativos", tabProductividad:"II. Productividad", tabEstrategicos:"III. Estratégicos",
+    cumplimientoLabel:"Cumplimiento", cumplimientoSub:"Cerrados / Total",
+    comprometidoLabel:"Costo estimado en curso",
+    tiempoLabel:"Tiempo promedio", tiempoSub:"Días de resolución (casos Cerrados)",
+    eficienciaLabel:"Eficiencia",
+    costoTotalLabel:"Costo total gestionado", costoPromLabel:"Costo promedio / caso"
+  },
+  comercial: {
+    tabOperativos:"I. Pipeline y Cierre", tabProductividad:"II. Desempeño Comercial", tabEstrategicos:"III. Análisis de Cartera",
+    cumplimientoLabel:"Tasa de cierre", cumplimientoSub:"Ventas cerradas / Total de oportunidades",
+    comprometidoLabel:"Pipeline activo ($)",
+    tiempoLabel:"Ciclo de venta promedio", tiempoSub:"Días desde apertura hasta el cierre",
+    eficienciaLabel:"Tasa de conversión",
+    costoTotalLabel:"Monto total vendido", costoPromLabel:"Ticket promedio"
+  },
+  marketing: {
+    tabOperativos:"I. Campañas y Entregables", tabProductividad:"II. Desempeño de Marketing", tabEstrategicos:"III. Análisis de Inversión",
+    cumplimientoLabel:"Tasa de finalización", cumplimientoSub:"Campañas cerradas / Total",
+    comprometidoLabel:"Presupuesto comprometido",
+    tiempoLabel:"Tiempo de ejecución promedio", tiempoSub:"Días desde apertura hasta el cierre",
+    eficienciaLabel:"Tasa de campañas exitosas",
+    costoTotalLabel:"Inversión total", costoPromLabel:"Inversión promedio / campaña"
+  },
+  compras: {
+    tabOperativos:"I. Órdenes y Abasto", tabProductividad:"II. Desempeño de Abastecimiento", tabEstrategicos:"III. Análisis de Gasto",
+    cumplimientoLabel:"Tasa de cumplimiento (OTIF aprox.)", cumplimientoSub:"Órdenes cerradas / Total",
+    comprometidoLabel:"Gasto comprometido",
+    tiempoLabel:"Lead time promedio", tiempoSub:"Días desde la solicitud hasta el cierre",
+    eficienciaLabel:"Tasa de surtido correcto",
+    costoTotalLabel:"Gasto total", costoPromLabel:"Gasto promedio / orden"
+  },
+  ingenieria: {
+    tabOperativos:"I. Órdenes de Trabajo", tabProductividad:"II. Desempeño de Mantenimiento", tabEstrategicos:"III. Análisis de Activos",
+    cumplimientoLabel:"Cumplimiento de mantenimiento", cumplimientoSub:"Órdenes cerradas / Total",
+    comprometidoLabel:"Presupuesto en curso",
+    tiempoLabel:"MTTR (tiempo de reparación)", tiempoSub:"Días desde apertura hasta el cierre",
+    eficienciaLabel:"Tasa de solución en primera visita",
+    costoTotalLabel:"Costo total de mantenimiento", costoPromLabel:"Costo promedio / orden"
+  },
+  direccion: {
+    tabOperativos:"I. Iniciativas Estratégicas", tabProductividad:"II. Desempeño Directivo", tabEstrategicos:"III. Análisis Estratégico",
+    cumplimientoLabel:"Cumplimiento estratégico", cumplimientoSub:"Iniciativas cerradas / Total",
+    comprometidoLabel:"Inversión comprometida",
+    tiempoLabel:"Tiempo promedio de ejecución", tiempoSub:"Días desde apertura hasta el cierre",
+    eficienciaLabel:"Tasa de éxito de iniciativas",
+    costoTotalLabel:"Inversión total", costoPromLabel:"Inversión promedio / iniciativa"
+  },
+  personalizado: {
+    tabOperativos:"I. Operativos", tabProductividad:"II. Productividad", tabEstrategicos:"III. Estratégicos",
+    cumplimientoLabel:"Cumplimiento", cumplimientoSub:"Cerrados / Total",
+    comprometidoLabel:"Valor comprometido en activos",
+    tiempoLabel:"Tiempo promedio", tiempoSub:"Días de resolución (casos Cerrados)",
+    eficienciaLabel:"Eficiencia",
+    costoTotalLabel:"Costo total gestionado", costoPromLabel:"Costo promedio / caso"
+  }
+};
+function aplicarEtiquetasKPI(){
+  const sistema = getSistemaActivo();
+  const tipo = sistema ? sistema.tipo : "rrhh";
+  const L = KPI_LABELS[tipo] || KPI_LABELS.rrhh;
+  const setText = (id, txt)=>{ const el = document.getElementById(id); if(el) el.textContent = txt; };
+  setText("kpi-tab-operativos", L.tabOperativos);
+  setText("kpi-tab-productividad", L.tabProductividad);
+  setText("kpi-tab-estrategicos", L.tabEstrategicos);
+  setText("op-cumplimiento-label", L.cumplimientoLabel);
+  setText("op-cumplimiento-sub", L.cumplimientoSub);
+  setText("op-comprometido-label", L.comprometidoLabel);
+  setText("prod-tiempo-label", L.tiempoLabel);
+  setText("prod-tiempo-sub", L.tiempoSub);
+  setText("prod-eficiencia-label", L.eficienciaLabel);
+  setText("prod-costo-total-label", L.costoTotalLabel);
+  setText("prod-costo-prom-label", L.costoPromLabel);
+}
+
 const DEFAULT_DEPARTAMENTOS = ["ADMINISTRACIÓN","COMERCIAL","DIRECCIÓN GENERAL","GERENCIA DE PROYECTOS","GESTIONES","INGENIERÍA","MERCADOTECNIA","MESA DE CONTROL","RECURSOS HUMANOS","SERVICIOS GENERALES"];
 const DEFAULT_SUCURSALES = ["Matriz Apodaca","Querétaro","Todas las sucursales"];
 let DEPARTAMENTOS = [...DEFAULT_DEPARTAMENTOS];
@@ -4816,6 +4974,7 @@ const DEFAULT_SETTINGS = {
     personal: true,
     candidatos: true
   },
+  kpisPersonalizados: [],
   rules:{
     contratoAmarilloDias: 30,
     contratoRojoDias: 15,
@@ -5128,7 +5287,8 @@ function normalizeSettings(raw){
     modulos:{...base.modulos, ...(raw.modulos || {})},
     rules:{...base.rules, ...(raw.rules || {})},
     kpis:{...base.kpis, ...(raw.kpis || {})},
-    notificaciones:{...base.notificaciones, ...(raw.notificaciones || {})}
+    notificaciones:{...base.notificaciones, ...(raw.notificaciones || {})},
+    kpisPersonalizados: Array.isArray(raw.kpisPersonalizados) ? raw.kpisPersonalizados : base.kpisPersonalizados
   };
 }
 const PULSO_MARK_SVG = `<svg viewBox="0 0 52 52" width="60%" height="60%" xmlns="http://www.w3.org/2000/svg">
@@ -6120,6 +6280,9 @@ function renderConfigView(){
   document.getElementById("cfg-casos-retraso").value = APP_SETTINGS.rules.casoRetrasoDias;
   document.getElementById("cfg-meta-resolucion").value = APP_SETTINGS.kpis.metaResolucionDias;
   document.getElementById("cfg-presupuesto").value = APP_SETTINGS.kpis.presupuestoMensual || "";
+  renderKpiCustomFiltroGrid("kpicustom-filtro-base");
+  renderKpiCustomFiltroGrid("kpicustom-filtro-extra");
+  renderKpisCustomList();
   updateStorageUsage();
   if(currentUserRole === "admin"){
     renderUsersAdminPanel();
@@ -6340,6 +6503,168 @@ document.getElementById("cfg-sistema-crear").addEventListener("click", async ()=
     btn.textContent = "Crear sistema";
   }
 });
+
+/* ============================================================
+   CAMINO B — CONSTRUCTOR DE KPIs PERSONALIZADOS
+   ------------------------------------------------------------
+   Permite armar tarjetas de KPI sin código: elige qué calcular
+   (contar / sumar / promediar / %) sobre la bitácora, con un
+   filtro opcional por estado, prioridad, tipo, área, macroproceso,
+   departamento, sucursal o riesgo. Viven en APP_SETTINGS, por lo
+   tanto son propios de cada Sistema de Negocio.
+   ============================================================ */
+const KPI_CUSTOM_FILTRO_CAMPOS = [
+  {key:"estado", label:"Estado", opciones:()=>ESTADOS},
+  {key:"prioridad", label:"Prioridad", opciones:()=>PRIORIDADES},
+  {key:"tipo", label:"Tipo de actividad", opciones:()=>TIPOS_ACTIVIDAD},
+  {key:"area", label:"Área estratégica", opciones:()=>AREAS},
+  {key:"macro", label:"Macroproceso", opciones:()=>{
+    const todos = new Set();
+    Object.values(MACRO_BY_AREA).forEach(list=>(list||[]).forEach(m=>todos.add(m)));
+    return Array.from(todos);
+  }},
+  {key:"departamento", label:"Departamento", opciones:()=>DEPARTAMENTOS},
+  {key:"sucursal", label:"Sucursal", opciones:()=>SUCURSALES},
+  {key:"riesgo", label:"Riesgo", opciones:()=>RIESGOS}
+];
+const KPI_CUSTOM_COLORES = {
+  blue:"var(--blue)", teal:"var(--teal)", amber:"var(--amber)", red:"var(--red)",
+  purple:"var(--purple)", cyan:"var(--cyan)", brown:"var(--brown)"
+};
+function renderKpiCustomFiltroGrid(containerId, valoresActuales){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const actuales = valoresActuales || {};
+  el.innerHTML = KPI_CUSTOM_FILTRO_CAMPOS.map(c=>{
+    const opciones = c.opciones();
+    return `<div class="field">
+      <label>${escapeHtml(c.label)}</label>
+      <select data-filtro-campo="${c.key}">
+        <option value="">Cualquiera</option>
+        ${opciones.map(o=>`<option value="${escapeHtml(o)}" ${actuales[c.key]===o?"selected":""}>${escapeHtml(o)}</option>`).join("")}
+      </select>
+    </div>`;
+  }).join("");
+}
+function leerFiltroDeGrid(containerId){
+  const el = document.getElementById(containerId);
+  const filtro = {};
+  if(!el) return filtro;
+  el.querySelectorAll("[data-filtro-campo]").forEach(sel=>{
+    if(sel.value) filtro[sel.dataset.filtroCampo] = sel.value;
+  });
+  return filtro;
+}
+function registroCumpleFiltroKpi(r, filtro){
+  if(!filtro) return true;
+  return Object.keys(filtro).every(key=> (r[key] || "") === filtro[key]);
+}
+function describirFiltroKpi(def){
+  const labels = {}; KPI_CUSTOM_FILTRO_CAMPOS.forEach(c=>{ labels[c.key] = c.label; });
+  const partes = Object.keys(def.filtro||{}).map(k=>`${labels[k]}: ${def.filtro[k]}`);
+  let txt = partes.length ? partes.join(" · ") : "Todos los registros";
+  if(def.tipoMetrica === "porcentaje" && def.filtroExtra){
+    const extra = Object.keys(def.filtroExtra).map(k=>`${labels[k]}: ${def.filtroExtra[k]}`);
+    if(extra.length) txt += " → " + extra.join(" · ");
+  }
+  return txt;
+}
+function calcularKpiPersonalizado(def){
+  const base = RECORDS.filter(r=>registroCumpleFiltroKpi(r, def.filtro));
+  switch(def.tipoMetrica){
+    case "suma_costo": {
+      const suma = base.reduce((s,r)=> s + (Number(r.costoFinal)||0), 0);
+      return money(suma);
+    }
+    case "promedio_costo": {
+      const conCosto = base.filter(r=> r.costoFinal != null && r.costoFinal !== "");
+      const suma = conCosto.reduce((s,r)=> s + (Number(r.costoFinal)||0), 0);
+      return money(conCosto.length ? suma / conCosto.length : 0);
+    }
+    case "promedio_dias": {
+      const dias = base.map(r=>calcDias(r)).filter(d=> typeof d === "number");
+      const prom = dias.length ? Math.round(dias.reduce((s,d)=>s+d,0)/dias.length) : 0;
+      return String(prom);
+    }
+    case "porcentaje": {
+      const numerador = base.filter(r=>registroCumpleFiltroKpi(r, def.filtroExtra));
+      const pct = base.length ? Math.round((numerador.length/base.length)*100) : 0;
+      return pct + "%";
+    }
+    case "conteo":
+    default:
+      return String(base.length);
+  }
+}
+function renderKpiPersonalizados(){
+  const defs = APP_SETTINGS.kpisPersonalizados || [];
+  const grid = document.getElementById("kpi-personalizados-grid");
+  const empty = document.getElementById("kpi-personalizados-empty");
+  if(!grid) return;
+  if(defs.length === 0){
+    grid.innerHTML = "";
+    if(empty) empty.style.display = "block";
+    return;
+  }
+  if(empty) empty.style.display = "none";
+  grid.innerHTML = defs.map(def=>{
+    const valor = calcularKpiPersonalizado(def);
+    const color = KPI_CUSTOM_COLORES[def.color] || "var(--blue)";
+    return `<div class="mini-kpi" style="border-left-color:${color};">
+      <div class="mk-label">${escapeHtml(def.titulo)}</div>
+      <div class="mk-value mono" style="font-size:19px;">${valor}</div>
+      <div class="mk-sub">${escapeHtml(describirFiltroKpi(def))}</div>
+    </div>`;
+  }).join("");
+}
+function renderKpisCustomList(){
+  const list = document.getElementById("cfg-kpis-custom-list");
+  if(!list) return;
+  const defs = APP_SETTINGS.kpisPersonalizados || [];
+  if(defs.length === 0){
+    list.innerHTML = `<div class="modal-empty">Aún no has creado ningún KPI personalizado.</div>`;
+    return;
+  }
+  const tipoLabels = {
+    conteo:"Contar", suma_costo:"Sumar costo", promedio_costo:"Promediar costo",
+    promedio_dias:"Promediar días", porcentaje:"Porcentaje"
+  };
+  list.innerHTML = defs.map(def=>`
+    <div class="config-item">
+      <span><b>${escapeHtml(def.titulo)}</b> <span class="hint">(${tipoLabels[def.tipoMetrica]||def.tipoMetrica})</span> — <span class="hint">${escapeHtml(describirFiltroKpi(def))}</span></span>
+      <button class="icon-btn danger" type="button" title="Eliminar" data-kpi-custom-remove="${def.id}">✕</button>
+    </div>
+  `).join("");
+  list.querySelectorAll("[data-kpi-custom-remove]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      APP_SETTINGS.kpisPersonalizados = (APP_SETTINGS.kpisPersonalizados||[]).filter(d=>d.id !== btn.dataset.kpiCustomRemove);
+      await saveSettings();
+      renderKpisCustomList();
+      showToast("KPI eliminado");
+    });
+  });
+}
+document.getElementById("kpicustom-tipo").addEventListener("change", (e)=>{
+  document.getElementById("kpicustom-filtro-extra-wrap").style.display = e.target.value === "porcentaje" ? "block" : "none";
+});
+document.getElementById("kpicustom-guardar").addEventListener("click", async ()=>{
+  const tituloInput = document.getElementById("kpicustom-titulo");
+  const titulo = tituloInput.value.trim();
+  const tipoMetrica = document.getElementById("kpicustom-tipo").value;
+  const color = document.getElementById("kpicustom-color").value;
+  if(!titulo){ alert("Escribe un título para el KPI."); return; }
+  const filtro = leerFiltroDeGrid("kpicustom-filtro-base");
+  const filtroExtra = tipoMetrica === "porcentaje" ? leerFiltroDeGrid("kpicustom-filtro-extra") : null;
+  const nuevo = { id: uid(), titulo, tipoMetrica, color, filtro, filtroExtra };
+  APP_SETTINGS.kpisPersonalizados = [...(APP_SETTINGS.kpisPersonalizados||[]), nuevo];
+  await saveSettings();
+  tituloInput.value = "";
+  renderKpiCustomFiltroGrid("kpicustom-filtro-base");
+  renderKpiCustomFiltroGrid("kpicustom-filtro-extra");
+  renderKpisCustomList();
+  showToast("✓ KPI personalizado creado");
+});
+
 document.getElementById("cfg-empresa-nombre-guardar").addEventListener("click", async ()=>{
   const input = document.getElementById("cfg-empresa-nombre");
   const nuevoNombre = input.value.trim();
@@ -6582,6 +6907,7 @@ function moduloCandidatosActivo(){
 function applyModulosToUI(){
   const personalOn = moduloPersonalActivo();
   const candidatosOn = moduloCandidatosActivo();
+  aplicarEtiquetasKPI();
 
   const personalTab = document.querySelector('.tab-btn[data-view="personal"]');
   const candidatosTab = document.querySelector('.tab-btn[data-view="candidatos"]');
@@ -12295,6 +12621,7 @@ function renderKpiSection(name){
   else if(name === "estrategicos") safeRender("renderKpiEstrategicos", renderKpiEstrategicos);
   else if(name === "analiticos") safeRender("renderKpiAnaliticos", renderKpiAnaliticos);
   else if(name === "talento") safeRender("renderKpiTalento", renderKpiTalento);
+  else if(name === "personalizados") safeRender("renderKpiPersonalizados", renderKpiPersonalizados);
   setTimeout(attachChartExportButtons, 50);
 }
 
@@ -12313,6 +12640,9 @@ function renderKpiOperativos(){
   document.getElementById("op-vencidas").textContent = vencidas.length;
   document.getElementById("op-riesgos").textContent = riesgos.length;
   document.getElementById("op-cumplimiento").textContent = cumplimiento + "%";
+
+  const comprometido = activos.reduce((sum,r)=> sum + (Number(r.costoFinal) || 0), 0);
+  document.getElementById("op-comprometido").textContent = money(comprometido);
 
   const counts = {};
   ESTADOS.forEach(e=>counts[e]=0);
