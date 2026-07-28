@@ -161,7 +161,7 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
 
 .cfg-tabbar{
   display:flex;gap:4px;flex-wrap:wrap;background:var(--gray-soft);border:1px solid var(--line);
-  border-radius:12px;padding:4px;margin-bottom:20px;
+  border-radius:12px;padding:4px;margin-bottom:20px;max-width:1040px;
 }
 .cfg-tabbar button{
   display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:9px;border:none;
@@ -172,8 +172,16 @@ h1,h2,h3,.display{font-family:'Sora',system-ui,sans-serif;}
 .cfg-tabbar button.active{background:#fff;color:var(--blue);box-shadow:0 1px 4px rgba(15,23,42,.08);}
 .cfg-tabbar button svg{flex:0 0 auto;}
 .cfg-tabpanel{display:none;}
-.cfg-tabpanel.active{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.cfg-tabpanel.active{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:16px;max-width:1040px;align-items:start;
+}
 .cfg-tabpanel .config-card.full{grid-column:1 / -1;}
+.cfg-sistema-banner{
+  grid-column:1 / -1;display:flex;align-items:center;gap:8px;background:#EEF2FF;color:#4338CA;
+  border:1px solid #C7D2FE;border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:600;
+}
+.cfg-sistema-banner svg{flex:0 0 auto;}
 
 /* ---- Tablas de catálogo con acciones al pasar el cursor ---- */
 .cfg-catalog-table{width:100%;border-collapse:collapse;}
@@ -4001,6 +4009,7 @@ select:focus,textarea:focus{
 
     <!-- ============ TAB: ESTRUCTURA ORGANIZACIONAL ============ -->
     <div class="cfg-tabpanel" id="cfg-tab-estructura">
+      <div class="cfg-sistema-banner"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Configurando la estructura de: <b id="cfg-sistema-banner-estructura">—</b></span></div>
       <div class="card config-card">
         <h3 class="cfg-h3">
           <svg class="cfg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
@@ -4098,6 +4107,7 @@ select:focus,textarea:focus{
 
     <!-- ============ TAB: REGLAS Y AUTOMATIZACIÓN ============ -->
     <div class="cfg-tabpanel" id="cfg-tab-reglas">
+      <div class="cfg-sistema-banner"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Configurando reglas y automatización de: <b id="cfg-sistema-banner-reglas">—</b></span></div>
       <div class="card config-card full">
         <h3 class="cfg-h3">
           <svg class="cfg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/></svg>
@@ -4145,6 +4155,7 @@ select:focus,textarea:focus{
 
     <!-- ============ TAB: KPIS Y NOTIFICACIONES ============ -->
     <div class="cfg-tabpanel" id="cfg-tab-kpis">
+      <div class="cfg-sistema-banner"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Configurando KPIs y notificaciones de: <b id="cfg-sistema-banner-kpis">—</b></span></div>
       <div class="card config-card full">
         <h3 class="cfg-h3">
           <svg class="cfg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
@@ -6614,10 +6625,11 @@ async function renderSistemasAdminPanel(){
           <span class="sistema-admin-nombre">${SISTEMA_TIPO_ICONO[s.tipo]||"🗂️"} <input type="text" class="sistema-nombre-input" value="${escapeHtml(s.nombre)}"></span>
           ${s.activo ? "" : '<span class="hint" style="color:var(--red);">Desactivado</span>'}
         </div>
+        ${s.tipo === "rrhh" ? `
         <div class="sistema-admin-modulos">
           <label class="chk"><input type="checkbox" class="sistema-mod-personal" ${s.modulo_personal ? "checked":""}> Control de Personal</label>
           <label class="chk"><input type="checkbox" class="sistema-mod-candidatos" ${s.modulo_candidatos ? "checked":""}> Candidatos</label>
-        </div>
+        </div>` : ""}
         <div class="sistema-admin-actions">
           <button type="button" class="btn btn-ghost btn-sm sistema-guardar-btn">Guardar</button>
           <button type="button" class="btn btn-ghost btn-sm sistema-toggle-btn">${s.activo ? "Desactivar" : "Reactivar"}</button>
@@ -6629,8 +6641,10 @@ async function renderSistemasAdminPanel(){
       const sistemaId = item.dataset.sistemaId;
       item.querySelector(".sistema-guardar-btn").addEventListener("click", async ()=>{
         const nombre = item.querySelector(".sistema-nombre-input").value.trim();
-        const modPersonal = item.querySelector(".sistema-mod-personal").checked;
-        const modCandidatos = item.querySelector(".sistema-mod-candidatos").checked;
+        const modPersonalEl = item.querySelector(".sistema-mod-personal");
+        const modCandidatosEl = item.querySelector(".sistema-mod-candidatos");
+        const modPersonal = modPersonalEl ? modPersonalEl.checked : false;
+        const modCandidatos = modCandidatosEl ? modCandidatosEl.checked : false;
         if(!nombre){ alert("El nombre no puede quedar vacío."); return; }
         try{
           const { error } = await supabaseClient.rpc("actualizar_sistema_negocio", {
@@ -7254,6 +7268,13 @@ function applyModulosToUI(){
   const personalOn = moduloPersonalActivo();
   const candidatosOn = moduloCandidatosActivo();
   aplicarEtiquetasKPI();
+
+  const sistemaActivo = getSistemaActivo();
+  const nombreSistema = sistemaActivo ? sistemaActivo.nombre : "—";
+  ["cfg-sistema-banner-estructura","cfg-sistema-banner-reglas","cfg-sistema-banner-kpis"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = nombreSistema;
+  });
 
   const personalTab = document.querySelector('.tab-btn[data-view="personal"]');
   const candidatosTab = document.querySelector('.tab-btn[data-view="candidatos"]');
